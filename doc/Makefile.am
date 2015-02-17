@@ -70,8 +70,12 @@ doc_DATA = \
 	  bibtex $*; \
 	fi
 	echo Run latex again to get references right $*
-	pdflatex $*
+#	pdflatex $*
+	#run latex in preparation for latex2html
+	latex $*
 	latex2html -split 4 -show_section_numbers -local_icons $<
+	#run final pdflatex for pdf to be created as originally intended
+	pdflatex $*
 
 #  Custom installation rule
 install-data-local:

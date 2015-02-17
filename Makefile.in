@@ -156,8 +156,8 @@ appdocs_DATA = \
 	AUTHORS$(TXTEXT) \
 	COPYING$(TXTEXT) \
 	ChangeLog$(TXTEXT) \
-	NEWS$(TXTEXT) \
-	README$(TXTEXT) \
+#	NEWS$(TXTEXT) \
+	README.md$(TXTEXT) \
 	THANKS$(TXTEXT)
 
 
