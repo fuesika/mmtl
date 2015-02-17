@@ -137,7 +137,7 @@ void nmmtl_output_headers(FILE *output_file,
   // look up the user name 
   userName = getlogin() ;
   if ( userName == NULL ) {
-    userName = "Username Unknown";
+    userName = (char *)&"Username Unknown";
   }
 
   time(&tm) ;
