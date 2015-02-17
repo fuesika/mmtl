@@ -9,15 +9,16 @@ build, and install TNT from the source code.
 Compiling and Installing TNT
 ----------------------------
 
-To compile TNT, you will need the following on your machine:
+To compile and run TNT, you will need the following on your machine:
 
-  C, C++, and FORTRAN compilers
+  C, C++, and FORTRAN compilers, e.g. gcc/g++/gfortran
   pdflatex and latex2html for documentation
+  itcl, bwidgets for the gui
 
 To compile and install TNT, type the following
 
   ./configure --prefix=/location/to/install/tnt
-  make
+  make F77=gfortran
   make install
 
 The configure script will analyze your system and generate makefiles
