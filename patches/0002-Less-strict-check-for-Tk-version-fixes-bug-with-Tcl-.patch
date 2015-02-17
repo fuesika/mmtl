@@ -1,0 +1,26 @@
+From 6d7750f4a77d844575a6680fe4bdc7c9d10eceeb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lukas=20Sandstr=C3=B6m?= <luksan@gmail.com>
+Date: Sat, 28 Jun 2014 15:51:55 +0200
+Subject: [PATCH 2/2] Less strict check for Tk version, fixes bug with Tcl/Tk
+ 8.5.13
+
+---
+ sppdgTcllib/console/tkcon.tcl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sppdgTcllib/console/tkcon.tcl b/sppdgTcllib/console/tkcon.tcl
+index 4c61c95..c95e709 100755
+--- a/sppdgTcllib/console/tkcon.tcl
++++ b/sppdgTcllib/console/tkcon.tcl
+@@ -44,7 +44,7 @@ exec wish "$0" ${1+"$@"}
+ if {$tcl_version < 8.0} {
+     return -code error "tkcon requires at least Tcl/Tk8"
+ } else {
+-    package require -exact Tk $tcl_version
++    package require Tk
+ }
+ 
+ catch {package require bogus-package-name}
+-- 
+1.8.5.5
+
