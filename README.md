@@ -21,15 +21,18 @@ http://tcllib.sourceforge.net/.  Or you can download and install a
 free binary distribution of ActiveTcl which includes all these (and
 many other) packages from http://www.activestate.com/tcl/.
 
-TNT and MMTL field solver programs are available on the web.  See:
-  http://mmtl.sourceforge.net/
+Download
+--------
+
+Original Win32-binaries and sources for TNT and MMTL field solver programs available on the web (discontinued since 2004):
+* http://mmtl.sourceforge.net/
   
 For the latest and patched version refer to:
-  https://github.com/fuesika/mmtl
+* https://github.com/fuesika/mmtl
 
 
-----
-
+Copyright
+---------
 Copyright (C) Mayo Foundation 2002-2004.
 
 TNT is free software; you can redistribute it and/or modify it under
@@ -48,12 +51,19 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA
 
 
-NEWS
+News
+----
 
-July 21, 2004
+**February 16, 2015**
+After some struggling with the original sources and trying to compile
+TNT and MMTL using the latest GNU compilers, I provide the patched
+sources via github. The original site at sourceforge seems to be
+discontinued since its original release.
+See https://github.com/fuesika/mmtl for the latest sources.
 
+**July 21, 2004**
 After much struggling, waiting, deciding, waiting some more, and
 eventually approving, TNT and MMTL are being released under the GNU
 General Public License.  For the first time, these relatively
 straight-foward signal integrity tools are available to the public at
-large.  See http://mmtl.sourceforge.net/ for the distribution.
+large. See http://mmtl.sourceforge.net/ for the distribution.
