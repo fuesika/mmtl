@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 
 class Complex
 {
@@ -36,8 +36,8 @@ class Complex
    friend Complex   pow(const Complex&, int&);
    friend Complex   pow(const double&, const Complex&);     
          
-   friend ostream& operator<<(ostream&, Complex&);
-   friend istream& operator>>(istream&, Complex&);
+   friend std::ostream& operator<<(std::ostream&, Complex&);
+   friend std::istream& operator>>(std::istream&, Complex&);
 
  public:
    Complex(){}                       // constructors

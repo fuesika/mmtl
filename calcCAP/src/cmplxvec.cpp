@@ -287,7 +287,7 @@ CmplxVector CmplxVector::conjg() const {
  
  int n = d;
  CmplxVector tmp(n);
- for(int i = 0; i < n; i++)  tmp[i] = ::conjg(v[i]);
+ for(int i = 0; i < n; i++)  tmp[i] = ::conjg(v[i])[0];
  return (tmp);
 }
 
@@ -295,7 +295,7 @@ Vector CmplxVector::real() const {
  
  Vector tmp(d);
  int n = d;
- while(n--) tmp[n] = ::real(v[n]);
+ while(n--) tmp[n] = ::real(v[n])[0];
  return (tmp);
 }
 
@@ -303,7 +303,7 @@ Vector CmplxVector::imag() const {
  
  Vector tmp(d);
  int n = d;
- while(n--) tmp[n] = ::imag(v[n]);
+ while(n--) tmp[n] = ::imag(v[n])[0];
  return (tmp);
 }
 

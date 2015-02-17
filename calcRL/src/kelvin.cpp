@@ -332,20 +332,20 @@ double keip(double x) {
   return(keip);
 }
 
-static Complex  seta_p1 = cmplx(0.0,-0.3926991);
-static Complex  seta_p2 = cmplx(0.0110486,0.0);
-static Complex  seta_p3 = cmplx(0.0,-0.0009765);
-static Complex  seta_p4 = cmplx(-0.0000906,-0.0000901);
-static Complex  seta_p5 = cmplx(-0.0000252,0.0);
-static Complex  seta_p6 = cmplx(-0.0000034,0.0000051);
-static Complex  seta_p7 = cmplx(0.0000006,.0000019);
-static Complex  dphi_p1 = cmplx(0.7071068,0.7071068);
-static Complex  dphi_p2 = cmplx(-0.0625001,-0.0000001);
-static Complex  dphi_p3 = cmplx(-0.0013813,0.0013811);
-static Complex  dphi_p4 = cmplx(0.0000005,0.0002452);
-static Complex  dphi_p5 = cmplx(0.0000346,0.0000338);
-static Complex  dphi_p6 = cmplx(0.0000117,-0.0000024);
-static Complex  dphi_p7 = cmplx(0.0000016,-0.0000032);
+static Complex  seta_p1 = Complex(0.0,-0.3926991);
+static Complex  seta_p2 = Complex(0.0110486,0.0);
+static Complex  seta_p3 = Complex(0.0,-0.0009765);
+static Complex  seta_p4 = Complex(-0.0000906,-0.0000901);
+static Complex  seta_p5 = Complex(-0.0000252,0.0);
+static Complex  seta_p6 = Complex(-0.0000034,0.0000051);
+static Complex  seta_p7 = Complex(0.0000006,.0000019);
+static Complex  dphi_p1 = Complex(0.7071068,0.7071068);
+static Complex  dphi_p2 = Complex(-0.0625001,-0.0000001);
+static Complex  dphi_p3 = Complex(-0.0013813,0.0013811);
+static Complex  dphi_p4 = Complex(0.0000005,0.0002452);
+static Complex  dphi_p5 = Complex(0.0000346,0.0000338);
+static Complex  dphi_p6 = Complex(0.0000117,-0.0000024);
+static Complex  dphi_p7 = Complex(0.0000016,-0.0000032);
 
 
 

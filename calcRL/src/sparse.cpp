@@ -1,9 +1,9 @@
 /******* functions, needed for sparse matrices  *******/
 
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
-#include <iomanip.h>
+#include <iomanip>
 
 #include "complex.h" 
 #include "vector.h" 

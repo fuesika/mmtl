@@ -9,7 +9,7 @@
 
 
 //#include "stdafx.h"
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 
 #include "vector.h"

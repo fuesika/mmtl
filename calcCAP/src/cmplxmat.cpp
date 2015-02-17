@@ -378,7 +378,7 @@ Matrix CmplxMatrix::real() const {
   Matrix result(d_i,d_j);
   for(int i = 0; i < d_i; i++)
     for(int j = 0; j < d_j; j++)
-      result(i,j)=::real(elem(i,j));
+      result(i,j)=::real(elem(i,j))[0];
   return (result);
 }
 
@@ -387,7 +387,7 @@ Matrix CmplxMatrix::imag() const {
   Matrix result(d_i,d_j);
   for(int i = 0; i < d_i; i++)
     for(int j = 0; j < d_j; j++)
-      result(i,j)=::imag(elem(i,j));
+      result(i,j)=::imag(elem(i,j))[0];
   return (result);
 }
 
@@ -405,7 +405,7 @@ CmplxMatrix CmplxMatrix::conjg() const {
   CmplxMatrix result(d_i,d_j);
   for(int i = 0; i < d_i; i++)
     for(int j = 0; j < d_j; j++)
-      result(i,j)=::conjg(elem(i,j));
+      result(i,j)=::conjg(elem(i,j))[0];
   return (result);
 }
      

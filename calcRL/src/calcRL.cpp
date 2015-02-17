@@ -44,6 +44,8 @@ numerical techniques.
 #include <time.h>
 #include <stdio.h>
 
+#include <string.h>
+
 /********************** Global variables *******************/
 
    int     Nc, Die, Rec, Cir, Tri, Ell, Pol, Gnd, Tra;
@@ -564,7 +566,7 @@ int main ( int argc, char *argv[] )
 	tmp4 = Circum[i] / double(Nw);
 	tmpsum1 = 0.0;
 	tmpsum2 = 0.0;
-	sum2[i] = cmplx( 0.0, 0.0 );
+	sum2[i] = Complex( 0.0, 0.0 );
 	
 	for (j = 0; j < Nw; j ++) {
 	  

@@ -2,7 +2,9 @@
 #define _IVectorl__h_
 #include <stdlib.h>
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
+
+using namespace std;
 
 class IVectorl
 {

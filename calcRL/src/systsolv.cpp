@@ -2,7 +2,7 @@
      /*****Source - "NUMERICAL RECIPES IN C", www.nr.com*****/
 
 //#include "stdafx.h"
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include "complex.h"

@@ -19,7 +19,7 @@ Complex Hank20( double x ) {
 
    hank01( vj0, vy0, x, 1 );
 
-   return( cmplx( vj0, -vy0 ) );
+   return( Complex( vj0, -vy0 ) );
 }
 
 /***** Function Hank21 - to calculate H^(2)_1(x), x - double  ****/
@@ -30,7 +30,7 @@ Complex Hank21( double x ) {
 
    hank11( vj1, vy1, x, 1 );
 
-   return( cmplx( vj1, -vy1 ) );
+   return( Complex( vj1, -vy1 ) );
 }
 
 /***** Function Hank10 - to calculate H^(1)_0(x), x - double  ****/
@@ -41,7 +41,7 @@ Complex Hank10( double x ) {
 
    hank01( vj0, vy0, x, 1 );
 
-   return( cmplx( vj0, vy0 ) );
+   return( Complex( vj0, vy0 ) );
 }
 
 /***** Function Hank11 - to calculate H^(1)_1(x), x - double  ****/
@@ -52,7 +52,7 @@ Complex Hank11( double x ) {
 
    hank11( vj1, vy1, x, 1 );
 
-   return( cmplx( vj1, vy1 ) );
+   return( Complex( vj1, vy1 ) );
 }
 
 int hank01( double& vj0, double& vy0, double xd, int n ) {

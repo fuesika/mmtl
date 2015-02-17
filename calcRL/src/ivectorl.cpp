@@ -3,6 +3,8 @@
 #include "ivectorl.h"
 //#include "stdafx.h"
 
+using namespace std;
+
 /*************************** constructors **************************/
 
 IVectorl::IVectorl(int n)  {

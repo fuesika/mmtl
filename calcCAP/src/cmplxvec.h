@@ -19,6 +19,7 @@ public:
   CmplxVector(int=0);
   CmplxVector(int, double);
   CmplxVector(int, Complex);
+  inline CmplxVector(const Complex &a) { ::CmplxVector(1, a); };
   CmplxVector(const CmplxVector&);
   CmplxVector(const Vector&);
 

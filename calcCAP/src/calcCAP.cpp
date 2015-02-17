@@ -15,6 +15,8 @@
 #include <time.h>
 #include <stdio.h>
 
+#include <string.h>
+
 /********************** Global variables *******************/
 
    int     Nc, Nd;
@@ -287,7 +289,7 @@ int main ( int argc, char *argv[] )
       
       for ( i1 = 0; i1 < Nc; i1 ++ ) {
 	
-	sumc[i1] = cmplx( 0.0, 0.0 );
+	sumc[i1] = Complex( 0.0, 0.0 );
 
 	
 	for ( j1 = 0; j1 < Nw; j1 ++ ) {

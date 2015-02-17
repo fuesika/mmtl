@@ -5,6 +5,8 @@
 #include <math.h>
 #include "vector.h"
 
+using namespace std;
+
 class Matrix
 {
   friend class Matrix3d;

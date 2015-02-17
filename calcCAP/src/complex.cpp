@@ -3,6 +3,8 @@
 #include <math.h>
 #include "complex.h"
 
+using namespace std;
+
 /*********************** constructors *****************************/
 
 Complex::Complex(double r, double i)

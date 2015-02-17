@@ -2,9 +2,9 @@
 
 //#include "stdafx.h"
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
-#include <iomanip.h>
+#include <iomanip>
 
 #include "complex.h" 
 #include "vector.h" 

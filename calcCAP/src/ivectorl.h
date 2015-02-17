@@ -1,12 +1,12 @@
 #ifndef _IVectorl__h_
 #define _IVectorl__h_
-#include <iostream.h>
+#include <iostream>
 
 class IVectorl
 {
   friend class IMatrix;
   friend class IMatrix3d;
-  friend ostream& operator<<(ostream&, const IVectorl&);
+  friend std::ostream& operator<<(std::ostream&, const IVectorl&);
   friend IVectorl operator*(int, const IVectorl&); 
   friend int max(const IVectorl&);
   friend int min(const IVectorl&);

@@ -260,7 +260,7 @@ void getparam(char *inFile) {
       }
     }
     
-    Ic = cmplx( 0.0, 1.0 );
+    Ic = Complex( 0.0, 1.0 );
     
     Nc4 = 11*Nh+1;
     step_w = 1.0/power( 2.0, J );

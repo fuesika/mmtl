@@ -7,6 +7,8 @@
 #include "vector.h"
 #include "matrix.h"
 
+using namespace std;
+
 class CmplxMatrix
 {
   friend class Matrix;

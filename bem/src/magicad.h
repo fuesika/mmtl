@@ -100,7 +100,7 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef __cplusplus
-#include <iostream.h>
+#include <iostream>
 #endif
 #include <limits.h>
 #if !defined(PATH_MAX) || defined(__hpux)

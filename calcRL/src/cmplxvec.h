@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include "complex.h"
 #include "vector.h"
 
@@ -10,8 +11,8 @@ class CmplxVector
 {
   friend class Complex;
   friend class CmplxMatrix;
-  friend ostream& operator<<(ostream&, const CmplxVector&);
-  friend istream& operator>>(istream&, CmplxVector&);
+  friend std::ostream& operator<<(std::ostream&, const CmplxVector&);
+  friend std::istream& operator>>(std::istream&, CmplxVector&);
   friend CmplxVector operator*(double, const CmplxVector&);
   friend CmplxVector operator*(const Complex&, const CmplxVector&);
   friend Complex inner(const CmplxVector&, const CmplxVector&);
@@ -21,6 +22,7 @@ public:
   CmplxVector(int=0);
   CmplxVector(int, double);
   CmplxVector(int, Complex);
+  inline CmplxVector(const Complex &a) { ::CmplxVector(1, a); };
   CmplxVector(const CmplxVector&);
   CmplxVector(const Vector&);
 
