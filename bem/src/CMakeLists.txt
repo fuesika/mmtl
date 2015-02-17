@@ -33,12 +33,9 @@ set (src_fortran
 	dcminv.F
 	dgeco.F
 	dgedi.F
-	#cbal.F
 	sgedi.F
 	cgefa.F
 	cgesl.F
-	#comqr2.F
-	#cbabk2.F
 	sfft.F
 	spmpar.F
 	cdivid.F
@@ -56,7 +53,7 @@ set (src_fortran
 )
 
 add_library (bem_libs STATIC
-  #sources for TETlib modules
+  #sources for fortran library
   ${src_fortran}
   )
   
@@ -67,9 +64,7 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   assemble_free_space.cpp
   dim2.cpp
   electro_read_icon_section.cpp
-  #error_location.cpp
   free2.cpp
-  #in_string.cpp
   math_library.cpp
   nmmtl_add_to_sorted_list.cpp
   nmmtl_angle_of_intersection.cpp
@@ -112,7 +107,6 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_qsp_calculate.cpp
   nmmtl_qsp_kernel.cpp
   nmmtl_retrieve.cpp
-  #nmmtl_parse_graphic.cpp
   nmmtl_set_offset.cpp
   nmmtl_shape.cpp
   nmmtl_spout_off.cpp

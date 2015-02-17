@@ -8,7 +8,7 @@ INST_PRFX=''
 
 NCORES=$(grep -ic ^processor /proc/cpuinfo)
 
-## Build MLSS from scratch ###################################################
+## Build MMTL_BEM from scratch #################################################
 #clean, create and cd to build-directory
 echo "== Configure MMTL-BEM ================================================="
 echo "Delete old build-dir and binaries..";
@@ -35,5 +35,5 @@ case $CONFIRM in
     ;;
 esac
 
-#install mlss{,-dev} to binary-directory
+#install mmtl_bem to binary-directory
 make DESTDIR="$ROOTDIR" install
