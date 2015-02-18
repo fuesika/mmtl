@@ -34,31 +34,28 @@
 #include <ctype.h>
 #include <string.h>
 
-char *remove_all_spaces(char *string)
-
-{
+char *remove_all_spaces(char *string) {
 /*---------------------------------------------------------------------------
  * Local Variable Declaration
  *---------------------------------------------------------------------------
  */
-    int i; /* index to next character in old string */
-    int j; /* index to next character in new string */
+  int i; /* index to next character in old string */
+  int j; /* index to next character in new string */
 /*---------------------------------------------------------------------------
  * Start of remove_all_spaces
  *---------------------------------------------------------------------------
  */
-    /***********************************************************\
-    *								*
-    * Copy string over the top of itself, excluding any space   *
-    * characters from the copy.					*
-    *								*
-    \***********************************************************/
-    for (j=i=0; i<strlen(string); i++) 
-        if (!isspace(string[i])) 
-	    string[j++] = string[i];
-    string[j] = '\0';  /* add null after last character in new string */
+  /***********************************************************\
+  *								*
+  * Copy string over the top of itself, excluding any space   *
+  * characters from the copy.					*
+  *								*
+  \***********************************************************/
+  for (j=i=0; i<strlen(string); i++) 
+    if (!isspace(string[i])) 
+      string[j++] = string[i];
+  string[j] = '\0';  /* add null after last character in new string */
 
-    return(string);
-    
+  return(string);
 }
 
