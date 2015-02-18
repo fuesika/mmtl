@@ -34,10 +34,6 @@
 #define MSLV mslv_
 #define DMSLV dmslv_
 #define MTMS mtms_
-//#define HBRD hbrd_
-//#define HYBRD hybrd_
-//#define LMDIFF lmdiff_
-//#define LMDIF lmdif_
 #define SGEFA sgefa_
 #define SGECO sgeco_
 #define SGESL sgesl_     
@@ -70,9 +66,6 @@
 #define d_c_set_solve_linear d_c_set_solve_linear_
 #define d_c_init_solve_linear d_c_init_solve_linear_
 #define d_c_solve_linear d_c_solve_linear_
-//#define set_solve_nonlinear set_solve_nonlinear_
-//#define init_solve_nonlinear init_solve_nonlinear_
-//#define solve_nonlinear solve_nonlinear_
 #define lu_factor lu_factor_
 #define lu_factor_cond lu_factor_cond_
 #define lu_solve_linear lu_solve_linear_
@@ -90,10 +83,6 @@
 #define MSLV _mslv_
 #define DMSLV _dmslv_
 #define MTMS _mtms_
-//#define HBRD _hbrd_
-//#define HYBRD _hybrd_
-//#define LMDIFF _lmdiff_
-//#define LMDIF _lmdif_
 #define SGEFA _sgefa_
 #define SGECO _sgeco_
 #define SGESL _sgesl_     
@@ -115,10 +104,6 @@
 #define MSLV mslv
 #define DMSLV dmslv
 #define MTMS mtms
-//#define HBRD hbrd
-//#define HYBRD hybrd
-//#define LMDIFF lmdiff
-//#define LMDIF lmdif
 #define SGEFA sgefa
 #define SGECO sgeco
 #define SGESL sgesl     
@@ -195,15 +180,6 @@ extern "C" void d_c_init_solve_linear(int * status);
 
 extern "C" void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 		      DOUBLE_COMPLEX *c, int *lda, int *status);
-
-
-//extern "C" void set_solve_nonlinear(int *n);
-
-//extern "C" void init_solve_nonlinear(int *status);
-
-//extern "C" void solve_nonlinear(void (*f)(),void (*f2)(), int *n,float *eps,
-//               float *tol, float *x, float *fvec, int *status);
-
 
 extern "C" void lu_factor(int *n, float *a, float *lu, int *lda, 
 		 int *ipvt, int *status);

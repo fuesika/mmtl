@@ -133,35 +133,30 @@
 
  /* wrapper for fft routine */
 
-void c_fft(int *n,COMPLEX *a,COMPLEX *c,int *status)
+void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
  /* the values pointed to by c will become the transform, it is necessary 
  *  to copy the data before the transform if the original data is to be kept
  */
-
-
- {
-   int ierr;                 /* indicates return status of the fft routine */
-   int i;                    /* a loop variable */
-   int sign = -1;            /* determines the sign of the eponent used in
-			     *  calculating the transform 
-			     */
- /* clear the error flag */
-   ierr = 0;      
-   for (i = 0; i < (*n); i++)
-     {
-       c[i] = a[i];
-     }
-   FFT(c,n,&sign,&ierr);
-   if (ierr != 0)
-     {
-       (*status) = FAIL;
-       fprintf(stderr,"ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %ld.\n",ierr);
-       return;
-     }
-   (*status) = SUCCESS;
-   return;
+  int ierr;                 /* indicates return status of the fft routine */
+  int i;                    /* a loop variable */
+  int sign = -1;            /* determines the sign of the eponent used in
+                             *  calculating the transform 
+                             */
+  /* clear the error flag */
+  ierr = 0;      
+  for (i = 0; i < (*n); i++) {
+    c[i] = a[i];
+  }
+  FFT(c, n, &sign, &ierr);
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %ld.\n",ierr);
+    return;
+  }
+  (*status) = SUCCESS;
+  return;
  }
-
+
 /* ***********************************************************************
  * ROUTINE NAME  c_fft_inv
  *
@@ -1370,9 +1365,7 @@ void c_init_solve_linear(int *status)
  */
 
 void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
-		      COMPLEX *c, int *lda, int *status)
-     
-{
+		      COMPLEX *c, int *lda, int *status) {
   extern COMPLEX *c_solve_linear_a;
   extern COMPLEX *c_solve_linear_b;
   extern COMPLEX *c_solve_linear_wrk;
@@ -1385,41 +1378,34 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
   int calc_inv = 1;        /* indicates not to calculate inverse */
   int one_dim = 1;
 
-  if ((*n) > n_c_init_solve_linear)
-    {
-      c_set_solve_linear(n);
-      c_init_solve_linear(status);
-    }
+  if ((*n) > n_c_init_solve_linear) {
+    c_set_solve_linear(n);
+    c_init_solve_linear(status);
+  }
   
   /* copy contents of a and b to temporary work arrays */
-  for (i = 0; i < (*n); i++)
-    {
-      for (j = 0; j < (*n); j++)
-	{
-	  c_solve_linear_a[i*(*n)+j] = a[i*(*lda)+j];
-	}
-      c_solve_linear_b[i] = b[i];
+  for (i = 0; i < (*n); i++) {
+    for (j = 0; j < (*n); j++) {
+      c_solve_linear_a[i*(*n)+j] = a[i*(*lda)+j];
     }
-
+    c_solve_linear_b[i] = b[i];
+  }
 
   CMSLV1(&calc_inv, n, &one_dim, c_solve_linear_a, lda, c_solve_linear_b, n, 
 	 &ierr, c_solve_linear_ipvt, c_solve_linear_wrk);
   
-  if (ierr != 0) 
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld\n",ierr);
-      return;
-    }
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld\n",ierr);
+    return;
+  }
 
   for (i = 0; i < (*n); i++)
-      c[i] = c_solve_linear_b[i];
+    c[i] = c_solve_linear_b[i];
 
   (*status) = SUCCESS;
   return;
 }
-
-
 
 /* ***********************************************************************
  * ROUTINE NAME d_c_set_solve_linear  
@@ -1456,9 +1442,7 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
  *                                                                 
  * ***********************************************************************
  */
-void d_c_set_solve_linear(int *n)
-
-{
+void d_c_set_solve_linear(int *n) {
   extern int n_d_c_solve_linear;
 
   if (n_d_c_solve_linear < (*n))
@@ -1466,7 +1450,7 @@ void d_c_set_solve_linear(int *n)
 
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME  d_c_init_solve_linear
  *
@@ -1499,9 +1483,7 @@ void d_c_set_solve_linear(int *n)
  *                                                                 
  * ***********************************************************************
  */
-void d_c_init_solve_linear(int * status)
-{
-
+void d_c_init_solve_linear(int * status) {
   extern double *d_c_solve_linear_ai;
   extern double *d_c_solve_linear_ar;
   extern double *d_c_solve_linear_bi;
@@ -1515,16 +1497,15 @@ void d_c_init_solve_linear(int * status)
   n = n_d_c_init_solve_linear = n_d_c_solve_linear;
 
   /* malloc the workspace */
-  if (d_c_solve_linear_ai != NULL)
-    {
-      free(d_c_solve_linear_ai);
-      free(d_c_solve_linear_ar);
-      free(d_c_solve_linear_bi);
-      free(d_c_solve_linear_br);
-    }
+  if (d_c_solve_linear_ai != NULL) {
+    free(d_c_solve_linear_ai);
+    free(d_c_solve_linear_ar);
+    free(d_c_solve_linear_bi);
+    free(d_c_solve_linear_br);
+  }
 
 
-/* malloc some workspace */  
+  /* malloc some workspace */  
   d_c_solve_linear_ai = (double *)calloc(n*n,sizeof(double));
   d_c_solve_linear_ar = (double *)calloc(n*n,sizeof(double));
   d_c_solve_linear_bi = (double *)calloc(n,sizeof(double));
@@ -1536,7 +1517,7 @@ void d_c_init_solve_linear(int * status)
   return;
 }
 
-
+
 /* ***********************************************************************
  * ROUTINE NAME d_c_solve_linear  
  *
@@ -1574,10 +1555,8 @@ void d_c_init_solve_linear(int * status)
  * ***********************************************************************
  */
 
-void d_c_solve_linear(int *n,DOUBLE_COMPLEX *a,DOUBLE_COMPLEX *b,
-		      DOUBLE_COMPLEX *c,int *lda,int *status)
-     
-{
+void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
+		      DOUBLE_COMPLEX *c, int *lda, int *status) {
   extern double *d_c_solve_linear_ai;
   extern double *d_c_solve_linear_ar;
   extern double *d_c_solve_linear_bi;
@@ -1587,55 +1566,57 @@ void d_c_solve_linear(int *n,DOUBLE_COMPLEX *a,DOUBLE_COMPLEX *b,
 
   extern int n_d_c_init_solve_linear;
 
-  DOUBLE_COMPLEX t1[2];           /* workspace matricies */
-  int rcond;            /* value indicating condition of input matrix */
-  int ierr;             /*status flag for call */
-  int i,j;                 /*loop variable */
+  DOUBLE_COMPLEX t1[2];   /* workspace matricies */
+  int rcond;              /* value indicating condition of input matrix */
+  int ierr;               /* status flag for call */
+  int i,j;                /* loop variable */
   int calc_inv = 1;       /* indicates if inverse of is to be calculated */
   int one_dim = 1;
 
-  if ((*n) > n_d_c_init_solve_linear)
-    {
-      d_c_set_solve_linear(n);
-      d_c_init_solve_linear(status);
+  if ((*n) > n_d_c_init_solve_linear) {
+    d_c_set_solve_linear(n);
+    d_c_init_solve_linear(status);
+  }
+
+
+  /* first copy  a to real and imag mat */
+  for (i = 0; i < (*n); i++) {
+    for (j = 0; j < (*n); j++) {
+      d_c_solve_linear_ar[i*(*n)+j] = a[i*(*lda)+j].real;
+      d_c_solve_linear_ai[i*(*n)+j] = a[i*(*lda)+j].imag;
     }
-
-
-
-/* first copy  a to real and imag mat */
-
-  for (i = 0; i < (*n); i++)
-    {
-      for (j = 0; j < (*n); j++)
-	{
-	  d_c_solve_linear_ar[i*(*n)+j] = a[i*(*lda)+j].real;
-	  d_c_solve_linear_ai[i*(*n)+j] = a[i*(*lda)+j].imaginary;
-	}
-      d_c_solve_linear_bi[i] = b[i].imaginary;
-      d_c_solve_linear_br[i] = b[i].real;
-    }
+    d_c_solve_linear_bi[i] = b[i].imag;
+    d_c_solve_linear_br[i] = b[i].real;
+  }
   
-  DCMSLV(&calc_inv,n,&one_dim,d_c_solve_linear_ar,d_c_solve_linear_ai,
-	 lda,d_c_solve_linear_br,d_c_solve_linear_bi,n,&ierr,
-	 d_c_solve_linear_ipvt,d_c_solve_linear_wrk);
+  DCMSLV(&calc_inv,
+         n,
+         &one_dim,
+         d_c_solve_linear_ar,
+         d_c_solve_linear_ai,
+         lda,
+         d_c_solve_linear_br,
+         d_c_solve_linear_bi,
+         n,
+         &ierr,
+         d_c_solve_linear_ipvt,
+         d_c_solve_linear_wrk);
   
 
-  if (ierr != 0) 
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld",ierr);
-      return;
-    }
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld",ierr);
+    return;
+  }
 
-  for (i = 0; i < (*n); i++)
-    {
-      c[i].real = d_c_solve_linear_br[i];
-      c[i].imaginary = d_c_solve_linear_bi[i];
-    }
+  for (i = 0; i < (*n); i++) {
+    c[i].real = d_c_solve_linear_br[i];
+    c[i].imag = d_c_solve_linear_bi[i];
+  }
   (*status) = SUCCESS;
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME set_solve_nonlinear  
  *
