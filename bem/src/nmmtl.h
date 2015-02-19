@@ -37,26 +37,11 @@
 #include "magicad.h"                  /* defines some general constants */
 #endif
 
-#ifndef math_h
-#include <math.h>                     /* for the pow() and fabs() functions */
-#endif
-
-#ifndef cmath_h
-#include <cmath>                     /* definition of pi (M_PI) */
-#endif
-
 #ifndef float_h
 #include <float.h>
 #endif
 
-#ifndef graphic_h
-#include "graphic.h"          /* graphic constants */
-#endif
-
-#ifdef __TURBOC__
-#include "math_lib.h"             /* info on calling NSWC routines */
-#include "egn.h"
-#else
+#ifndef __TURBOC__
 #include "math_library.h"             /* info on calling NSWC routines */
 #include "electro_gendata_netlist.h"
 #endif
@@ -64,15 +49,6 @@
 #ifndef dim_h
 #include "dim.h"                      /* to allow dynamic 2D array allocation*/
 #endif
-
-/* Remove clashes with other include files */
-
-#ifdef __GNUCPPLIB__
-#ifdef PI
-#undef PI
-#endif
-#endif
-
 
 
 /************** Conditional compilation flags *****************/
