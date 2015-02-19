@@ -5,19 +5,14 @@
 /* one letter prefixes in routine names have the following meanings
 
       --  no prefix indicates single precision real
-    c --  complex data being used 
+    c --  complex data being used
     d --  double sized data being used
     d_c -- double complex data is being used
 
 */
 
-#ifndef complex_numbers_h
-#include "complex_numbers.h"
-#endif
-
-#ifndef math_h
 #include <math.h>
-#endif
+#include "complex_numbers.h"
 
 /* Create aliases for NSWC FORTRAN routines so C programs can call them */
 /* on Alpha/OSF and Sun Sparc hosts */
@@ -36,9 +31,9 @@
 #define MTMS mtms_
 #define SGEFA sgefa_
 #define SGECO sgeco_
-#define SGESL sgesl_     
+#define SGESL sgesl_
 #define DGEFA dgefa_
-#define DGESL dgesl_     
+#define DGESL dgesl_
 
 /* And create aliases so C routines in math_library.c can be called from
    FORTRAN on Alpha and Sparc */
@@ -85,9 +80,9 @@
 #define MTMS _mtms_
 #define SGEFA _sgefa_
 #define SGECO _sgeco_
-#define SGESL _sgesl_     
+#define SGESL _sgesl_
 #define DGEFA _dgefa_
-#define DGESL _dgesl_     
+#define DGESL _dgesl_
 
 // Other hosts (hp7, you need just case conversion to call FORTRAN from C
 // Since FORTRAN uppercase is all converted to lowercase.
@@ -106,9 +101,9 @@
 #define MTMS mtms
 #define SGEFA sgefa
 #define SGECO sgeco
-#define SGESL sgesl     
+#define SGESL sgesl
 #define DGEFA dgefa
-#define DGESL dgesl     
+#define DGESL dgesl
 
 // end of else for fortran underbars
 
@@ -128,16 +123,16 @@ extern "C" void c_set_calc_eigenvalues(int *n);
 extern "C" void c_init_calc_eigenvalues(int * status);
 
 extern "C" void c_calc_eigenvalues(COMPLEX *c,int *n,COMPLEX *eval,COMPLEX *evect,
-			      int *ldc, int *ldevect, int *status); 
+            int *ldc, int *ldevect, int *status);
 
 
 extern "C" void c_mult_matricies(int *ra,int *carb, int *cb,
-			   COMPLEX *a, COMPLEX *b, COMPLEX *c,
-			   int *lda, int *ldb, int *ldc,int *status);
+         COMPLEX *a, COMPLEX *b, COMPLEX *c,
+         int *lda, int *ldb, int *ldc,int *status);
 
 extern "C" void mult_matricies(int *ra,int *carb, int *cb,
-			   float *a, float *b, float *c,
-			   int *lda, int *ldb, int *ldc,int *status);
+         float *a, float *b, float *c,
+         int *lda, int *ldb, int *ldc,int *status);
 
 
 extern "C" void c_set_invert_matrix(int *n);
@@ -145,25 +140,25 @@ extern "C" void c_set_invert_matrix(int *n);
 extern "C" void c_init_invert_matrix(int *status);
 
 extern "C" void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
-			   int *lda, int *ldb, int *status);
+         int *lda, int *ldb, int *status);
 
 extern "C" void set_invert_matrix(int *n);
 
 extern "C" void init_invert_matrix(int *status);
 
 extern "C" void invert_matrix(int *n,float *a,float *b,
-			   int *lda, int *ldb, int *status);
+         int *lda, int *ldb, int *status);
 
 extern "C" void invert_matrix_cond(int *n,float *a,float *b,
-				   int *lda, int *ldb, float *rcond,
-				   int *status);
+           int *lda, int *ldb, float *rcond,
+           int *status);
 
 extern "C" void d_set_invert_matrix(int *n);
 
 extern "C" void d_init_invert_matrix(int *status);
 
 extern "C" void d_invert_matrix(int *n,double *a,double *b,
-			   int *lda, int *ldb, int *status);
+         int *lda, int *ldb, int *status);
 
 
 extern "C" void c_set_solve_linear(int *n);
@@ -171,7 +166,7 @@ extern "C" void c_set_solve_linear(int *n);
 extern "C" void c_init_solve_linear(int *status);
 
 extern "C" void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
-		      COMPLEX *c, int *lda, int *status);
+          COMPLEX *c, int *lda, int *status);
 
 
 extern "C" void d_c_set_solve_linear(int *n);
@@ -179,75 +174,75 @@ extern "C" void d_c_set_solve_linear(int *n);
 extern "C" void d_c_init_solve_linear(int * status);
 
 extern "C" void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
-		      DOUBLE_COMPLEX *c, int *lda, int *status);
+          DOUBLE_COMPLEX *c, int *lda, int *status);
 
-extern "C" void lu_factor(int *n, float *a, float *lu, int *lda, 
-		 int *ipvt, int *status);
+extern "C" void lu_factor(int *n, float *a, float *lu, int *lda,
+     int *ipvt, int *status);
 
-extern "C" void lu_factor_cond(int *n, float *a, float *lu, int *lda, 
-		 int *ipvt, float *rcond, int *status);
+extern "C" void lu_factor_cond(int *n, float *a, float *lu, int *lda,
+     int *ipvt, float *rcond, int *status);
 
 extern "C" void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda,
-		 int *ipvt, int *status);
+     int *ipvt, int *status);
 
-extern "C" void dlu_factor(int *n, double *a, double *lu, int *lda, 
-		 int *ipvt, int *status);
+extern "C" void dlu_factor(int *n, double *a, double *lu, int *lda,
+     int *ipvt, int *status);
 
 extern "C" void dlu_solve_linear(int *n, double *a, double *x, double *b,
-		 int *lda, int *ipvt, int *status);
+     int *lda, int *ipvt, int *status);
 
 /* Declarations of NSWC routines */
 
 extern "C" void FFT(COMPLEX *c, int *n, int *sign, int *ierr);
 
 extern "C" void CEIGV(int *bal,
-		 float *c_calc_eigenvalues_ar,float *c_calc_eigenvalues_ai,
-		 int *n1, int *n2,
-		 float *c_calc_eigenvalues_wr,float *c_calc_eigenvalues_wi,
-		 float *c_calc_eigenvalues_zr,float *c_calc_eigenvalues_zi,
-		 int *ierr,
-		 float *c_calc_eigenvalues_temp);
+     float *c_calc_eigenvalues_ar,float *c_calc_eigenvalues_ai,
+     int *n1, int *n2,
+     float *c_calc_eigenvalues_wr,float *c_calc_eigenvalues_wi,
+     float *c_calc_eigenvalues_zr,float *c_calc_eigenvalues_zi,
+     int *ierr,
+     float *c_calc_eigenvalues_temp);
 
 extern "C"  void CMTMS(int *ra, int *carb, int *cb, COMPLEX *a, int *lda,
-			   COMPLEX *b, int *ldb, COMPLEX *c, int *ldc);
+         COMPLEX *b, int *ldb, COMPLEX *c, int *ldc);
 
 extern "C"  void MTMS(int *ra,int *carb,int *cb,float *a,int *lda,
-			  float *b,int *ldb,float *c,int *ldc);
+        float *b,int *ldb,float *c,int *ldc);
 
 extern "C"  void CMSLV1(int *calc_inv,int *n,int *zero_dim1,
-			    COMPLEX *c_solve_linear_a, int *lda,
-			    COMPLEX *c_solve_linear_b, 
-			    int *n2,
-			    int *ierr,
-			    int *c_invert_matrix_ipvt,
-			    COMPLEX *c_invert_matrix_wrk);
+          COMPLEX *c_solve_linear_a, int *lda,
+          COMPLEX *c_solve_linear_b,
+          int *n2,
+          int *ierr,
+          int *c_invert_matrix_ipvt,
+          COMPLEX *c_invert_matrix_wrk);
 
 extern "C"  void MSLV(int *calc_inv,int *n,int *zero_dim1,
-			  float *b,int *ldb,int *dum,int *zero_dim2,
-			  float *t1, float *rcond,int *ierr,
-			  int *invert_matrix_ipvt,float *invert_matrix_wrk);
+        float *b,int *ldb,int *dum,int *zero_dim2,
+        float *t1, float *rcond,int *ierr,
+        int *invert_matrix_ipvt,float *invert_matrix_wrk);
 
 extern "C"  void DMSLV(int *calc_inv,int *n,int *zero_dim1,
-			  double *b,int *ldb,int *dum,int *zero_dim2,
-			  double *t1, double *rcond,int *ierr,
-			  int *invert_matrix_ipvt,double *invert_matrix_wrk);
+        double *b,int *ldb,int *dum,int *zero_dim2,
+        double *t1, double *rcond,int *ierr,
+        int *invert_matrix_ipvt,double *invert_matrix_wrk);
 
 extern "C"  void DCMSLV(int *calc_inv,
                    int *n1,
-			    int *one_dim,
-			    double *d_c_solve_linear_ar,
-			    double *d_c_solve_linear_ai,
-			    int *lda,
-			    double *d_c_solve_linear_br,
-			    double *d_c_solve_linear_bi,
-			    int *n2,
-			    int *ierr,
-			    int *d_c_solve_linear_ipvt,
-			    double *d_c_solve_linear_wrk);
+          int *one_dim,
+          double *d_c_solve_linear_ar,
+          double *d_c_solve_linear_ai,
+          int *lda,
+          double *d_c_solve_linear_br,
+          double *d_c_solve_linear_bi,
+          int *n2,
+          int *ierr,
+          int *d_c_solve_linear_ipvt,
+          double *d_c_solve_linear_wrk);
 
 extern "C" void SGEFA(float *lu, int *lda, int *n, int *ipvt, int *info);
 
-extern "C" void SGECO(float *lu, int *lda, int *n, int *ipvt, float *rcond, 
+extern "C" void SGECO(float *lu, int *lda, int *n, int *ipvt, float *rcond,
                  int *info);
 
 extern "C" void SGESL(float *a, int *lda, int *n, int *ipvt, float *x, int *job);

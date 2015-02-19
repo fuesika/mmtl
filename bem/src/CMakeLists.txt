@@ -63,7 +63,6 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   assemble.cpp
   assemble_free_space.cpp
   dim2.cpp
-  electro_read_icon_section.cpp
   free2.cpp
   math_library.cpp
   nmmtl.cpp

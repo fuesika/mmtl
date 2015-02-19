@@ -33,10 +33,6 @@
 #define FAR_END 1
     
 
-/* forward references for C++ */ 
-struct attribute;
-struct pin;
-
 /************************************************
 *						*
 * Attribute data structure.			*

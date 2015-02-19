@@ -36,19 +36,16 @@
  * ***********************************************************************
  */
 
-void **dim2(int rows, int columns, unsigned size)
-
-{
+void **dim2(int rows, int columns, unsigned size) {
   int i;
   void **prow;
   char *pdata;
   
   pdata = (char *) calloc(rows * columns, size);
   prow = (void **) malloc(rows *  sizeof(void *));
-  for (i=0; i < rows; i++)
-    {
-      prow[i] = pdata;
-      pdata += columns * size;
-    }
+  for (i=0; i < rows; i++) {
+    prow[i] = pdata;
+    pdata += columns * size;
+  }
   return prow;
 }

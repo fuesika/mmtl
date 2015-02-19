@@ -4,7 +4,7 @@
      d -- doubles are being used
      d_c -- double complex data is to be input
 */
-/* this is a set of wrappers for the math library 
+/* this is a set of wrappers for the math library
 *  the available routines are
 *
 *      c_fft
@@ -38,112 +38,101 @@
 *
 *      lu_solve_linear
 *      dlu_solve_linear
-*  
+*
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "magicad.h"
 #include "math_library.h"
 
 
+float *c_calc_eigenvalues_ai = NULL; /* workspace matricies */
+float *c_calc_eigenvalues_ar = NULL;
+float *c_calc_eigenvalues_wr = NULL;
+float *c_calc_eigenvalues_wi = NULL;
+float *c_calc_eigenvalues_zi = NULL;
+float *c_calc_eigenvalues_zr = NULL;
+float *c_calc_eigenvalues_temp = NULL;
+int n_c_calc_eigenvalues = 0;
+int n_c_init_calc_eigenvalues = 0;
 
- float *c_calc_eigenvalues_ai = NULL; /* workspace matricies */
- float *c_calc_eigenvalues_ar = NULL;
- float *c_calc_eigenvalues_wr = NULL;
- float *c_calc_eigenvalues_wi = NULL;
- float *c_calc_eigenvalues_zi = NULL;
- float *c_calc_eigenvalues_zr = NULL;
- float *c_calc_eigenvalues_temp = NULL;
- int n_c_calc_eigenvalues = 0;
- int n_c_init_calc_eigenvalues = 0;
+int n_c_invert_matrix = 0;
+int n_c_init_invert_matrix = 0;
+int *c_invert_matrix_ipvt = NULL;
+COMPLEX *c_invert_matrix_wrk = NULL;
 
- int n_c_invert_matrix = 0;
- int n_c_init_invert_matrix = 0;
- int *c_invert_matrix_ipvt = NULL;
- COMPLEX *c_invert_matrix_wrk = NULL;
+int n_invert_matrix = 0;
+int n_init_invert_matrix = 0;
+int *invert_matrix_ipvt = NULL;
+float *invert_matrix_wrk = NULL;
+double *d_invert_matrix_wrk = NULL;
 
- int n_invert_matrix = 0;
- int n_init_invert_matrix = 0;
- int *invert_matrix_ipvt = NULL;
- float *invert_matrix_wrk = NULL;
- double *d_invert_matrix_wrk = NULL;
+int n_c_solve_linear = 0;
+int n_c_init_solve_linear = 0;
+COMPLEX *c_solve_linear_a = NULL;
+COMPLEX *c_solve_linear_b = NULL;
+COMPLEX *c_solve_linear_wrk = NULL;
+int *c_solve_linear_ipvt = NULL;
 
- int n_c_solve_linear = 0;
- int n_c_init_solve_linear = 0;
- COMPLEX *c_solve_linear_a = NULL;
- COMPLEX *c_solve_linear_b = NULL;
- COMPLEX *c_solve_linear_wrk = NULL;
- int *c_solve_linear_ipvt = NULL;
+int n_d_c_solve_linear = 0;
+int n_d_c_init_solve_linear = 0;
+double *d_c_solve_linear_ai = NULL;
+double *d_c_solve_linear_ar = NULL;
+double *d_c_solve_linear_bi = NULL;
+double *d_c_solve_linear_br = NULL;
+double *d_c_solve_linear_wrk = NULL;
+int *d_c_solve_linear_ipvt = NULL;
 
- int n_d_c_solve_linear = 0;
- int n_d_c_init_solve_linear = 0;
- double *d_c_solve_linear_ai = NULL;
- double *d_c_solve_linear_ar = NULL;
- double *d_c_solve_linear_bi = NULL;
- double *d_c_solve_linear_br = NULL;
- double *d_c_solve_linear_wrk = NULL;
- int *d_c_solve_linear_ipvt = NULL;
-
-//  int n_solve_nonlinear = 0;
-//  int m_solve_nonlinear = 0;
-//  int n_init_solve_nonlinear = 0;
-// 
-//  int *solve_nonlinear_iwk;
-//  float *solve_nonlinear_wrk = NULL;
-//  float *solve_nonlinear_x = NULL;
-
-     
 /* ***********************************************************************
- * ROUTINE NAME c_fft 
+ * ROUTINE NAME c_fft
  *
  *
  * ABSTRACT  performs a forward fourier transform on the input data
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_fft
   *
   *
   *
-  * 
-  * INPUTS  
-  *   n                   the number of points in the vector 
-  *   *a                  vector of complex numbers to be transformed 
-  *          
-  * OUTPUTS  
-  *   c                   the complex coeff of the transform 
+  *
+  * INPUTS
+  *   n                   the number of points in the vector
+  *   *a                  vector of complex numbers to be transformed
+  *
+  * OUTPUTS
+  *   c                   the complex coeff of the transform
   *   status              indicates if the fft worked
   *                           this will be either SUCCESS or FAIL
-  *          
-  *         
-  * FUNCTIONS CALLED 
+  *
+  *
+  * FUNCTIONS CALLED
   *         FFT
-  *         
-  *         
-  *                                    
+  *
+  *
+  *
   * AUTHOR          Andrew Staniszewski
-  *                                                        
-  * MODIFICATION HISTORY                                   
+  *
+  * MODIFICATION HISTORY
   * 1.00     Original                          AJS       12-15-90
-  * 2.00     Update to support fortran         AJS        3-8-91   
-  *                                                                 
+  * 2.00     Update to support fortran         AJS        3-8-91
+  *
   * ***********************************************************************
   */
 
  /* wrapper for fft routine */
 
 void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
- /* the values pointed to by c will become the transform, it is necessary 
+ /* the values pointed to by c will become the transform, it is necessary
  *  to copy the data before the transform if the original data is to be kept
  */
   int ierr;                 /* indicates return status of the fft routine */
   int i;                    /* a loop variable */
   int sign = -1;            /* determines the sign of the eponent used in
-                             *  calculating the transform 
+                             *  calculating the transform
                              */
   /* clear the error flag */
-  ierr = 0;      
+  ierr = 0;
   for (i = 0; i < (*n); i++) {
     c[i] = a[i];
   }
@@ -162,35 +151,35 @@ void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
  *
  *
  * ABSTRACT  will find the complex coeff of the inverse fourier transform
- *           
- *            
- *
- * ENVIRONMENT  c_fft_inv 
  *
  *
  *
- * 
- * INPUTS  
- *   a              vector of complex numbers to be transformed 
- *   n              the number of points in the vector 
- *          
- * OUTPUTS  
- *   c              the complex coeff of the transform 
+ * ENVIRONMENT  c_fft_inv
+ *
+ *
+ *
+ *
+ * INPUTS
+ *   a              vector of complex numbers to be transformed
+ *   n              the number of points in the vector
+ *
+ * OUTPUTS
+ *   c              the complex coeff of the transform
  *   status         indicates if the routine succeded
  *                                 will be either SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90  
- * 2.00     Update to support fortran         AJS        3-8-91 
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
+ * 2.00     Update to support fortran         AJS        3-8-91
+ *
  * ***********************************************************************
  */
 
@@ -198,7 +187,7 @@ void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
 
 void c_fft_inv(int *n,COMPLEX *a,COMPLEX *c,int *status)
 
-/* the values pointed to by c will become the transform, it is necessary 
+/* the values pointed to by c will become the transform, it is necessary
 *  to copy the data before the transform if the original data is to be kept
 */
 
@@ -207,11 +196,11 @@ void c_fft_inv(int *n,COMPLEX *a,COMPLEX *c,int *status)
   int ierr;                 /* indicates return status of the fft routine */
   int i;                    /* A LOOP VARIABLE */
   int sign = 1;             /* determines the sign of the eponent used in
-                            *  calculating the transform 
-			    */
+                            *  calculating the transform
+          */
 
 /* clear the error flag */
-  ierr = 0;      
+  ierr = 0;
   for (i = 0; i < (*n); i++)
     {
       c[i] = a[i];
@@ -228,38 +217,38 @@ void c_fft_inv(int *n,COMPLEX *a,COMPLEX *c,int *status)
 }
 
 /* ***********************************************************************
- * ROUTINE NAME c_set_calc_eigenvalues  
+ * ROUTINE NAME c_set_calc_eigenvalues
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine c_calc_eigenvalues. This is
  *           designed to allow multiple calls with the
  *           largest size being retained. The routine is optional
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_set_calc_eigenvalues
  *
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           c_calc_eigenvalues
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 void c_set_calc_eigenvalues(int *n)
@@ -280,29 +269,29 @@ void c_set_calc_eigenvalues(int *n)
  * ABSTRACT  this routine sets up the workspace for the routine
  *             c_calc_eigenvalues. It should only be called
  *             from within c_calc_eigenvalues
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_init_calc_eigenvalues
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *     calloc
-  *         
- *         
- *                                    
+  *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 void c_init_calc_eigenvalues(int *status)
@@ -348,52 +337,52 @@ void c_init_calc_eigenvalues(int *status)
 }
 
 /* ***********************************************************************
- * ROUTINE NAME c_calc_eigenvalues  
+ * ROUTINE NAME c_calc_eigenvalues
  *
  *
  * ABSTRACT returns the eigenvalues and eigen vectors of the input
  *          matrix. It will produce a warning if not called after
  *          c_set_calc_eigenvalues
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT c_calc_eigenvalues
  *
  *
  *
- * 
- * INPUTS  
- *    c                  input matrix 
+ *
+ * INPUTS
+ *    c                  input matrix
  *    n                  the number of rows/columns in c
- *          
- * OUTPUTS  
+ *
+ * OUTPUTS
  *   eval               the eigenvalues of c
  *   evect              the matrix of eigenvectors for c
  *   ldc                number of rows in c
  *   ldevect            number of rows in evect
  *   status             return status of the call
- *   
- *          
- *         
- * FUNCTIONS CALLED 
+ *
+ *
+ *
+ * FUNCTIONS CALLED
  *     c_set_calc_eigenvalues
- *     c_init_calc_eigenvalues    
- *         
- *         
- *                                    
+ *     c_init_calc_eigenvalues
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
  * 2.00     Update to support fortran         AJS        3-18-91
- * 
- *                                                                 
+ *
+ *
  * ***********************************************************************
  */
 
-  
+
 //  void c_calc_eigenvalues(COMPLEX *c,int *n,COMPLEX *eval,COMPLEX *evect,
-//  			      int *ldc, int *ldevect, int *status) 
+//              int *ldc, int *ldevect, int *status)
 
 /* this  routine will find the eigenvalues and eigenvectors of a complex
 *  matrix
@@ -410,35 +399,35 @@ void c_init_calc_eigenvalues(int *status)
 //    extern int n_c_init_calc_eigenvalues;
 
 //    int ierr;                    /* status flag for the routine called */
-//    int i,j;		       /* loop varible */
+//    int i,j;           /* loop varible */
 //    int bal = 0;                 /* indicates if balancing is to be used
-//  			       *  see NSWC page 315
-//  			       */
+//               *  see NSWC page 315
+//               */
 
 //    if ((*n) > n_c_init_calc_eigenvalues)
 //      {
 //        c_set_calc_eigenvalues(n);
 //        c_init_calc_eigenvalues(status);
 //        if ((*status) != SUCCESS)
-//  	return;
+//    return;
 //      }
-  
+
 //    /* copy the input data to the workspace */
 
 //    for (i = 0; i < (*n); i++)
 //      {
 //        for (j = 0; j < (*n); j++)
-//  	{
-//  	  c_calc_eigenvalues_ai[i*(*n) + j] = c[i*(*ldc) + j].imaginary;
-//  	  c_calc_eigenvalues_ar[i*(*n) + j] = c[i*(*ldc) +j].real;
-//  	}
+//    {
+//      c_calc_eigenvalues_ai[i*(*n) + j] = c[i*(*ldc) + j].imaginary;
+//      c_calc_eigenvalues_ar[i*(*n) + j] = c[i*(*ldc) +j].real;
+//    }
 //      }
-  
+
 //    ierr = 0;
 //    CEIGV(&bal,c_calc_eigenvalues_ar,c_calc_eigenvalues_ai,n,n,
-//  	c_calc_eigenvalues_wr,c_calc_eigenvalues_wi,
-//  	c_calc_eigenvalues_zr,c_calc_eigenvalues_zi,&ierr,
-//  	c_calc_eigenvalues_temp);
+//    c_calc_eigenvalues_wr,c_calc_eigenvalues_wi,
+//    c_calc_eigenvalues_zr,c_calc_eigenvalues_zi,&ierr,
+//    c_calc_eigenvalues_temp);
 //    if (ierr != 0)
 //      {
 //        (*status) = FAIL;
@@ -455,63 +444,63 @@ void c_init_calc_eigenvalues(int *status)
 //    for (i = 0; i < (*n); i++)
 //      {
 //        for (j = 0; j < (*n); j++)
-//  	{
-//  	  evect[i*(*ldevect) + j].real = c_calc_eigenvalues_zr[i*(*n) + j];
-//  	  evect[i*(*ldevect) + j].imaginary = c_calc_eigenvalues_zi[i*(*n) + j];
-//  	}
+//    {
+//      evect[i*(*ldevect) + j].real = c_calc_eigenvalues_zr[i*(*n) + j];
+//      evect[i*(*ldevect) + j].imaginary = c_calc_eigenvalues_zi[i*(*n) + j];
+//    }
 //      }
-  
+
 //    (*status) = SUCCESS;
 //    return;
 //  }
 
 /* ***********************************************************************
- * ROUTINE NAME c_mult_matricies  
+ * ROUTINE NAME c_mult_matricies
  *
  *
  * ABSTRACT  multiplies two complex matricies
- *           
- *            
- *
- * ENVIRONMENT c_mult_matricies 
- *             
  *
  *
- * 
- * INPUTS  
- *    ra            number of rows used in a 
+ *
+ * ENVIRONMENT c_mult_matricies
+ *
+ *
+ *
+ *
+ * INPUTS
+ *    ra            number of rows used in a
  *    carb          number of columns in a / rows in b
- *    cb            number of columns in b 
+ *    cb            number of columns in b
  *    lda           number of rows in a (when dimensioned)
  *    ldb           number of rows in b (when dimensioned)
  *    ldc           number of rows in c (when dimensioned)
- *    a             complex input matrix 
- *    b             complex input matrix 
- *          
- * OUTPUTS  
+ *    a             complex input matrix
+ *    b             complex input matrix
+ *
+ * OUTPUTS
  *    c             complex output matrix
- *          
- *         
- * FUNCTIONS CALLED 
- *       CMTMS  
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *       CMTMS
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
- * 2.00     Update to Support Fortran         AJS        3-18-91 
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
+ * 2.00     Update to Support Fortran         AJS        3-18-91
+ *
  * ***********************************************************************
  */
 
 /* this routine will multiply two complex matricies */
 
 void c_mult_matricies(int *ra,int *carb, int *cb,
-			   COMPLEX *a, COMPLEX *b, COMPLEX *c,
-			   int *lda, int *ldb, int *ldc,int *status)
-     
+         COMPLEX *a, COMPLEX *b, COMPLEX *c,
+         int *lda, int *ldb, int *ldc,int *status)
+
 {
   CMTMS(ra,carb,cb,a,lda,b,ldb,c,ldc);
   (*status) = SUCCESS;
@@ -520,52 +509,52 @@ void c_mult_matricies(int *ra,int *carb, int *cb,
 
 
 /* ***********************************************************************
- * ROUTINE NAME mult_matricies  
+ * ROUTINE NAME mult_matricies
  *
  *
  * ABSTRACT  multiplies two complex matricies
- *           
- *            
- *
- * ENVIRONMENT mult_matricies 
- *             
  *
  *
- * 
- * INPUTS  
- *    ra            number of rows used in a 
+ *
+ * ENVIRONMENT mult_matricies
+ *
+ *
+ *
+ *
+ * INPUTS
+ *    ra            number of rows used in a
  *    carb          number of columns in a / rows in b
- *    cb            number of columns in b 
+ *    cb            number of columns in b
  *    lda           number of rows in a (when dimensioned)
  *    ldb           number of rows in b (when dimensioned)
  *    ldc           number of rows in c (when dimensioned)
- *    a             float input matrix 
- *    b             float input matrix 
- *          
- * OUTPUTS  
+ *    a             float input matrix
+ *    b             float input matrix
+ *
+ * OUTPUTS
  *    c             float output matrix
- *          
- *         
- * FUNCTIONS CALLED 
- *       CMTMS  
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *       CMTMS
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
- * 2.00     Update to Support Fortran         AJS        3-18-91 
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
+ * 2.00     Update to Support Fortran         AJS        3-18-91
+ *
  * ***********************************************************************
  */
 
 /* this routine will multiply two matricies */
 
 void mult_matricies(int *ra,int *carb, int *cb,
-			   float *a, float *b, float *c,
-			   int *lda, int *ldb, int *ldc,int *status)
-     
+         float *a, float *b, float *c,
+         int *lda, int *ldb, int *ldc,int *status)
+
 {
   MTMS(ra,carb,cb,a,lda,b,ldb,c,ldc);
   (*status) = SUCCESS;
@@ -574,38 +563,38 @@ void mult_matricies(int *ra,int *carb, int *cb,
 
 
 /* ***********************************************************************
- * ROUTINE NAME c_set_invert_matrix  
+ * ROUTINE NAME c_set_invert_matrix
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine c_invert_matrix. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
- *            
+ *           largest size being retained.
+ *
+ *
  *
  * ENVIRONMENT  c_set_inv_matrix
  *
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           c_invert_matrix
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 void c_set_invert_matrix(int *n)
@@ -626,29 +615,29 @@ void c_set_invert_matrix(int *n)
  * ABSTRACT  this routine sets up the workspace for the routine
  *             c_invert_matrix. It should only be called
  *             from within c_invert_matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_init_invert_matrix
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 void c_init_invert_matrix(int *status)
@@ -670,7 +659,7 @@ void c_init_invert_matrix(int *status)
     }
 
 
-/* malloc some workspace */  
+/* malloc some workspace */
   c_invert_matrix_ipvt = (int *)calloc(n,sizeof(int));
   c_invert_matrix_wrk = (COMPLEX *)calloc(n*n,sizeof(COMPLEX));
 
@@ -680,46 +669,46 @@ void c_init_invert_matrix(int *status)
 
 
 /* ***********************************************************************
- * ROUTINE NAME c_invert_matrix  
+ * ROUTINE NAME c_invert_matrix
  *
  *
  * ABSTRACT  will supply the inverse of a complex matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_invert_matrix
  *
  *
- * 
- * INPUTS  
- *     n                   the size of the a and b is n*n 
+ *
+ * INPUTS
+ *     n                   the size of the a and b is n*n
  *     a                   the input matrix
  *     lda                 leading dimension of a
- *     ldb                 leading dimension of b 
- *          
- * OUTPUTS  
- *     b              the inverted matrix 
+ *     ldb                 leading dimension of b
+ *
+ * OUTPUTS
+ *     b              the inverted matrix
  *     status         SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
  * 2.00     Update for use from fortran       AJS        3-18-91
- *                                                                 
+ *
  * ***********************************************************************
  */
 /* this routine will invert a complex matrix */
 
 void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
-		     int *lda, int *ldb, int *status)
-     
+         int *lda, int *ldb, int *status)
+
 {
   extern int *c_invert_matrix_ipvt;
   extern COMPLEX *c_invert_matrix_wrk;
@@ -731,9 +720,9 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
   int ierr;             /*status flag for call */
   int i,j;                 /*loop variable */
   int calc_inv = 0;       /* indicates inverse of is to be calculated */
-  int zero_dim = 0;	/* indicates that no solutions is needed see
-			   NSWC page 211
-			*/
+  int zero_dim = 0; /* indicates that no solutions is needed see
+         NSWC page 211
+      */
 
   if ((*n) > n_c_init_invert_matrix)
     {
@@ -748,19 +737,19 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
   for (i = 0; i < (*n); i++)
     {
       for (j = 0; j < (*n); j++)
-	{
-	  b[i*(*ldb)+j] = a[i*(*lda)+j];
-	}
+  {
+    b[i*(*ldb)+j] = a[i*(*lda)+j];
+  }
     }
-  
-  CMSLV1(&calc_inv, n, &zero_dim,
-	    b, ldb, a,
-	    &zero_dim,
-	    &ierr,
-	    c_invert_matrix_ipvt,
-	    c_invert_matrix_wrk);
 
-  if (ierr != 0) 
+  CMSLV1(&calc_inv, n, &zero_dim,
+      b, ldb, a,
+      &zero_dim,
+      &ierr,
+      c_invert_matrix_ipvt,
+      c_invert_matrix_wrk);
+
+  if (ierr != 0)
     {
       (*status) = FAIL;
       fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
@@ -772,38 +761,38 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
 }
 
 /* ***********************************************************************
- * ROUTINE NAME set_invert_matrix  
+ * ROUTINE NAME set_invert_matrix
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine invert_matrix. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
- *            
+ *           largest size being retained.
+ *
+ *
  *
  * ENVIRONMENT  set_invert_matrix
  *
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           c_invert_matrix
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 void set_invert_matrix(int *n)
@@ -824,29 +813,29 @@ void set_invert_matrix(int *n)
  * ABSTRACT  this routine sets up the workspace for the routine
  *             invert_matrix. It should only be called
  *             from within invert_matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  init_invert_matrix
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 void init_invert_matrix(int *status)
@@ -868,7 +857,7 @@ void init_invert_matrix(int *status)
     }
 
 
-/* malloc some workspace */  
+/* malloc some workspace */
   invert_matrix_ipvt = (int *)calloc(n,sizeof(int));
   invert_matrix_wrk = (float *)calloc(n*n,sizeof(float));
 
@@ -877,47 +866,47 @@ void init_invert_matrix(int *status)
 }
 
 /* ***********************************************************************
- * ROUTINE NAME invert_matrix  
+ * ROUTINE NAME invert_matrix
  *
  *
  * ABSTRACT  will supply the inverse of a matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  invert_matrix
  *
  *
- * 
- * INPUTS  
- *     n                   the size of the a and b is n*n 
+ *
+ * INPUTS
+ *     n                   the size of the a and b is n*n
  *     a                   the input matrix
  *     lda                 leading dimension of a
- *     ldb                 leading dimension of b 
- *          
- * OUTPUTS  
- *     b              the inverted matrix 
+ *     ldb                 leading dimension of b
+ *
+ * OUTPUTS
+ *     b              the inverted matrix
  *     status         SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
  * 2.00     Update for use from fortran       AJS        3-18-91
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 /* this routine will invert a single precision real matrix */
 
 void invert_matrix(int *n,float *a,float *b,
-		   int *lda, int *ldb, int *status)
-     
+       int *lda, int *ldb, int *status)
+
 {
   extern int *invert_matrix_ipvt;
   extern float *invert_matrix_wrk;
@@ -929,9 +918,9 @@ void invert_matrix(int *n,float *a,float *b,
   int ierr;             /*status flag for call */
   int i,j;                 /*loop variable */
   int calc_inv = 0;       /* indicates inverse of is to be calculated */
-  int zero_dim = 0;	/* indicates that no solutions is needed see
-			   NSWC page 211
-			*/
+  int zero_dim = 0; /* indicates that no solutions is needed see
+         NSWC page 211
+      */
 
   if ((*n) > n_init_invert_matrix)
     {
@@ -946,15 +935,15 @@ void invert_matrix(int *n,float *a,float *b,
   for (i = 0; i < (*n); i++)
     {
       for (j = 0; j < (*n); j++)
-	{
-	  b[i*(*ldb)+j] = a[i*(*lda)+j];
-	}
+  {
+    b[i*(*ldb)+j] = a[i*(*lda)+j];
+  }
     }
-  
+
   MSLV(&calc_inv,n,&zero_dim,b,ldb,NULL,&zero_dim,&t1[0],
        &rcond,&ierr,invert_matrix_ipvt,invert_matrix_wrk);
 
-  if (ierr != 0) 
+  if (ierr != 0)
     {
       (*status) = FAIL;
       fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
@@ -974,43 +963,43 @@ void invert_matrix(int *n,float *a,float *b,
  *
  * ABSTRACT  will supply the inverse of a matrix and return the condition
  *           number
- *            
+ *
  *
  * ENVIRONMENT  invert_matrix_cond
  *
  *
- * 
- * INPUTS  
- *     n                   the size of the a and b is n*n 
+ *
+ * INPUTS
+ *     n                   the size of the a and b is n*n
  *     a                   the input matrix
  *     lda                 leading dimension of a
- *     ldb                 leading dimension of b 
- *          
- * OUTPUTS  
- *     b              the inverted matrix 
+ *     ldb                 leading dimension of b
+ *
+ * OUTPUTS
+ *     b              the inverted matrix
  *     rcond          condition number
  *     status         SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
+ *
+ *
+ * FUNCTIONS CALLED
+ *
  *         MSLV (NSWC Fortran library)
- *         
- *                                    
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
  * 2.00     Update for use from fortran       AJS        3-18-91
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 /* this routine will invert a single precision real matrix */
 
 void invert_matrix_cond(int *n,float *a,float *b,
-		   int *lda, int *ldb, float *rcond, int *status)
-     
+       int *lda, int *ldb, float *rcond, int *status)
+
 {
   extern int *invert_matrix_ipvt;
   extern float *invert_matrix_wrk;
@@ -1021,8 +1010,8 @@ void invert_matrix_cond(int *n,float *a,float *b,
   int ierr;             /*status flag for call */
   int i,j;                 /*loop variable */
   int calc_inv = 0;       /* indicates inverse of is to be calculated */
-  int zero_dim = 0;	/* indicates that no solutions is needed see
-			   NSWC page 211 */
+  int zero_dim = 0; /* indicates that no solutions is needed see
+         NSWC page 211 */
   int istatus;
 
   if ((*n) > n_init_invert_matrix)
@@ -1037,11 +1026,11 @@ void invert_matrix_cond(int *n,float *a,float *b,
     for (j = 0; j < (*n); j++)
       b[i*(*ldb)+j] = a[i*(*lda)+j];
 
-  
+
   MSLV(&calc_inv,n,&zero_dim,b,ldb,NULL,&zero_dim,&t1[0],
        rcond,&ierr,invert_matrix_ipvt,invert_matrix_wrk);
 
-  if (ierr != 0) 
+  if (ierr != 0)
     {
       (*status) = FAIL ;
       fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
@@ -1055,38 +1044,38 @@ void invert_matrix_cond(int *n,float *a,float *b,
 
 
 /* ***********************************************************************
- * ROUTINE NAME d_set_invert_matrix  
+ * ROUTINE NAME d_set_invert_matrix
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine invert_matrix. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
- *            
+ *           largest size being retained.
+ *
+ *
  *
  * ENVIRONMENT  d_set_invert_matrix
  *
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           c_invert_matrix
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 void d_set_invert_matrix(int *n)
@@ -1107,29 +1096,29 @@ void d_set_invert_matrix(int *n)
  * ABSTRACT  this routine sets up the workspace for the routine
  *             d_invert_matrix. It should only be called
  *             from within invert_matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  d_init_invert_matrix
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 void d_init_invert_matrix(int *status)
@@ -1151,7 +1140,7 @@ void d_init_invert_matrix(int *status)
     }
 
 
-/* malloc some workspace */  
+/* malloc some workspace */
   invert_matrix_ipvt = (int *)calloc(n,sizeof(int));
   d_invert_matrix_wrk = (double *)calloc(n*n,sizeof(double));
 
@@ -1161,47 +1150,47 @@ void d_init_invert_matrix(int *status)
 
 
 /* ***********************************************************************
- * ROUTINE NAME d_invert_matrix  
+ * ROUTINE NAME d_invert_matrix
  *
  *
  * ABSTRACT  will supply the inverse of a matrix
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  d_invert_matrix
  *
  *
- * 
- * INPUTS  
- *     n                   the size of the a and b is n*n 
+ *
+ * INPUTS
+ *     n                   the size of the a and b is n*n
  *     a                   the input matrix
  *     lda                 leading dimension of a
- *     ldb                 leading dimension of b 
- *          
- * OUTPUTS  
- *     b              the inverted matrix 
+ *     ldb                 leading dimension of b
+ *
+ * OUTPUTS
+ *     b              the inverted matrix
  *     status         SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
  * 2.00     Update for use from fortran       AJS        3-18-91
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 /* this routine will invert a single precision real matrix */
 
 void d_invert_matrix(int *n,double *a,double *b,
-		   int *lda, int *ldb, int *status)
-     
+       int *lda, int *ldb, int *status)
+
 {
   extern int *invert_matrix_ipvt;
   extern double *d_invert_matrix_wrk;
@@ -1213,9 +1202,9 @@ void d_invert_matrix(int *n,double *a,double *b,
   int ierr;             /*status flag for call */
   int i,j;                 /*loop variable */
   int calc_inv = 0;       /* indicates inverse of is to be calculated */
-  int zero_dim = 0;	/* indicates that no solutions is needed see
-			   NSWC page 211
-			*/
+  int zero_dim = 0; /* indicates that no solutions is needed see
+         NSWC page 211
+      */
 
   if ((*n) > n_init_invert_matrix)
     {
@@ -1230,15 +1219,15 @@ void d_invert_matrix(int *n,double *a,double *b,
   for (i = 0; i < (*n); i++)
     {
       for (j = 0; j < (*n); j++)
-	{
-	  b[i*(*ldb)+j] = a[i*(*lda)+j];
-	}
+  {
+    b[i*(*ldb)+j] = a[i*(*lda)+j];
+  }
     }
-  
+
   DMSLV(&calc_inv,n,&zero_dim,b,ldb,NULL,&zero_dim,&t1[0],
        &rcond,&ierr,invert_matrix_ipvt,d_invert_matrix_wrk);
 
-  if (ierr != 0) 
+  if (ierr != 0)
     {
       (*status) = FAIL;
       fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
@@ -1251,27 +1240,27 @@ void d_invert_matrix(int *n,double *a,double *b,
 
 
 /* ***********************************************************************
- * ROUTINE NAME c_set_solve_linear  
+ * ROUTINE NAME c_set_solve_linear
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine c_solve_linear. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
+ *           largest size being retained.
+ *
  * ENVIRONMENT  c_set_solve_linear
  *
- * INPUTS  
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           c_solve_linear
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
  * AUTHOR          Jeff Prentice
- *                                                        
+ *
  * ***********************************************************************
  */
 void c_set_solve_linear(int *n)
@@ -1292,20 +1281,20 @@ void c_set_solve_linear(int *n)
  * ABSTRACT  this routine sets up the workspace for the routine
  *             c_solve_linear. It should only be called
  *             from within c_solve_linear
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  c_init_solve_linear
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
+ *
+ * FUNCTIONS CALLED
+ *
  * AUTHOR          Jeff Prentice
- *                                                        
+ *
  * ***********************************************************************
  */
 void c_init_solve_linear(int *status)
@@ -1327,7 +1316,7 @@ void c_init_solve_linear(int *status)
       free(c_solve_linear_b);
   }
 
-/* malloc some workspace */  
+/* malloc some workspace */
   c_solve_linear_a = (COMPLEX *)calloc(n*n,sizeof(COMPLEX));
   c_solve_linear_b = (COMPLEX *)calloc(n*n,sizeof(COMPLEX));
   c_solve_linear_wrk = (COMPLEX *)calloc(n,sizeof(COMPLEX));
@@ -1339,33 +1328,33 @@ void c_init_solve_linear(int *status)
 
 
 /* ***********************************************************************
- * ROUTINE NAME c_solve_linear  
+ * ROUTINE NAME c_solve_linear
  *
  *
- * ABSTRACT  will solve a complex linear system of equations 
- *	     (A*C = B) without destroying A or B.
- *           
+ * ABSTRACT  will solve a complex linear system of equations
+ *       (A*C = B) without destroying A or B.
+ *
  * ENVIRONMENT  dsovle_linear(n, a, b, c, lda, status)
- * 
- * INPUTS  
- *    int n;                   the size of the a  is n*n 
+ *
+ * INPUTS
+ *    int n;                   the size of the a  is n*n
  *    COMPLEX *a;              the input matrix
  *    COMPLEX *b;              the input vector
  *    int lda;                 leading dimension of a
- *          
- * OUTPUTS  
- *    COMPLEX *c;              the solution vector 
+ *
+ * OUTPUTS
+ *    COMPLEX *c;              the solution vector
  *    int     status;          SUCCESS or FAIL
- *          
- * FUNCTIONS CALLED 
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
-		      COMPLEX *c, int *lda, int *status) {
+          COMPLEX *c, int *lda, int *status) {
   extern COMPLEX *c_solve_linear_a;
   extern COMPLEX *c_solve_linear_b;
   extern COMPLEX *c_solve_linear_wrk;
@@ -1382,7 +1371,7 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
     c_set_solve_linear(n);
     c_init_solve_linear(status);
   }
-  
+
   /* copy contents of a and b to temporary work arrays */
   for (i = 0; i < (*n); i++) {
     for (j = 0; j < (*n); j++) {
@@ -1391,9 +1380,9 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
     c_solve_linear_b[i] = b[i];
   }
 
-  CMSLV1(&calc_inv, n, &one_dim, c_solve_linear_a, lda, c_solve_linear_b, n, 
-	 &ierr, c_solve_linear_ipvt, c_solve_linear_wrk);
-  
+  CMSLV1(&calc_inv, n, &one_dim, c_solve_linear_a, lda, c_solve_linear_b, n,
+   &ierr, c_solve_linear_ipvt, c_solve_linear_wrk);
+
   if (ierr != 0) {
     (*status) = FAIL;
     fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld\n",ierr);
@@ -1408,38 +1397,38 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
 }
 
 /* ***********************************************************************
- * ROUTINE NAME d_c_set_solve_linear  
+ * ROUTINE NAME d_c_set_solve_linear
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine d_c_solve_linear. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
- *            
+ *           largest size being retained.
+ *
+ *
  *
  * ENVIRONMENT  d_c_set_solve_linear
  *
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    n                    the size of the square matrix
  *                           that will be input into
  *                           d_c_solve_linear
- *          
- * OUTPUTS  
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * OUTPUTS
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 void d_c_set_solve_linear(int *n) {
@@ -1458,29 +1447,29 @@ void d_c_set_solve_linear(int *n) {
  * ABSTRACT  this routine sets up the workspace for the routine
  *             d_c_solve_linear. It should only be called
  *             from within d_c_solve_linear
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  d_c_init_solve_linear
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 void d_c_init_solve_linear(int * status) {
@@ -1505,7 +1494,7 @@ void d_c_init_solve_linear(int * status) {
   }
 
 
-  /* malloc some workspace */  
+  /* malloc some workspace */
   d_c_solve_linear_ai = (double *)calloc(n*n,sizeof(double));
   d_c_solve_linear_ar = (double *)calloc(n*n,sizeof(double));
   d_c_solve_linear_bi = (double *)calloc(n,sizeof(double));
@@ -1519,44 +1508,44 @@ void d_c_init_solve_linear(int * status) {
 
 
 /* ***********************************************************************
- * ROUTINE NAME d_c_solve_linear  
+ * ROUTINE NAME d_c_solve_linear
  *
  *
  * ABSTRACT  will solve a linear system of equations with doubles for input
- *	     (A*C = B)
- *           
- *            
+ *       (A*C = B)
+ *
+ *
  *
  * ENVIRONMENT  dsovle_linear(n, a, b, c, lda, status)
  *
  *
- * 
- * INPUTS  
- *    int n;                   the size of the a  is n*n 
+ *
+ * INPUTS
+ *    int n;                   the size of the a  is n*n
  *    DOUBLE_COMPLEX *a;       the input matrix
  *    DOUBLE_COMPLEX *b;       the input vector
  *    int lda;                 leading dimension of a
- *          
- * OUTPUTS  
- *    DOUBLE_COMPLEX *c;       the solution vector 
+ *
+ * OUTPUTS
+ *    DOUBLE_COMPLEX *c;       the solution vector
  *    int     status;          SUCCESS or FAIL
- *          
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
+ *
  * ***********************************************************************
  */
 
 void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
-		      DOUBLE_COMPLEX *c, int *lda, int *status) {
+          DOUBLE_COMPLEX *c, int *lda, int *status) {
   extern double *d_c_solve_linear_ai;
   extern double *d_c_solve_linear_ar;
   extern double *d_c_solve_linear_bi;
@@ -1588,7 +1577,7 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
     d_c_solve_linear_bi[i] = b[i].imag;
     d_c_solve_linear_br[i] = b[i].real;
   }
-  
+
   DCMSLV(&calc_inv,
          n,
          &one_dim,
@@ -1601,7 +1590,7 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
          &ierr,
          d_c_solve_linear_ipvt,
          d_c_solve_linear_wrk);
-  
+
 
   if (ierr != 0) {
     (*status) = FAIL;
@@ -1618,47 +1607,47 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 }
 
 /* ***********************************************************************
- * ROUTINE NAME set_solve_nonlinear  
+ * ROUTINE NAME set_solve_nonlinear
  *
  *
  * ABSTRACT  Will set the size of the workspace created for
  *           the routine solve_nonlinear. This is
  *           designed to allow multiple calls with the
- *           largest size being retained. 
- *           
- *            
+ *           largest size being retained.
+ *
+ *
  *
  * ENVIRONMENT  set_solve_nonlinear
  *
  *
  *
- * 
- * INPUTS  
- *    n                   the number of varibles in the nonlinear equation 
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *    n                   the number of varibles in the nonlinear equation
+ *
+ * OUTPUTS
  *    status               will be SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-15-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-15-91
+ *
  * ***********************************************************************
  */
 // void set_solve_nonlinear(int *n)
-// 
+//
 // {
 //   extern int n_solve_nonlinear;
-// 
+//
 //   if (n_solve_nonlinear < (*n))
 //     n_solve_nonlinear = (*n);
-// 
+//
 //   return;
 // }
 // 
@@ -1669,29 +1658,29 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
  * ABSTRACT  this routine sets up the workspace for the routine
  *             solve_nonlinear. It should only be called
  *             from within solve_nonlinear
- *           
- *            
+ *
+ *
  *
  * ENVIRONMENT  init_solve_nonlinear
  *
  *
  *
- * 
- * INPUTS  
- *          
- * OUTPUTS  
+ *
+ * INPUTS
+ *
+ * OUTPUTS
  *    status                       will be either SUCCESS or FAIL
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       3-8-91   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       3-8-91
+ *
  * ***********************************************************************
  */
 // void init_solve_nonlinear(int *status)
@@ -1699,50 +1688,50 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 //   extern int *solve_nonlinear_iwk;
 //   extern float *solve_nonlinear_wrk;
 //   extern float *solve_nonlinear_x;
-// 
-//   
+//
+//
 //   extern int n_init_solve_nonlinear;
 //   extern int n_solve_nonlinear;
 //   extern int m_solve_nonlinear;
-//   
+//
 //   int n;
 //   int m;
-//   
+//
 //   n = n_init_solve_nonlinear = n_solve_nonlinear;
-//   
+//
 //   /* malloc the workspace */
-//   
+//
 //   if (solve_nonlinear_wrk != NULL)
 //     {
 //       free(solve_nonlinear_wrk);
 //     }
-//   
+//
 //   /* malloc some workspace */
-// 
+//
 //   m_solve_nonlinear = m = (int ) (ceil(n*(n+1)/2.0) + n*n +7*n) ;
-// 
+//
 //   solve_nonlinear_wrk = (float *)calloc(m,sizeof(float));
 //   solve_nonlinear_iwk = (int *)calloc(n,sizeof(int));
 //   solve_nonlinear_x = (float *)calloc(n,sizeof(float));
-// 
+//
 //   (*status) = SUCCESS;
 //   return;
 // }
-// 
+//
 //
 /* ***********************************************************************
- * ROUTINE NAME solve_nonlinear  
+ * ROUTINE NAME solve_nonlinear
  *
  *
- * ABSTRACT  will solve a non-linear system of equations 
- *           
- *            
+ * ABSTRACT  will solve a non-linear system of equations
+ *
+ *
  *
  * ENVIRONMENT  sovle_nonlinear
  *
  *
- * 
- * INPUTS  
+ *
+ * INPUTS
  *     void (*f)()              a pointer to a function that
  *                                will evaluate the system of equations
  *                                see page 137 of NSWC
@@ -1752,27 +1741,27 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
  *     float TOL                the desired accuracy of the soln
  *                                s/b less than 1.0e-5
  * OUTPUTS
- *    float *x                 the final solution  
+ *    float *x                 the final solution
  *    float *fvec              a pointer to a vector that represents
- *                                what (*f)() evaluates to at the final 
+ *                                what (*f)() evaluates to at the final
  *                                solution
- *         
- * FUNCTIONS CALLED 
- *         
- *         
- *         
- *                                    
+ *
+ * FUNCTIONS CALLED
+ *
+ *
+ *
+ *
  * AUTHOR          Andrew Staniszewski
- *                                                        
- * MODIFICATION HISTORY                                   
- * 1.00     Original                          AJS       12-15-90   
- *                                                                 
+ *
+ * MODIFICATION HISTORY
+ * 1.00     Original                          AJS       12-15-90
+ *
  * ***********************************************************************
  */
-// 
+//
 // void solve_nonlinear(void (*f)(),void (*f2)(), int *n,float *eps,float *tol,
-// 		     float *x, float *fvec, int *status)
-//      
+//         float *x, float *fvec, int *status)
+//
 // {
 //   extern float *solve_nonlinear_wrk;
 //   extern int *solve_nonlinear_iwk;
@@ -1791,15 +1780,15 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 //   int lr;
 //   float sum;
 //   float *m1,*m2,*m3,*m4,*m5,*m6,*m7,*mm;
-//   
+//
 //   ml_mu = (*n) -1;
-// 
+//
 //   if ((*n) > n_init_solve_nonlinear)
 //     {
 //       set_solve_nonlinear(n);
 //       init_solve_nonlinear(status);
 //     }
-// 
+//
 //   m = n_init_solve_nonlinear;
 //   lr = (int )ceil((m*(m+1))/2.0);
 //   m1 = solve_nonlinear_wrk + lr;
@@ -1810,45 +1799,45 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 //   m6 = m5 + m;
 //   m7 = m6 + m;
 //   mm = m7 + m;
-// 
+//
 //   for (i = 0; i < (*n); i++)
 //     {
 //       solve_nonlinear_x[i] = x[i];
 //     }
 // /*
 //   HYBRD(f,n,solve_nonlinear_x,fvec,tol,&maxfev,&ml_mu,&ml_mu,eps,
-// 	m1,&mode,&factor,&nprint,&info,&nfev,mm,&m,solve_nonlinear_wrk,
-// 	&lr,m2,m3,m4,m5,m6);
+//  m1,&mode,&factor,&nprint,&info,&nfev,mm,&m,solve_nonlinear_wrk,
+//  &lr,m2,m3,m4,m5,m6);
 // */
 //   if (info != 1)
 //     {
 //       for (i = 0; i < (*n); i++)
-// 	{
-// 	  solve_nonlinear_x[i] = x[i];
-// 	}
+//  {
+//    solve_nonlinear_x[i] = x[i];
+//  }
 // /*
 //       LMDIF(f2,n,n,solve_nonlinear_x,fvec,tol,tol,&gtol,&maxfev,eps,
-// 	    m1,&mode,&factor,&nprint,&info,&nfev,mm,&m,m2,m3,m4,m5,
-// 	    m6,m7);
+//      m1,&mode,&factor,&nprint,&info,&nfev,mm,&m,m2,m3,m4,m5,
+//      m6,m7);
 // */
 //       printf("dummy, you didn't reactivate the non linear problem solver\n");
 //       if (info == 4)
-// 	{
-// 	  for (i = 0,sum=0; i < (*n); i++)
-// 	    {
-// 	      sum += fvec[i] * fvec[i];
-// 	    }
-// 	  if (sum == 0)
-// 	    info = 3;
-// 	}
-//  
-//      if (info != 1 && info != 2 && info != 3) 
-// 
-// 	{
-// 	  (*status) = FAIL;
-//	  fprintf(stderr,"ELECTRO-F-NONLININT Error in solution of nonlinear system, NSWC code %ld\n",info);
-// 	  return;
-// 	}
+//  {
+//    for (i = 0,sum=0; i < (*n); i++)
+//      {
+//        sum += fvec[i] * fvec[i];
+//      }
+//    if (sum == 0)
+//      info = 3;
+//  }
+//
+//      if (info != 1 && info != 2 && info != 3)
+//
+//  {
+//    (*status) = FAIL;
+//    fprintf(stderr,"ELECTRO-F-NONLININT Error in solution of nonlinear system, NSWC code %ld\n",info);
+//    return;
+//  }
 //     }
 //   for (i = 0; i < (*n); i++)
 //     {
@@ -1863,63 +1852,63 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
  *
  *
  * ABSTRACT  Factors a real matrix A by gaussian elimination (A = L*U).
- *           
+ *
  * ENVIRONMENT  lu_factor(n, a, lu, lda, ipvt, status)
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    int *n;               the order of matrix a
  *    float *a;             the matrix to be factored
  *    int *lda;             leading dimension of a
- *          
- * OUTPUTS  
- *    int *ipvt;	    integer vector of pivot indices
- *    float *lu;	    factorization of A (= L*U)
+ *
+ * OUTPUTS
+ *    int *ipvt;      integer vector of pivot indices
+ *    float *lu;      factorization of A (= L*U)
  *                          if a is not needed, pass a or NULL for lu
  *    int     *status;      SUCCESS or FAIL
- *          
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *    sgefa (NSWC originally from LINPACK)
- *                                    
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
-void lu_factor(int *n, float *a, float *lu, int *lda, 
-		 int *ipvt, int *status)
+void lu_factor(int *n, float *a, float *lu, int *lda,
+     int *ipvt, int *status)
 {
-    int i,j;	/* loop indices */
+    int i,j;  /* loop indices */
     int info;   /* status flag for call */
 
     /********************************************************************
-    *									*
-    * If the matrix lu is passed (not NULL and different than a), the	*
-    * matrix a is copied to lu which is used in the factorization and	*
-    * will contain the results, preserving the contents of a.		*
-    * Otherwise a will contain the results destroying its original	*
-    * contents.								*
-    *									*
+    *                 *
+    * If the matrix lu is passed (not NULL and different than a), the *
+    * matrix a is copied to lu which is used in the factorization and *
+    * will contain the results, preserving the contents of a.   *
+    * Otherwise a will contain the results destroying its original  *
+    * contents.               *
+    *                 *
     ********************************************************************/
     if ((lu != NULL) && (lu != a))
     {
-	for (i = 0; i < (*n); i++)
-	    for (j = 0; j < (*n); j++)
-		lu[i*(*n)+j] = a[i*(*lda)+j];
-	SGEFA(lu, lda, n, ipvt, &info);
-    }	
+  for (i = 0; i < (*n); i++)
+      for (j = 0; j < (*n); j++)
+    lu[i*(*n)+j] = a[i*(*lda)+j];
+  SGEFA(lu, lda, n, ipvt, &info);
+    }
     else
-	SGEFA(a, lda, n, ipvt, &info);
-	
+  SGEFA(a, lda, n, ipvt, &info);
+
 
     /********************************************************************
-    *									*
+    *                 *
     * A nonzero value for info indicates that u(info,info) = 0.0.  This *
-    * is not necessarily an error condition, however it does indicate	*
-    * that using the l*u factorization to solve (sgesl) or to invert	*
-    * (sgedi) will divide by zero.					*
-    *									*
+    * is not necessarily an error condition, however it does indicate *
+    * that using the l*u factorization to solve (sgesl) or to invert  *
+    * (sgedi) will divide by zero.          *
+    *                 *
     ********************************************************************/
-    if (info != 0)   
+    if (info != 0)
     {
       (*status) = FAIL;
       fprintf(stderr,"ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %ld\n",info);
@@ -1936,67 +1925,67 @@ void lu_factor(int *n, float *a, float *lu, int *lda,
  *
  * ABSTRACT  Factors a real matrix A by gaussian elimination (A = L*U).
  *           Returns a condition number.
- *           
+ *
  * ENVIRONMENT  lu_factor_cond(n, a, lu, lda, ipvt, rcond, status)
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    int *n;               the order of matrix a
  *    float *a;             the matrix to be factored
  *    int *lda;             leading dimension of a
- *          
- * OUTPUTS  
- *    int *ipvt;	    integer vector of pivot indices
- *    float *lu;	    factorization of A (= L*U)
+ *
+ * OUTPUTS
+ *    int *ipvt;      integer vector of pivot indices
+ *    float *lu;      factorization of A (= L*U)
  *                          if a is not needed, pass a or NULL for lu
  *    float *rcond          condition number
  *    int *status;      SUCCESS or LUFACTCN
- *          
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *    sgeco (NSWC originally from LINPACK)
- *                                    
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
-void lu_factor_cond(int *n, float *a, float *lu, int *lda, 
-		 int *ipvt, float *rcond, int *status)
+void lu_factor_cond(int *n, float *a, float *lu, int *lda,
+     int *ipvt, float *rcond, int *status)
 {
-    int i,j;	           /* loop indices */
+    int i,j;             /* loop indices */
     static int *z;         /* workspace vector */
     static int old_n = 0;  /* previous value of n used to size z */
     float check;           /* used for doing a check of rcond */
     double condition;      /* used to pass rcond to message */
-    
-        
+
+
     // z is a vector of size n - enlarge if needed
     if(*n > old_n)
       {
-	free(z);
-	z = (int *)malloc(sizeof(int) * *n);
-	old_n = *n; // save largest n
+  free(z);
+  z = (int *)malloc(sizeof(int) * *n);
+  old_n = *n; // save largest n
       }
-    
-    
+
+
     /********************************************************************
-    *									*
-    * If the matrix lu is passed (not NULL and different than a), the	*
-    * matrix a is copied to lu which is used in the factorization and	*
-    * will contain the results, preserving the contents of a.		*
-    * Otherwise a will contain the results destroying its original	*
-    * contents.								*
-    *									*
+    *                 *
+    * If the matrix lu is passed (not NULL and different than a), the *
+    * matrix a is copied to lu which is used in the factorization and *
+    * will contain the results, preserving the contents of a.   *
+    * Otherwise a will contain the results destroying its original  *
+    * contents.               *
+    *                 *
     ********************************************************************/
     if ((lu != NULL) && (lu != a))
     {
-	for (i = 0; i < (*n); i++)
-	    for (j = 0; j < (*n); j++)
-		lu[i*(*n)+j] = a[i*(*lda)+j];
-	SGECO(lu, lda, n, ipvt, rcond, z);
-    }	
+  for (i = 0; i < (*n); i++)
+      for (j = 0; j < (*n); j++)
+    lu[i*(*n)+j] = a[i*(*lda)+j];
+  SGECO(lu, lda, n, ipvt, rcond, z);
+    }
     else
-	SGECO( a, lda, n, ipvt, rcond, z);
-	
+  SGECO( a, lda, n, ipvt, rcond, z);
+
     /********************************************************************
     *                                                                   *
     * What about the rcond condition number?  Here is the recommended   *
@@ -2005,10 +1994,10 @@ void lu_factor_cond(int *n, float *a, float *lu, int *lda,
     * probably not independent of the z value which is discussed in the *
     * NSWC documentation.                                               *
     *                                                                   *
-    ********************************************************************/    
+    ********************************************************************/
 
     check = 1.0 + *rcond;
-    if (check == 1.0)   
+    if (check == 1.0)
     {
       (*status) = FAIL ;
       condition = *rcond;
@@ -2025,63 +2014,63 @@ void lu_factor_cond(int *n, float *a, float *lu, int *lda,
  *
  *
  * ABSTRACT  Factors a real matrix A by gaussian elimination (A = L*U).
- *           
+ *
  * ENVIRONMENT  dlu_factor(n, a, lu, lda, ipvt, status)
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    int *n;               the order of matrix a
  *    double *a;             the matrix to be factored
  *    int *lda;             leading dimension of a
- *          
- * OUTPUTS  
- *    int *ipvt;	    integer vector of pivot indices
- *    double *lu;	    factorization of A (= L*U)
+ *
+ * OUTPUTS
+ *    int *ipvt;      integer vector of pivot indices
+ *    double *lu;     factorization of A (= L*U)
  *                          if a is not needed, pass a or NULL for lu
  *    int     *status;      SUCCESS or FAIL
- *          
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *    dgefa (NSWC originally from LINPACK)
- *                                    
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
-void dlu_factor(int *n, double *a, double *lu, int *lda, 
-		 int *ipvt, int *status)
+void dlu_factor(int *n, double *a, double *lu, int *lda,
+     int *ipvt, int *status)
 {
-    int i,j;	/* loop indices */
+    int i,j;  /* loop indices */
     int info;   /* status flag for call */
 
     /********************************************************************
-    *									*
-    * If the matrix lu is passed (not NULL and different than a), the	*
-    * matrix a is copied to lu which is used in the factorization and	*
-    * will contain the results, preserving the contents of a.		*
-    * Otherwise a will contain the results destroying its original	*
-    * contents.								*
-    *									*
+    *                 *
+    * If the matrix lu is passed (not NULL and different than a), the *
+    * matrix a is copied to lu which is used in the factorization and *
+    * will contain the results, preserving the contents of a.   *
+    * Otherwise a will contain the results destroying its original  *
+    * contents.               *
+    *                 *
     ********************************************************************/
     if ((lu != NULL) && (lu != a))
     {
-	for (i = 0; i < (*n); i++)
-	    for (j = 0; j < (*n); j++)
-		lu[i*(*n)+j] = a[i*(*lda)+j];
-	DGEFA(lu, lda, n, ipvt, &info);
-    }	
+  for (i = 0; i < (*n); i++)
+      for (j = 0; j < (*n); j++)
+    lu[i*(*n)+j] = a[i*(*lda)+j];
+  DGEFA(lu, lda, n, ipvt, &info);
+    }
     else
-	DGEFA(a, lda, n, ipvt, &info);
-	
+  DGEFA(a, lda, n, ipvt, &info);
+
 
     /********************************************************************
-    *									*
+    *                 *
     * A nonzero value for info indicates that u(info,info) = 0.0.  This *
-    * is not necessarily an error condition, however it does indicate	*
-    * that using the l*u factorization to solve (sgesl) or to invert	*
-    * (sgedi) will divide by zero.					*
-    *									*
+    * is not necessarily an error condition, however it does indicate *
+    * that using the l*u factorization to solve (sgesl) or to invert  *
+    * (sgedi) will divide by zero.          *
+    *                 *
     ********************************************************************/
-    if (info != 0)   
+    if (info != 0)
     {
       (*status) = FAIL;
       fprintf(stderr,"ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %ld\n",status);
@@ -2097,54 +2086,54 @@ void dlu_factor(int *n, double *a, double *lu, int *lda,
  *
  *
  * ABSTRACT  Solves the real system A*X=B using the factors computed
- *	     from lu_factor.  
- *           
+ *       from lu_factor.
+ *
  * ENVIRONMENT  lu_solve_linear(n, a, x, b, lda, ipvt, status)
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    int *n;               the order of matrix a
  *    float *a;             lu factored matrix output from lu_factor
  *    float *b;             right hand side vector (a*x=b)
  *    int *lda;             leading dimension of matrix
- *    int *ipvt;	    integer vector of pivot indices from lu_factor
- *          
- * OUTPUTS  
- *    float *x;		    the solution vector 
+ *    int *ipvt;      integer vector of pivot indices from lu_factor
+ *
+ * OUTPUTS
+ *    float *x;       the solution vector
  *                          if b is not needed, pass b or NULL in for x
  *    int     *status;      SUCCESS
- *          
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *    sgesl (NSWC originally from LINPACK)
- *                                    
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 
-void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda, 
-		     int *ipvt, int *status)
+void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda,
+         int *ipvt, int *status)
 {
-    int i;	/* loop indices */
+    int i;  /* loop indices */
     int job=0;  /* indicates to solve a*x=b */
 
     /********************************************************************
-    *									*
-    * If the matrix x is passed (not NULL and different than b), the	*
-    * matrix b is copied to x which will contain the results,		*
-    * preserving the contents of b.  Otherwise b will contain the	*
-    * results destroying its original contents.				*
-    *									*
+    *                 *
+    * If the matrix x is passed (not NULL and different than b), the  *
+    * matrix b is copied to x which will contain the results,   *
+    * preserving the contents of b.  Otherwise b will contain the *
+    * results destroying its original contents.       *
+    *                 *
     ********************************************************************/
     if ((x != NULL) && (x != b))
     {
-	for (i = 0; i < (*n); i++)
-	    x[i] = b[i];
-	SGESL(a, lda, n, ipvt, x, &job);
-    }	
+  for (i = 0; i < (*n); i++)
+      x[i] = b[i];
+  SGESL(a, lda, n, ipvt, x, &job);
+    }
     else
-	SGESL(a, lda, n, ipvt, b, &job);
-	
+  SGESL(a, lda, n, ipvt, b, &job);
+
   (*status) = SUCCESS;
   return;
 }
@@ -2154,54 +2143,54 @@ void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda,
  *
  *
  * ABSTRACT  Solves the real system A*X=B using the factors computed
- *	     from dlu_factor.  
- *           
+ *       from dlu_factor.
+ *
  * ENVIRONMENT  dlu_solve_linear(n, a, x, b, lda, ipvt, status)
- * 
- * INPUTS  
+ *
+ * INPUTS
  *    int *n;               the order of matrix a
  *    double *a;             lu factored matrix output from dlu_factor
  *    double *b;             right hand side vector (a*x=b)
  *    int *lda;             leading dimension of matrix
- *    int *ipvt;	    integer vector of pivot indices from dlu_factor
- *          
- * OUTPUTS  
- *    double *x;		    the solution vector 
+ *    int *ipvt;      integer vector of pivot indices from dlu_factor
+ *
+ * OUTPUTS
+ *    double *x;        the solution vector
  *                          if b is not needed, pass b or NULL in for x
  *    int     *status;      SUCCESS
- *          
- * FUNCTIONS CALLED 
+ *
+ * FUNCTIONS CALLED
  *    dgesl (NSWC originally from LINPACK)
- *                                    
+ *
  * AUTHOR          Jeff Prentice
- *                                                                 
+ *
  * ***********************************************************************
  */
 
 
-void dlu_solve_linear(int *n, double *a, double *x, double *b, int *lda, 
-		     int *ipvt, int *status)
+void dlu_solve_linear(int *n, double *a, double *x, double *b, int *lda,
+         int *ipvt, int *status)
 {
-    int i;	/* loop indices */
+    int i;  /* loop indices */
     int job=0;  /* indicates to solve a*x=b */
 
     /********************************************************************
-    *									*
-    * If the matrix x is passed (not NULL and different than b), the	*
-    * matrix b is copied to x which will contain the results,		*
-    * preserving the contents of b.  Otherwise b will contain the	*
-    * results destroying its original contents.				*
-    *									*
+    *                 *
+    * If the matrix x is passed (not NULL and different than b), the  *
+    * matrix b is copied to x which will contain the results,   *
+    * preserving the contents of b.  Otherwise b will contain the *
+    * results destroying its original contents.       *
+    *                 *
     ********************************************************************/
     if ((x != NULL) && (x != b))
     {
-	for (i = 0; i < (*n); i++)
-	    x[i] = b[i];
-	DGESL(a, lda, n, ipvt, x, &job);
-    }	
+  for (i = 0; i < (*n); i++)
+      x[i] = b[i];
+  DGESL(a, lda, n, ipvt, x, &job);
+    }
     else
-	DGESL(a, lda, n, ipvt, b, &job);
-	
+  DGESL(a, lda, n, ipvt, b, &job);
+
   (*status) = SUCCESS;
   return;
 }
