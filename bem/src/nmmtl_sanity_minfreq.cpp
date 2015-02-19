@@ -1,22 +1,17 @@
-////////////////////////////////////////////////////////////////////
-//
-// file: nmmtl_spout_off
-//
-// Abstract:
-//  this is a function that spouts off if it thinks the conductor dimensions
-//  are to small for giving the accurate AC resistance from the perturbation
-//  technique and the correct inductance based only on the external inductance
-//////////////////////////////////////////////////////////////////////////////
+/*
+ * Prints the minimum frequency for obtaining an accurate AC resistance from the
+ * perturbation technique and the correct inductance based only on the external
+ * inductance with regard to minimum conductor dimensions.
+ */
 
 #include "nmmtl.h"
 
-
-void nmmtl_spout_off(float the_conductivity,
+void nmmtl_sanity_minfreq(float the_conductivity,
          CONTOURS_P signals,
          float top_ground_plane_thickness,
          float bottom_ground_plane_thickness,
-         FILE *output_file1, FILE *output_file2)
-{
+         FILE *output_file1,
+         FILE *output_file2) {
   CONTOURS_P item;
   float minimumDimension = FLT_MAX;
   float minimumFrequency;
@@ -24,18 +19,14 @@ void nmmtl_spout_off(float the_conductivity,
   float minfreq;
   float conductivity = the_conductivity;
 
-  ////////////////////////////////////////
-  // search for the minimum dimension
-  ///////////////////////////////////////
-
+  //search for the minimum dimension
   if (top_ground_plane_thickness < minimumDimension)
     minimumDimension = top_ground_plane_thickness;
   if (bottom_ground_plane_thickness < minimumDimension)
     minimumDimension = bottom_ground_plane_thickness;
 
-
   for (item = signals; item != NULL; item = item->next) {
-    if ( item->conductivity != 0.0 )
+    if (item->conductivity != 0.0)
       conductivity = item->conductivity;
 
     switch (item->primitive) {
@@ -44,8 +35,8 @@ void nmmtl_spout_off(float the_conductivity,
         minimumDimension = item->y1 - item->y0;
       break;
     case CIRCLE:
-      if ((2 * item->x1) < minimumDimension)
-        minimumDimension = 2 * item->x1;
+      if ((2. * item->x1) < minimumDimension)
+        minimumDimension = 2. * item->x1;
       break;
     case POLYGON:
       if ((item->y1 - item->y0) < minimumDimension)
@@ -54,14 +45,11 @@ void nmmtl_spout_off(float the_conductivity,
     }
   }
 
-  ///////////////////////////////
-  // Write out messages.
-  ///////////////////////////////
-
+  //write out messages.
   tmp =  PI * minimumDimension / 10.;
-  minimumFrequency = 1.0 / (4.0e-7 * conductivity * pow(tmp,2));
-  minfreq = minimumFrequency/1e6 + 1.0 ;
-  printf ("%ld MHz is the minimum frequency for the surface current assumptions for this cross section\n", minfreq);
+  minimumFrequency = 1.0 / (4.0e-7 * conductivity * pow(tmp, 2));
+  minfreq = minimumFrequency/1e6 + 1.0;
+  printf ("%g MHz is the minimum frequency for the surface current assumptions for this cross section\n", minfreq);
   if (output_file1 != NULL)
     fprintf(output_file1,"Note: minimum frequency for surface current assumptions is %d MHz.", minfreq);
   if (output_file2 != NULL)

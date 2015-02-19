@@ -57,7 +57,6 @@ int main(int argc, char **argv) {
   float risetime; /* signal risetime (icon attr.) */
   float conductivity; /* conductivity or converted surface */
                       /* resistance (icon attr.) */
-  float frequency; /* icon attr. */
   int gnd_planes; /* # ground planes in file (1 or 2 needed) */
   float top_ground_plane_thickness; /* icon attr. */
   float bottom_ground_plane_thickness; /* icon attr. */
@@ -215,8 +214,8 @@ int main(int argc, char **argv) {
 
     printf ("filename: %s\ncntr_seg: %d  pln_seg: %d  coupling: %g\n",
       filename, cntr_seg, pln_seg, coupling);
-    printf ("risetime: %g  conductivity: %g  frequency: %g\n",
-      risetime, conductivity, frequency);
+    printf ("risetime: %g  conductivity: %g\n",
+      risetime, conductivity);
     printf ("half_min_dim: %g  grnd_planes: %d  top_grnd_thck: %d\n",
       half_minimum_dimension, gnd_planes, top_ground_plane_thickness);
     printf ("bot_grnd_thck: %g  num_sig: %d  num_grounds: %d\n",
@@ -228,7 +227,7 @@ int main(int argc, char **argv) {
 
     /* - - - - - - - -  dump the geometry as read in  - - - - - - - - - */
     nmmtl_dump_geometry(cntr_seg, pln_seg, coupling, risetime, conductivity,
-      frequency, half_minimum_dimension,
+      half_minimum_dimension,
       gnd_planes, top_ground_plane_thickness,
       bottom_ground_plane_thickness, dielectrics,signals,
       groundwires);
@@ -288,9 +287,13 @@ int main(int argc, char **argv) {
          bottom_ground_plane_thickness);
   }
 
-  /* --------------- warn the user if the frequency is too low ------------- */
-  nmmtl_spout_off(conductivity,signals,top_ground_plane_thickness,
-      bottom_ground_plane_thickness,output_file1,output_file2);
+  //-- Sanity Check ------------------------------------------------------------
+  //minimum frequency for valid computation
+  nmmtl_sanity_minfreq(conductivity,
+                       signals,
+                       top_ground_plane_thickness,
+                       bottom_ground_plane_thickness,
+                       output_file1, output_file2);
 
   /* - - - - - - - - Calculate the Quasi-static Parameters - - - - - - - - */
   status = nmmtl_qsp_calculate(dielectrics,signals,groundwires,

@@ -25,21 +25,7 @@
 
 #include "nmmtl.h"
 
-/*
- *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
+
 /*
  *******************************************************************
  **  GLOBALS
@@ -52,16 +38,10 @@ extern FILE *dump_file;
 
 /*
  *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
-/*
- *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME: nmmtl_dump_geometry
@@ -79,7 +59,6 @@ extern FILE *dump_file;
   float coupling
   float risetime
   float conductivity
-  float frequency
   float half_minimum_dimension
   int gnd_planes
   float top_ground_plane_thickness
@@ -89,37 +68,36 @@ extern FILE *dump_file;
   struct contour *groundwires
 
   */
-void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
-       float coupling,float risetime,
-       float the_conductivity,float frequency,
-       float half_minimum_dimension,
-       int gnd_planes,
-       float top_ground_plane_thickness,
-       float bottom_ground_plane_thickness,
-       struct dielectric *dielectrics,
-       struct contour *signals,
-       struct contour *groundwires) {
+void nmmtl_dump_geometry(int cntr_seg,
+                         int pln_seg,
+                         float coupling,
+                         float risetime,
+                         float the_conductivity,
+                         float half_minimum_dimension,
+                         int gnd_planes,
+                         float top_ground_plane_thickness,
+                         float bottom_ground_plane_thickness,
+                         struct dielectric *dielectrics,
+                         struct contour *signals,
+                         struct contour *groundwires) {
   float conductivity = the_conductivity;
 
   fprintf(dump_file,"\n\n\t\tDUMP OF GEOMETRY\n\n");
   fprintf(dump_file,
     "cntr_seg=%d, pln_seg=%d, coupling=%g, risetime=%g\n",
     cntr_seg,pln_seg,coupling,risetime);
-  fprintf(dump_file,"conductivity=%g, frequency=%g, half min dim=%g\n",
-    conductivity,frequency,half_minimum_dimension);
+  fprintf(dump_file,"conductivity=%g, half min dim=%g\n",
+    conductivity, half_minimum_dimension);
   fprintf(dump_file,
     "%d ground planes, top thickness=%g, bottom thickness=%g\n\n",
     gnd_planes,top_ground_plane_thickness,bottom_ground_plane_thickness);
 
   fprintf(dump_file,"SIGNAL CONDUCTORS:\n\n");
-  for(;signals != NULL;signals = signals->next)
-  {
+  for(;signals != NULL;signals = signals->next) {
+    if (signals->conductivity != 0.0)
+      conductivity = signals->conductivity;
 
-      if ( signals->conductivity != 0.0 )
-  conductivity = signals->conductivity;
-
-     switch(signals->primitive)
-    {
+    switch(signals->primitive) {
     case RECTANGLE :
       nmmtl_dump_rectangle(signals);
       break;
@@ -135,10 +113,8 @@ void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
   fprintf(dump_file,"\n");
 
   fprintf(dump_file,"GROUND CONDUCTORS:\n\n");
-  for(;groundwires != NULL;groundwires = groundwires->next)
-  {
-    switch(groundwires->primitive)
-    {
+  for(;groundwires != NULL;groundwires = groundwires->next) {
+    switch(groundwires->primitive) {
     case RECTANGLE :
       nmmtl_dump_rectangle(groundwires);
       break;
@@ -154,8 +130,7 @@ void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
   fprintf(dump_file,"\n");
 
   fprintf(dump_file,"DIELECTRICS:\n\n");
-  for (struct dielectric *die = dielectrics; die != NULL; die = die->next)
-  {
+  for (struct dielectric *die = dielectrics; die != NULL; die = die->next) {
     fprintf(dump_file,"\tlow left = (%g,%g), up right = (%g,%g)\n",
       die->x0,
       die->y0,die->x1,die->y1);
@@ -163,11 +138,9 @@ void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
       die->tangent);
   }
   fprintf(dump_file,"\n");
-
 }
 
 
-
 /*
 
   FUNCTION NAME:  nmmtl_dump_polygon

@@ -6,7 +6,7 @@ enable_language(CXX)
 
 
 # g++
-set (CMAKE_CXX_FLAGS_RELEASE "-Wunused -Werror")
+#set (CMAKE_CXX_FLAGS_RELEASE "-Wunused -Werror -Wuninitialized")
 #set (CMAKE_CXX_FLAGS_RELEASE "-Wconversion")
 #set (CMAKE_CXX_FLAGS_DEBUG "-Wextra")
 

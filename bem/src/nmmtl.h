@@ -102,7 +102,6 @@
 #define DEFAULT_RISETIME 1000.0L  /* risetime if icon attribute not used */
 #define DEFAULT_COUPLING 1.0L  /* coupling len if icon attribute not used */
 
-#define DEFAULT_FREQUENCY 100.0L   /* frequency if icon attribute not used */
 #define DEFAULT_CONDUCTIVITY 5.8e7L /* mho/meter for Copper */
 #define DEFAULT_GND_THICK 2.54e-5L /* default ground plane thickness meters */
 
@@ -134,8 +133,8 @@ extern const float INFINITE_SLOPE;
 
 /* UNITS Conversions constants */
 
-#define MILS_TO_METERS     2.54e-5L
-#define INCHES_TO_METERS   2.54e-2L
+#define MILS_TO_METERS     2.54e-5
+#define INCHES_TO_METERS   2.54e-2
 
 /* which end of segments are you dealing with */
 
@@ -747,9 +746,11 @@ void nmmtl_dump_polygon(CONTOURS_P contour);
 
 void nmmtl_dump_circle(CONTOURS_P contour);
 
-void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
-                         float coupling,float risetime,
-                         float conductivity,float frequency,
+void nmmtl_dump_geometry(int cntr_seg,
+                         int pln_seg,
+                         float coupling,
+                         float risetime,
+                         float conductivity,
                          float half_minimum_dimension,
                          int gnd_planes,
                          float top_ground_plane_thickness,
@@ -1190,7 +1191,7 @@ void nmmtl_sort_gnd_die_list(GND_DIE_LIST_P lower_gdl_head,
            SORTED_GND_DIE_LIST_P *upper_sorted_gdl,
            double left, double right);
 
-void nmmtl_spout_off(float conductivity,
+void nmmtl_sanity_minfreq(float conductivity,
          CONTOURS_P signals,
          float top_ground_plane_thickness,
          float bottom_ground_plane_thickness,

@@ -206,17 +206,12 @@ int nmmtl_parse_xsctn(char *filename,
   //-----------------------------------------------
   // Loss-tangent not used for the calculations.
   //-----------------------------------------------
-  printf ("*********************************************************************\n");
-  printf ("* Warning: lossTangent not used in this simulation!\n");
-  printf ("*********************************************************************\n");
+  printf ("Warning: lossTangent not used in this simulation!\n");
 
-  if ( ! (inpf = fopen (fullfilespec, "r") ) )
-    {
-      printf ("*********************************************************************\n");
-      printf ("* ERROR: Could not open the cross-section file %s\n", fullfilespec);
-      printf ("*********************************************************************\n");
-      return (FAIL);
-    }
+  if ( ! (inpf = fopen (fullfilespec, "r") ) ) {
+    printf ("* ERROR: Could not open the cross-section file %s\n", fullfilespec);
+    return (FAIL);
+  }
 
   double dbl;
   char tmp[100], defaultUnits[20];
@@ -224,33 +219,30 @@ int nmmtl_parse_xsctn(char *filename,
   char arg2[30];
   int tmp_cntr_seg, tmp_pln_seg;
 
-  while ( 1 )
-    {
-      if ( fgets (line, GPGE_MAX, inpf) == NULL )
-  {
+  while (1) {
+    if ( fgets (line, GPGE_MAX, inpf) == NULL ) {
     printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
     return 0;
   }
-      if ( line[0] == '#' )
-  continue;
+  if ( line[0] == '#' )
+    continue;
 
-      if ( strlen(line) < 3 )
-  continue;
-      if ( strstr (line, "ackage") != NULL )
-  continue;
+  if ( strlen(line) < 3 )
+    continue;
+  if ( strstr (line, "ackage") != NULL )
+    continue;
 
-      if ( (! strncmp (line, "Gro", 3)) ||
-     (! strncmp (line, "Die", 3)) ||
-     (! strncmp (line, "Rec", 3)) ||
-     (! strncmp (line, "Cir", 3)) ||
-     (! strncmp (line, "Tra", 3)) )
-  break;
+  if ( (! strncmp (line, "Gro", 3)) ||
+  (! strncmp (line, "Die", 3)) ||
+  (! strncmp (line, "Rec", 3)) ||
+  (! strncmp (line, "Cir", 3)) ||
+  (! strncmp (line, "Tra", 3)) )
+    break;
 
-      if ( strncmp (line, "set", 3) )
-  continue;
+  if ( strncmp (line, "set", 3) )
+    continue;
 
-      if ( strstr (line, "couplingLen") != NULL )
-  {
+  if ( strstr (line, "couplingLen") != NULL ) {
     parseVal (line, 0, tmp);
     if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
       strcat (tmp, "meters");

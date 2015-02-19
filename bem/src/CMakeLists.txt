@@ -106,10 +106,10 @@ add_executable(${PROJECT_NAME} nmmtl.cpp
   nmmtl_qsp_calculate.cpp
   nmmtl_qsp_kernel.cpp
   nmmtl_retrieve.cpp
+  nmmtl_sanity_minfreq.cpp
   nmmtl_set_offset.cpp
   nmmtl_shape.cpp
   nmmtl_sort_gnd_die_list.cpp
-  nmmtl_spout_off.cpp
   nmmtl_unload.cpp
   nmmtl_write_plot_data.cpp
   nmmtl_xtk_calculate.cpp
