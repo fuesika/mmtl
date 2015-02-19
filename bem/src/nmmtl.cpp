@@ -40,10 +40,7 @@
 #include <limits.h>
 #include <string.h>
 
-
-//#include "node_database.h"
 #include "magicad.h"
-#include "list.h"
 #include "nmmtl.h"
 
 #include "dim.h"
