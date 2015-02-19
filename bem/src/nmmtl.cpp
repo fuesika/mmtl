@@ -114,7 +114,6 @@ int main(int argc, char **argv) {
   char ele_dmp_filename[PATH_MAX];
   FILE *retrieval_file;
 
-  //  extern void nmmtl_fpe_handler(void *);
   int iop = 0;
 
   /* - - - - - - - - - -  INITIALIZATIONS - - - - - - - - - - - - - - - - */
@@ -128,29 +127,38 @@ int main(int argc, char **argv) {
   //////////////////////////////////////////////////////////////
   // Get the input and output file names from the command-line.
   //////////////////////////////////////////////////////////////
-  while (--argc > 0) {
-    iop++;
-    if (iop == 1) {
-      strcpy (filename, argv[1]);
-    } else if (iop == 2) {
-      sscanf (argv[2], "%d", &cntr_seg);
-    } else if (iop == 3) {
-      sscanf (argv[3],"%d", &pln_seg);
-    } else if (iop == 4) {
-      strcpy (ele_dmp_filename, argv[4]);
-      element_dump = 1;
+  for (int ii = 0; ii < argc; ii++) {
+    switch (ii) {
+      case 0:
+        break;
+      case 1:
+        strcpy(filename, argv[1]);
+        break;
+      case 2:
+        sscanf(argv[2], "%d", &cntr_seg);
+        break;
+      case 3:
+        sscanf(argv[3],"%d", &pln_seg);
+        break;
+      case 4:
+        strcpy(ele_dmp_filename, argv[4]);
+        element_dump = 1;
+        break;
+      default:
+        printf("ERROR: list of input arguments too long.\n\n");
     }
   }
 
-  if (iop < 1) {
-    printf ("No filename on command line!\n");
-    printf ("nmmtl.exe <filename> <c-seg> <p-seg>\n");
-    printf ("<filename> - name of the graphic file\n");
-    printf ("<c-seg>    - number of contour segments\n");
-    printf ("<p-seg>    - number of plane/dielectric segments\n");
-    exit (0);
+  if ((argc < 2) || (argc > 5)) {
+    printf ("MMTL_BEM is a tool for the characterization of transmission line cross-sections.\n\n");
+    printf ("usage: mmtl_bem geometry_fname [c_seg] [p_seg] [dump_fname]\n\n");
+    printf ("Without further options, MMTL_BEM prints this help and exists.\n\n");
+    printf ("  geometry_fname   geometry specification filename\n");
+    printf ("  c_seg            number of contour segments (optional)\n");
+    printf ("  p_seg            number of plane/dielectric segments (optional)\n");
+    printf ("  dump_fname       verbose output specification filename (optional)\n");
+    return 0;
   }
-
 
   sprintf (filespec, "%s.dump", filename);
   printf ("Dump file of %s\n", filespec);
@@ -366,8 +374,3 @@ int main(int argc, char **argv) {
   printf ("\nMMTL is done\n");
   return 0;
 }
-
-
-
-
-
