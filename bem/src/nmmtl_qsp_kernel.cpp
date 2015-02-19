@@ -155,7 +155,8 @@ int nmmtl_qsp_kernel(int conductor_counter,
   int status;
   int int_status;
   int matrix_order;
-  int i,j;
+  unsigned int i;
+  unsigned int j;
   float **electrostatic_induction_free_space;
   char msg[256];
   char asmsg1[512],asmsg2[512]; /* strings for asymmetry messages */
@@ -198,10 +199,8 @@ int nmmtl_qsp_kernel(int conductor_counter,
   nmmtl_assemble_free_space(conductor_counter,conductor_data,assemble_matrix);
 
 #ifdef TRANSPOSE_ASSEMBLE
-  for(i = 0; i<conductor_counter; i++)
-  {
-    for(j = i+1; j<conductor_counter; j++)
-    {
+  for(i = 0; i<conductor_counter; i++) {
+    for(j = i+1; j<conductor_counter; j++) {
       static float temp;
       temp = assemble_matrix[i][j];
       assemble_matrix[i][j] = assemble_matrix[j][i];
@@ -538,9 +537,9 @@ int nmmtl_qsp_kernel(int conductor_counter,
 
   /* zero out portion of the matrix that was used above */
 
-  for(i=0;i <= highest_conductor_node;i++)
-    for(j=0;j <= highest_conductor_node;j++)
-      assemble_matrix[i][j] = 0.0;
+  for (i = 0; i <= highest_conductor_node;i++)
+    for (j=0;j <= highest_conductor_node;j++)
+      assemble_matrix[i][j] = 0.;
 
   printf ("Calculate LHS (assemble) matrix in dielectric\n");
 
@@ -548,10 +547,8 @@ int nmmtl_qsp_kernel(int conductor_counter,
      length_scale,assemble_matrix);
 
 #ifdef TRANSPOSE_ASSEMBLE
-  for(i = 0; i < node_point_counter; i++)
-  {
-    for(j = i+1; j < node_point_counter; j++)
-    {
+  for(i = 0; i < node_point_counter; i++) {
+    for(j = i+1; j < node_point_counter; j++) {
       static float temp;
       temp = assemble_matrix[i][j];
       assemble_matrix[i][j] = assemble_matrix[j][i];

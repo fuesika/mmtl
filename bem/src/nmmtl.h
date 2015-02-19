@@ -413,7 +413,8 @@ typedef struct celements
 {
   struct celements *next;
   EDGEDATA_P edge[2];
-  double xpts[INTERP_PTS],ypts[INTERP_PTS];
+  double xpts[INTERP_PTS];
+  double ypts[INTERP_PTS];
   float epsilon;
   int node[INTERP_PTS];
 
@@ -421,26 +422,22 @@ typedef struct celements
 
 /* the head of the conductor element lists - will be used in an array */
 
-typedef struct conductor_data
-{
+typedef struct conductor_data {
   CELEMENTS_P elements;
-  int node_start, node_end;
-
+  unsigned int node_start;
+  unsigned int node_end;
 } CONDUCTOR_DATA, *CONDUCTOR_DATA_P;
-
 
 
 /*
   Point
 
   A simple point structure - good for intersections, etc
-
   */
 
-typedef struct point
-{
-  double x,y;
-
+typedef struct point {
+  double x;
+  double y;
 } POINT, *POINT_P;
 
 
@@ -448,13 +445,11 @@ typedef struct point
   LineSegments
 
   A simple line segment
-
   */
 
-typedef struct linesegment
-{
-  double x[2],y[2];
-
+typedef struct linesegment {
+  double x[2];
+  double y[2];
 } LINESEG, *LINESEG_P;
 
 
@@ -462,14 +457,11 @@ typedef struct linesegment
   Arc
 
   A simple arc
-
   */
 
-typedef struct arc
-{
+typedef struct arc{
   double center_x,center_y,radius;
   double start_angle, end_angle;
-
 }  ARC, *ARC_P;
 
 

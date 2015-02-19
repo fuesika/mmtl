@@ -1,21 +1,15 @@
-
 /*
-
-  FACILITY:  NMMTL
-
-  MODULE DESCRIPTION:
-
-  Contains the function nmmtl_retrieve
-
-  AUTHOR(S):
-
-  Kevin J. Buchs
-
-  CREATION DATE:  Mon Jun  1 15:21:29 1992
-
-  COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
-
-  */
+ * FACILITY
+ *    NMMTL
+ * MODULE DESCRIPTION
+ *    Contains the function nmmtl_retrieve
+ * AUTHOR(S):
+ *    Kevin J. Buchs
+ * CREATION DATE
+ *    Mon Jun  1 15:21:29 1992
+ * COPYRIGHT
+ *    Copyright (C) 1992 by Mayo Foundation. All rights reserved.
+*/
 
 
 /*
@@ -34,38 +28,27 @@
  */
 
 /*
-
-  FUNCTION NAME:  nmmtl_retrieve
-
-
-  FUNCTIONAL DESCRIPTION:
-
-  Retreive data from a dump file of conductor and dielectric elements.
-
-  FORMAL PARAMETERS:
-
-  FILE *retrieve_file                - where to write dumpy things to.
-  int *cntr_seg,                     - cseg parameter
-  int *pln_seg,                      - dseg parameter
-  float *coupling                    - coupling length
-  float *risetime                    - risetime
-  struct contour **psignals          - signals data structure
-  int *pconductor_counter,           - how many conductors (gnd not included)
-  CONDUCTOR_DATA_P *pconductor_data, - array of data on conductors
-  DELEMENTS_P *pdie_elements         - list of dielectric elements
-  unsigned int *pnode_point_counter           - highest node number
-  unsigned int *phighest_conductor_node       - highest node for a conductor
-
-  RETURN VALUE:
-
-  SUCCESS, or FAIL
-
-  CALLING SEQUENCE:
-
-  status =
-  nmmtl_retrieve(retrieve_file,conductor_counter,cd,*die_elements);
-
-  */
+ * FUNCTION NAME
+ *    nmmtl_retrieve
+ * FUNCTIONAL DESCRIPTION:
+ *    Retrieve data from a dump file of conductor and dielectric elements.
+ * FORMAL PARAMETERS:
+ *    FILE *retrieve_file                - where to write dumpy things to.
+ *    int *cntr_seg,                     - cseg parameter
+ *    int *pln_seg,                      - dseg parameter
+ *    float *coupling                    - coupling length
+ *    float *risetime                    - risetime
+ *    struct contour **psignals          - signals data structure
+ *    int *pconductor_counter,           - how many conductors (gnd not included)
+ *    CONDUCTOR_DATA_P *pconductor_data, - array of data on conductors
+ *    DELEMENTS_P *pdie_elements         - list of dielectric elements
+ *    unsigned int *pnode_point_counter           - highest node number
+ *    unsigned int *phighest_conductor_node       - highest node for a conductor
+ * RETURN VALUE:
+ *    SUCCESS, or FAIL
+ * CALLING SEQUENCE:
+ *    status = nmmtl_retrieve(retrieve_file,conductor_counter,cd,*die_elements);
+*/
 
 int nmmtl_retrieve(FILE *retrieve_file,
              int *cntr_seg,
@@ -181,67 +164,67 @@ int nmmtl_retrieve(FILE *retrieve_file,
       while(line[i] != ' ') i++;
       i++;
 
-      if(edge0)
-      {
-
-  ce->edge[0] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
-  sscanf(&line[i],"%f %f",&ce->edge[0]->nu,
-         &ce->edge[0]->free_space_nu);
-  /* skip these two fields */
-  while(line[i] != ' ') i++;
-  i++;
-  while(line[i] != ' ') i++;
-  i++;
+      if (edge0) {
+        ce->edge[0] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
+        sscanf(&line[i],"%f %f",&ce->edge[0]->nu,
+               &ce->edge[0]->free_space_nu);
+        /* skip these two fields */
+        while(line[i] != ' ') i++;
+        i++;
+        while(line[i] != ' ') i++;
+        i++;
       }
-      if(edge1)
-      {
+      if (edge1) {
 
-  ce->edge[1] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
-  sscanf(&line[i],"%f %f",&ce->edge[1]->nu,
-         &ce->edge[1]->free_space_nu);
-  /* skip these two fields */
-  while(line[i] != ' ') i++;
-  i++;
-  while(line[i] != ' ') i++;
-  i++;
+        ce->edge[1] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
+        sscanf(&line[i],"%f %f",&ce->edge[1]->nu,
+               &ce->edge[1]->free_space_nu);
+        /* skip these two fields */
+        while(line[i] != ' ') i++;
+        i++;
+        while(line[i] != ' ') i++;
+        i++;
       }
-      for(i = 0; i < 3; i++)
-      {
-  if(fscanf(retrieve_file,"%d %f %f\n",&ce->node[i],
-      &ce->xpts[i],&ce->ypts[i]) != 3) return(FAIL);
-
+      for(i = 0; i < 3; i++) {
+        if (fscanf(retrieve_file, "%d %lf %lf\n", &ce->node[i],
+                                                &ce->xpts[i],
+                                                &ce->ypts[i]) != 3) {
+          return(FAIL);
+        }
       }
-      if(fgets(line,255,retrieve_file) == NULL) return(FAIL);
+      if(fgets(line,255,retrieve_file) == NULL)
+        return(FAIL);
     }
   }
 
 
   if(fgets(line,255,retrieve_file) == NULL) return(FAIL);
-  while(line[0] != '.')
-  {
-    if(*pdie_elements == NULL)
-    {
+  while(line[0] != '.') {
+    if(*pdie_elements == NULL){
       die_elements = (DELEMENTS_P)malloc(sizeof(DELEMENTS));
       *pdie_elements = die_elements;
-    }
-    else
-    {
+    } else {
       die_elements->next = (DELEMENTS_P)malloc(sizeof(DELEMENTS));
       die_elements = die_elements->next;
     }
 
     die_elements->next = NULL;
-    if(sscanf(line,"%f %f %f %f\n",
-        &die_elements->epsilonplus,&die_elements->epsilonminus,
-        &die_elements->normalx,&die_elements->normaly) != 4)
+    if(sscanf(line,
+              "%f %f %f %f\n",
+              &die_elements->epsilonplus,
+              &die_elements->epsilonminus,
+              &die_elements->normalx,
+              &die_elements->normaly) != 4) {
       return(FAIL);
-
-    for(i = 0; i < 3; i++)
-    {
-      fscanf(retrieve_file,"%d %f %f\n",&die_elements->node[i],
-       &die_elements->xpts[i],&die_elements->ypts[i]);
     }
-    if(fgets(line,255,retrieve_file) == NULL) return(FAIL);
+
+    for(i = 0; i < 3; i++) {
+      fscanf(retrieve_file,"%d %lf %lf\n", &die_elements->node[i],
+                                           &die_elements->xpts[i],
+                                           &die_elements->ypts[i]);
+    }
+    if(fgets(line, 255, retrieve_file) == NULL)
+      return(FAIL);
   }
   return(SUCCESS);
 }

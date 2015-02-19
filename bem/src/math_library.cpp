@@ -143,7 +143,7 @@ void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
   FFT(c, n, &sign, &ierr);
   if (ierr != 0) {
     (*status) = FAIL;
-    fprintf(stderr,"ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %ld.\n",ierr);
+    fprintf(stderr, "ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %d.\n", ierr);
     return;
   }
   (*status) = SUCCESS;
@@ -187,39 +187,30 @@ void c_fft(int *n, COMPLEX *a, COMPLEX *c, int *status) {
  * ***********************************************************************
  */
 
-/* inverse of fft */
+/* inverse of fft
+ * Note: this function operates in-place. Copy the data before calling the
+ * Fortran routine, if the original data is to be kept.
+ */
+void c_fft_inv(int *n,COMPLEX *a,COMPLEX *c,int *status) {
+  int ierr;                 // return status of the fft routine
+  int i;                    // loop index
+  int sign = 1;             // sign of the exponent used in the transform
 
-void c_fft_inv(int *n,COMPLEX *a,COMPLEX *c,int *status)
-
-/* the values pointed to by c will become the transform, it is necessary
-*  to copy the data before the transform if the original data is to be kept
-*/
-
-
-{
-  int ierr;                 /* indicates return status of the fft routine */
-  int i;                    /* A LOOP VARIABLE */
-  int sign = 1;             /* determines the sign of the eponent used in
-                            *  calculating the transform
-          */
-
-/* clear the error flag */
+  //initialize error flag
   ierr = 0;
-  for (i = 0; i < (*n); i++)
-    {
-      c[i] = a[i];
-    }
-  FFT(c,n,&sign,&ierr);
-  if (ierr != 0)
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %ld.\n",ierr);
-      return;
-    }
+  for (i = 0; i < (*n); i++) {
+    c[i] = a[i];
+  }
+  FFT(c, n, &sign, &ierr);
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-FFTINT Fast Fourier Transform Faileds with code %d.\n", ierr);
+    return;
+  }
   (*status) = SUCCESS;
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME c_set_calc_eigenvalues
  *
@@ -728,23 +719,20 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
          NSWC page 211
       */
 
-  if ((*n) > n_c_init_invert_matrix)
-    {
-      c_set_invert_matrix(n);
-      c_init_invert_matrix(status);
-    }
+  if ((*n) > n_c_init_invert_matrix) {
+    c_set_invert_matrix(n);
+    c_init_invert_matrix(status);
+  }
 
 
 
 /* first copy a to b */
 
-  for (i = 0; i < (*n); i++)
-    {
-      for (j = 0; j < (*n); j++)
-  {
-    b[i*(*ldb)+j] = a[i*(*lda)+j];
-  }
+  for (i = 0; i < (*n); i++) {
+    for (j = 0; j < (*n); j++) {
+      b[i*(*ldb)+j] = a[i*(*lda)+j];
     }
+  }
 
   CMSLV1(&calc_inv, n, &zero_dim,
       b, ldb, a,
@@ -753,17 +741,16 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
       c_invert_matrix_ipvt,
       c_invert_matrix_wrk);
 
-  if (ierr != 0)
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
-      return;
-    }
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
+    return;
+  }
 
   (*status) = SUCCESS;
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME set_invert_matrix
  *
@@ -950,7 +937,7 @@ void invert_matrix(int *n,float *a,float *b,
   if (ierr != 0)
     {
       (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
+      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
       return;
     }
 
@@ -1036,7 +1023,7 @@ void invert_matrix_cond(int *n,float *a,float *b,
   if (ierr != 0)
     {
       (*status) = FAIL ;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
+      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
       return;
     }
 
@@ -1045,7 +1032,7 @@ void invert_matrix_cond(int *n,float *a,float *b,
 }
 
 
-
+
 /* ***********************************************************************
  * ROUTINE NAME d_set_invert_matrix
  *
@@ -1233,7 +1220,7 @@ void d_invert_matrix(int *n,double *a,double *b,
   if (ierr != 0)
     {
       (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %ld\n",ierr);
+      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
       return;
     }
 
@@ -1241,7 +1228,7 @@ void d_invert_matrix(int *n,double *a,double *b,
   return;
 }
 
-
+
 /* ***********************************************************************
  * ROUTINE NAME c_set_solve_linear
  *
@@ -1388,7 +1375,7 @@ void c_solve_linear(int *n, COMPLEX *a, COMPLEX *b,
 
   if (ierr != 0) {
     (*status) = FAIL;
-    fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld\n",ierr);
+    fprintf(stderr, "ELECTRO-F-LININT Error in solution of linear system, NSWC code %d\n", ierr);
     return;
   }
 
@@ -1595,7 +1582,7 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 
   if (ierr != 0) {
     (*status) = FAIL;
-    fprintf(stderr,"ELECTRO-F-LININT Error in solution of linear system, NSWC code %ld",ierr);
+    fprintf(stderr, "ELECTRO-F-LININT Error in solution of linear system, NSWC code %d", ierr);
     return;
   }
 
@@ -1876,50 +1863,46 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
  */
 
 void lu_factor(int *n, float *a, float *lu, int *lda,
-     int *ipvt, int *status)
-{
-    int i,j;  /* loop indices */
-    int info;   /* status flag for call */
+     int *ipvt, int *status) {
+  int i,j;  /* loop indices */
+  int info;   /* status flag for call */
 
-    /********************************************************************
-    *                 *
-    * If the matrix lu is passed (not NULL and different than a), the *
-    * matrix a is copied to lu which is used in the factorization and *
-    * will contain the results, preserving the contents of a.   *
-    * Otherwise a will contain the results destroying its original  *
-    * contents.               *
-    *                 *
-    ********************************************************************/
-    if ((lu != NULL) && (lu != a))
-    {
-  for (i = 0; i < (*n); i++)
+  /********************************************************************
+  *                 *
+  * If the matrix lu is passed (not NULL and different than a), the *
+  * matrix a is copied to lu which is used in the factorization and *
+  * will contain the results, preserving the contents of a.   *
+  * Otherwise a will contain the results destroying its original  *
+  * contents.               *
+  *                 *
+  ********************************************************************/
+  if ((lu != NULL) && (lu != a)) {
+    for (i = 0; i < (*n); i++)
       for (j = 0; j < (*n); j++)
-    lu[i*(*n)+j] = a[i*(*lda)+j];
-  SGEFA(lu, lda, n, ipvt, &info);
-    }
-    else
-  SGEFA(a, lda, n, ipvt, &info);
+        lu[i*(*n)+j] = a[i*(*lda)+j];
+    SGEFA(lu, lda, n, ipvt, &info);
+  } else {
+    SGEFA(a, lda, n, ipvt, &info);
+  }
 
-
-    /********************************************************************
-    *                 *
-    * A nonzero value for info indicates that u(info,info) = 0.0.  This *
-    * is not necessarily an error condition, however it does indicate *
-    * that using the l*u factorization to solve (sgesl) or to invert  *
-    * (sgedi) will divide by zero.          *
-    *                 *
-    ********************************************************************/
-    if (info != 0)
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %ld\n",info);
-      return;
-    }
+  /********************************************************************
+  *                 *
+  * A nonzero value for info indicates that u(info,info) = 0.0.  This *
+  * is not necessarily an error condition, however it does indicate *
+  * that using the l*u factorization to solve (sgesl) or to invert  *
+  * (sgedi) will divide by zero.          *
+  *                 *
+  ********************************************************************/
+  if (info != 0) {
+    (*status) = FAIL;
+    fprintf(stderr, "ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %d\n", info);
+    return;
+  }
 
   (*status) = SUCCESS;
   return;
 }
-// 
+
 /* ***********************************************************************
  * ROUTINE NAME lu_factor_cond
  *
@@ -2038,50 +2021,46 @@ void lu_factor_cond(int *n, float *a, float *lu, int *lda,
  */
 
 void dlu_factor(int *n, double *a, double *lu, int *lda,
-     int *ipvt, int *status)
-{
-    int i,j;  /* loop indices */
-    int info;   /* status flag for call */
+     int *ipvt, int *status) {
+  int i,j;  /* loop indices */
+  int info;   /* status flag for call */
 
-    /********************************************************************
-    *                 *
-    * If the matrix lu is passed (not NULL and different than a), the *
-    * matrix a is copied to lu which is used in the factorization and *
-    * will contain the results, preserving the contents of a.   *
-    * Otherwise a will contain the results destroying its original  *
-    * contents.               *
-    *                 *
-    ********************************************************************/
-    if ((lu != NULL) && (lu != a))
-    {
-  for (i = 0; i < (*n); i++)
+  /********************************************************************
+  *                 *
+  * If the matrix lu is passed (not NULL and different than a), the *
+  * matrix a is copied to lu which is used in the factorization and *
+  * will contain the results, preserving the contents of a.   *
+  * Otherwise a will contain the results destroying its original  *
+  * contents.               *
+  *                 *
+  ********************************************************************/
+  if ((lu != NULL) && (lu != a)) {
+    for (i = 0; i < (*n); i++)
       for (j = 0; j < (*n); j++)
-    lu[i*(*n)+j] = a[i*(*lda)+j];
-  DGEFA(lu, lda, n, ipvt, &info);
-    }
-    else
-  DGEFA(a, lda, n, ipvt, &info);
+        lu[i*(*n)+j] = a[i*(*lda)+j];
+    DGEFA(lu, lda, n, ipvt, &info);
+  } else {
+    DGEFA(a, lda, n, ipvt, &info);
+  }
 
-
-    /********************************************************************
-    *                 *
-    * A nonzero value for info indicates that u(info,info) = 0.0.  This *
-    * is not necessarily an error condition, however it does indicate *
-    * that using the l*u factorization to solve (sgesl) or to invert  *
-    * (sgedi) will divide by zero.          *
-    *                 *
-    ********************************************************************/
-    if (info != 0)
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %ld\n",status);
-      return;
-    }
+  /********************************************************************
+  *                 *
+  * A nonzero value for info indicates that u(info,info) = 0.0.  This *
+  * is not necessarily an error condition, however it does indicate *
+  * that using the l*u factorization to solve (sgesl) or to invert  *
+  * (sgedi) will divide by zero.          *
+  *                 *
+  ********************************************************************/
+  if (info != 0) {
+    (*status) = FAIL;
+    fprintf(stderr, "ELECTRO-F-LUFACT Error in LU factorization of matrix, NSWC code %d\n", *status);
+    return;
+  }
 
   (*status) = SUCCESS;
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME lu_solve_linear
  *
@@ -2111,34 +2090,31 @@ void dlu_factor(int *n, double *a, double *lu, int *lda,
  * ***********************************************************************
  */
 
-
 void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda,
-         int *ipvt, int *status)
-{
-    int i;  /* loop indices */
-    int job=0;  /* indicates to solve a*x=b */
+         int *ipvt, int *status) {
+  int i;  /* loop indices */
+  int job=0;  /* indicates to solve a*x=b */
 
-    /********************************************************************
-    *                 *
-    * If the matrix x is passed (not NULL and different than b), the  *
-    * matrix b is copied to x which will contain the results,   *
-    * preserving the contents of b.  Otherwise b will contain the *
-    * results destroying its original contents.       *
-    *                 *
-    ********************************************************************/
-    if ((x != NULL) && (x != b))
-    {
-  for (i = 0; i < (*n); i++)
+  /********************************************************************
+  *                 *
+  * If the matrix x is passed (not NULL and different than b), the  *
+  * matrix b is copied to x which will contain the results,   *
+  * preserving the contents of b.  Otherwise b will contain the *
+  * results destroying its original contents.       *
+  *                 *
+  ********************************************************************/
+  if ((x != NULL) && (x != b)) {
+    for (i = 0; i < (*n); i++)
       x[i] = b[i];
-  SGESL(a, lda, n, ipvt, x, &job);
-    }
-    else
-  SGESL(a, lda, n, ipvt, b, &job);
+    SGESL(a, lda, n, ipvt, x, &job);
+  } else {
+    SGESL(a, lda, n, ipvt, b, &job);
+  }
 
   (*status) = SUCCESS;
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME dlu_solve_linear
  *

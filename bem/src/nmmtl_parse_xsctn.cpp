@@ -323,210 +323,185 @@ int nmmtl_parse_xsctn(char *filename,
   double thickness;
   double yCoord = 0.0;
 
-  while ( 1 )
-    {
-
-      if ( strstr (line, "oundPlane") != NULL )
-  {
-    if (++(*gnd_planes) > 2)
-      {
+  while (true) {
+    if (strstr (line, "oundPlane") != NULL) {
+      if (++(*gnd_planes) > 2) {
         /* count ground planes */
-        printf ("**************************************************************\n");
         printf ("* Warning: There are %d groundplanes in the design...reset to 2\n",
-          gnd_planes);
+          *gnd_planes);
         printf ("***************************************************************\n");
         *gnd_planes = 2;  /* keep it at 2 */
       }
     //    yCoord += DEFAULT_GND_THICK;
-  }
-      //--------------------------------------------------------------------------------
-      // Is this a dielectric definition?
-      //--------------------------------------------------------------------------------
-      else if ( strstr (line, "lectricLayer") != NULL )
-  {
-    if ( *gnd_planes == 0 )
-      {
-        printf ("*********************************************\n");
+    }
+    //--------------------------------------------------------------------------------
+    // Is this a dielectric definition?
+    //--------------------------------------------------------------------------------
+    else if (strstr (line, "lectricLayer") != NULL) {
+      if (*gnd_planes == 0) {
         printf ("* ERROR: There must be a bottom ground plane!\n");
-        printf ("*********************************************\n");
         return (FAIL);
       }
-          //-----------------------------------------------------
-    // Create the dielectric structure.
-    // d_temp.x0  - left x coordinate of the rectangle
-    // d_temp.y0  - lower y coordinate of the rectangle
-    // d_temp.x1  - right x coordinate of the rectangle
-    // d_temp.y1  - upper y coordinate of the rectangle
-    //------------------------------------------------
-    d_temp = (struct dielectric *)malloc(sizeof(struct dielectric));
-    d_temp->next = NULL;
-    d_temp->constant = 1.0;   // Default to 1.0 if no -permittivity attribute in the file..
-    d_temp->tangent = 0.0;    // Default to 0 since this is not used in calculations.
-    d_temp->x0 = d_temp->x1 = 0;
-          //-----------------------------------------------------
-    // Process this dielectric until a line is read without the "\" character.
-          //-----------------------------------------------------
-    while ( 1 )
-      {
+      //-----------------------------------------------------
+      // Create the dielectric structure.
+      // d_temp.x0  - left x coordinate of the rectangle
+      // d_temp.y0  - lower y coordinate of the rectangle
+      // d_temp.x1  - right x coordinate of the rectangle
+      // d_temp.y1  - upper y coordinate of the rectangle
+      //------------------------------------------------
+      d_temp = (struct dielectric *)malloc(sizeof(struct dielectric));
+      d_temp->next = NULL;
+      d_temp->constant = 1.0;   // Default to 1.0 if no -permittivity attribute in the file..
+      d_temp->tangent = 0.0;    // Default to 0 since this is not used in calculations.
+      d_temp->x0 = d_temp->x1 = 0;
+      //-----------------------------------------------------
+      // Process this dielectric until a line is read without the "\" character.
+      //-----------------------------------------------------
+      while (true) {
         //-----------------------------------------------
         // Thickness of the dielectric
         //-----------------------------------------------
-        if ( strstr (line, "-thickness") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, thickness);
-      d_temp->y0 = yCoord;
-      yCoord += thickness;
-      d_temp->y1 = yCoord;
+        if (strstr (line, "-thickness") != NULL) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, thickness);
+          d_temp->y0 = yCoord;
+          yCoord += thickness;
+          d_temp->y1 = yCoord;
 
-      /* insert dielectric onto plain list */
-      d_temp->next = *dielectrics;
-      *dielectrics = d_temp;
+          /* insert dielectric onto plain list */
+          d_temp->next = *dielectrics;
+          *dielectrics = d_temp;
 
-      /* keep track of the highest dielectric - to find ground plane */
-      if(d_temp->y1 > highest_dielectric) highest_dielectric = d_temp->y1;
+          /* keep track of the highest dielectric - to find ground plane */
+          if(d_temp->y1 > highest_dielectric) highest_dielectric = d_temp->y1;
 
-      /* keep track of the lowest dielectric - to offset to y=0 */
-      if(d_temp->y0 < offset) offset = d_temp->y0;
+          /* keep track of the lowest dielectric - to offset to y=0 */
+          if(d_temp->y0 < offset) offset = d_temp->y0;
 
-      /* keep track of smallest dimension */
-      if(thickness < minimum_dimension)
-        minimum_dimension = thickness;
-    }
+          /* keep track of smallest dimension */
+          if(thickness < minimum_dimension)
+            minimum_dimension = thickness;
+        }
 
         //-----------------------------------------------
         // Thickness of the dielectric
         //-----------------------------------------------
         if ( strstr (line, "-permittivity") != NULL )
-      sscanf (line, "%*s %f", &d_temp->constant);
+          sscanf (line, "%*s %f", &d_temp->constant);
 
         //-----------------------------------------------
         // End of this dielectric definition
         //-----------------------------------------------
-        if ( (strrchr (line, '\\')) == 0 )
-    {
-      break;
-    }
+        if ( (strrchr (line, '\\')) == 0 ) {
+          break;
+        }
 
-        if ( fgets (line, GPGE_MAX, inpf) == NULL )
-    {
-      printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
-      return 0;
-    }
-
+        if ( fgets (line, GPGE_MAX, inpf) == NULL ) {
+          printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
+          return 0;
+        }
       }
-  }
-
-      //-----------------------------------------------------
-      // Is this a rectangle dielectric?
-      //-----------------------------------------------------
-      else if ( strstr (line, "ctangleDielec") != NULL )
-  {
-    double width, height, xOffset, yOffset, pitch;
-    int indx, number;
-
-          //-----------------------------------------------------
-    // Create the dielectric structure.
-    // d_temp.x0  - left x coordinate of the rectangle
-    // d_temp.y0  - lower y coordinate of the rectangle
-    // d_temp.x1  - right x coordinate of the rectangle
-    // d_temp.y1  - upper y coordinate of the rectangle
-    //------------------------------------------------
-    d_temp = (struct dielectric *)malloc(sizeof(struct dielectric));
-    d_temp->next = NULL;
-    d_temp->constant = 1.0;   // Default to 1.0 if no -permittivity attribute in the file..
-    d_temp->tangent = 0.0;    // Default to 0 since this is not used in calculations.
-
-    // Set the default number of RectangleDielectric to 1
-    number = 1;
-    while (1)
-      {
-        if ( strstr (line, "-height") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, height);
     }
+
+    //-----------------------------------------------------
+    // Is this a rectangle dielectric?
+    //-----------------------------------------------------
+    else if ( strstr (line, "ctangleDielec") != NULL ) {
+      double width, height, xOffset, yOffset, pitch;
+      int indx, number;
+
+            //-----------------------------------------------------
+      // Create the dielectric structure.
+      // d_temp.x0  - left x coordinate of the rectangle
+      // d_temp.y0  - lower y coordinate of the rectangle
+      // d_temp.x1  - right x coordinate of the rectangle
+      // d_temp.y1  - upper y coordinate of the rectangle
+      //------------------------------------------------
+      d_temp = (struct dielectric *)malloc(sizeof(struct dielectric));
+      d_temp->next = NULL;
+      d_temp->constant = 1.0;   // Default to 1.0 if no -permittivity attribute in the file..
+      d_temp->tangent = 0.0;    // Default to 0 since this is not used in calculations.
+
+      // Set the default number of RectangleDielectric to 1
+      number = 1;
+      while (true) {
+        if ( strstr (line, "-height") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, height);
+        }
 
         //-----------------------------------------------
         // Width of each rectangular conductor
         //-----------------------------------------------
-        if ( strstr (line, "-width") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, width);
-    }
+        if ( strstr (line, "-width") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, width);
+        }
 
         //-----------------------------------------------
         // Permittivity of the dielectric
         //-----------------------------------------------
         if ( strstr (line, "-permittivity") != NULL )
-      sscanf (line, "%*s %f", &d_temp->constant);
+          sscanf (line, "%*s %f", &d_temp->constant);
 
         //-----------------------------------------------
         // Number of conductors to the set
         //-----------------------------------------------
         if ( strstr (line, "-number") != NULL )
-      sscanf (line, "%*s %d", &number);
+          sscanf (line, "%*s %d", &number);
 
         //-----------------------------------------------
         // X-offset for placing the first conductor in the set
         //-----------------------------------------------
-        if ( strstr (line, "-xOff") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, xOffset);
-    }
+        if ( strstr (line, "-xOff") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, xOffset);
+        }
 
         //-----------------------------------------------
         // Y-offset for placing the first conductor in the set
         //-----------------------------------------------
-        if ( strstr (line, "-yOff") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, yOffset);
-    }
+        if ( strstr (line, "-yOff") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, yOffset);
+        }
 
         //-----------------------------------------------
         // Spacing for the conductor set
         //-----------------------------------------------
-        if ( strstr (line, "-pitch") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, pitch);
-    }
+        if ( strstr (line, "-pitch") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, pitch);
+        }
 
         //-----------------------------------------------
         // End of this dielectric definition
         //-----------------------------------------------
-        if ( (strrchr (line, '\\')) == 0 )
-    {
-      break;
-    }
+        if ( (strrchr (line, '\\')) == 0 ) {
+          break;
+        }
 
 
-        if ( fgets (line, GPGE_MAX, inpf) == NULL )
-    {
-      printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
-      return 0;
-    }
-
+        if ( fgets (line, GPGE_MAX, inpf) == NULL ) {
+          printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
+          return 0;
+        }
       }
 
-    float cx = xOffset;
-    for ( indx = 0; indx < number; ++indx )
-      {
+      float cx = xOffset;
+      for ( indx = 0; indx < number; ++indx ) {
         //-----------------------------------------------
         // d_temp.x0  - left x coordinate of the rectangle
         // d_temp.y0  - lower y coordinate of the rectangle
@@ -550,357 +525,334 @@ int nmmtl_parse_xsctn(char *filename,
 
         /* keep track of smallest dimension */
         if(height < minimum_dimension)
-    minimum_dimension = height;
+          minimum_dimension = height;
 
         cx += pitch;
       }
-  }
-      //-----------------------------------------------------
-      // Is this a conductor definition?
-      //-----------------------------------------------------
-      else if ( strstr (line, "Conductors") != NULL )
-  {
-    double width, botWidth, topWidth, height, xOffset, yOffset, pitch;
-    double diameter, conductivity;
-    int indx, number, primitive, type;
-    char name[500];
+    }
+    //-----------------------------------------------------
+    // Is this a conductor definition?
+    //-----------------------------------------------------
+    else if ( strstr (line, "Conductors") != NULL ) {
+      double width, botWidth, topWidth, height, xOffset, yOffset, pitch;
+      double diameter, conductivity;
+      int indx, number, primitive, type;
+      char name[500];
 
-    // Name of the conductor
-    sscanf (line, "%*s %s", name);
+      // Name of the conductor
+      sscanf (line, "%*s %s", name);
 
-    // Type of conductor
-    if ( strstr (line, "RectangleCon") != NULL )
-      type = primitive = RECTANGLE;
-    else if ( strstr (line, "TrapezoidCon") != NULL )
-      {
-        primitive = POLYGON;
-        type = 'T';
-      }
-    else if ( strstr (line, "CircleCon") != NULL )
-      {
-        primitive = CIRCLE;
-        type = 'C';
-      }
-    // Set the default number of conductors to 1
-    number = 1;
-    while ( 1 )
-      {
+      // Type of conductor
+      if ( strstr (line, "RectangleCon") != NULL )
+        type = primitive = RECTANGLE;
+      else if ( strstr (line, "TrapezoidCon") != NULL )
+        {
+          primitive = POLYGON;
+          type = 'T';
+        }
+      else if ( strstr (line, "CircleCon") != NULL )
+        {
+          primitive = CIRCLE;
+          type = 'C';
+        }
+      // Set the default number of conductors to 1
+      number = 1;
+      while ( 1 ) {
         //-----------------------------------------------
         // Conductivity of conductor set
         //-----------------------------------------------
-        if ( strstr (line, "-conductivity") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      conversion (tmp, siemensPmeter, conductivity);
-    }
+        if ( strstr (line, "-conductivity") != NULL ) {
+          parseVal (line, 1, tmp);
+          conversion (tmp, siemensPmeter, conductivity);
+        }
 
         //-----------------------------------------------
         // Width of each rectangular conductor
         //-----------------------------------------------
-        if ( strstr (line, "-width") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, width);
-    }
+        if ( strstr (line, "-width") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, width);
+        }
 
         //-----------------------------------------------
         // Top width of each trapezoidal conductor
         //-----------------------------------------------
-        if ( strstr (line, "-topWidth") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, topWidth);
-    }
+        if ( strstr (line, "-topWidth") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, topWidth);
+        }
 
         //-----------------------------------------------
         // Bottom width of each trapezoidal conductor
         //-----------------------------------------------
-        if ( strstr (line, "-bottomWidth") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, botWidth);
-    }
+        if ( strstr (line, "-bottomWidth") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, botWidth);
+        }
 
         //-----------------------------------------------
         // Height of each rectangular or trapezoidal conductor
         //-----------------------------------------------
-        if ( strstr (line, "-height") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, height);
-    }
+        if ( strstr (line, "-height") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, height);
+        }
 
         //-----------------------------------------------
         // Diameter of each circular conductor
         //-----------------------------------------------
-        if ( strstr (line, "-diameter") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, diameter);
-    }
+        if ( strstr (line, "-diameter") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, diameter);
+        }
 
         //-----------------------------------------------
         // Number of conductors to the set
         //-----------------------------------------------
         if ( strstr (line, "-number") != NULL )
-      sscanf (line, "%*s %d", &number);
+          sscanf (line, "%*s %d", &number);
 
         //-----------------------------------------------
         // X-offset for placing the first conductor in the set
         //-----------------------------------------------
-        if ( strstr (line, "-xOff") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, xOffset);
-    }
+        if ( strstr (line, "-xOff") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, xOffset);
+        }
 
         //-----------------------------------------------
         // Y-offset for placing the first conductor in the set
         //-----------------------------------------------
-        if ( strstr (line, "-yOff") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, yOffset);
-    }
+        if ( strstr (line, "-yOff") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, yOffset);
+        }
 
         //-----------------------------------------------
         // Spacing for the conductor set
         //-----------------------------------------------
-        if ( strstr (line, "-pitch") != NULL )
-    {
-      parseVal (line, 1, tmp);
-      if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-        strcat (tmp, defaultUnits);
-      conversion (tmp, meters, pitch);
-    }
+        if ( strstr (line, "-pitch") != NULL ) {
+          parseVal (line, 1, tmp);
+          if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
+            strcat (tmp, defaultUnits);
+          conversion (tmp, meters, pitch);
+        }
 
         //-----------------------------------------------
         // Break is this is the end of the conductor definition
         //-----------------------------------------------
         if ( (strrchr (line, '\\')) == 0 )
     ///       if ( line[strlen(line)-2] != '\\' )
-    break;
-        if ( fgets (line, GPGE_MAX, inpf) == NULL )
-    {
-      printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
-      return 0;
-    }
+          break;
+        if ( fgets (line, GPGE_MAX, inpf) == NULL ) {
+          printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
+          return 0;
+        }
 
         if ( strlen(line) < 1 )
-    continue;
+          continue;
       }
 
-    double cx = xOffset, tw, length;
-    double cy = yCoord + yOffset;
+      double cx = xOffset, tw, length;
+      double cy = yCoord + yOffset;
 
-          //-----------------------------------------------------
-          // Caculate the total width of the conductor set.
-          // Check for the minimum width of the conductor.
-          //-----------------------------------------------------
-    switch ( primitive )
-      {
+      //-----------------------------------------------------
+      // Caculate the total width of the conductor set.
+      // Check for the minimum width of the conductor.
+      //-----------------------------------------------------
+      switch ( primitive ) {
       case RECTANGLE:
         tw = xOffset + (number - 1) * pitch + width;
         if ( width < minimum_dimension )
-    minimum_dimension = width;
+          minimum_dimension = width;
         if ( height < minimum_dimension )
-    minimum_dimension = height;
+          minimum_dimension = height;
         break;
       case POLYGON:
         width = botWidth;
         if ( topWidth > width )
-    width = topWidth;
+          width = topWidth;
         tw = xOffset + (number - 1) * pitch + width;
         width *= 0.5;
         if(topWidth < minimum_dimension)
-    minimum_dimension = topWidth;
+          minimum_dimension = topWidth;
         if(botWidth < minimum_dimension)
-    minimum_dimension = botWidth;
+          minimum_dimension = botWidth;
         break;
       case CIRCLE:
         tw = xOffset + (number - 1) * pitch + diameter;
         if ( diameter < minimum_dimension )
-    minimum_dimension = diameter;
+          minimum_dimension = diameter;
         break;
       }
-    if ( tw > totWidth )
-      {
+      if ( tw > totWidth ) {
         totWidth = tw;
         printf ("Total width: %g\n", totWidth);
       }
 
-    for ( indx = 0; indx < number; ++indx )
-      {
+      for ( indx = 0; indx < number; ++indx ) {
         c_temp = (struct contour *)malloc(sizeof(struct contour));
         c_temp->next = NULL;
         c_temp->points = NULL;
         c_temp->name[0] = '\0';
         c_temp->x0 = cx;
         c_temp->y0 = cy;
-        switch ( primitive )
-    {
-    case RECTANGLE:
-                  //-----------------------------------------------
-                  // c_temp.x0  - left x coordinate of the rectangle
-                  // c_temp.y0  - lower y coordinate of the rectangle
-                  // c_temp.x1  - right x coordinate of the rectangle
-                  // c_temp.y1  - upper y coordinate of the rectangle
-                  //------------------------------------------------
-      c_temp->x1 = cx + width;
-      c_temp->y1 = cy + height;
-      break;
-    case CIRCLE:
-                  //-----------------------------------------------
-                  // c_temp.x0  - center x point of the circle
-                  // c_temp.y0  - center y point of the circle
-                  // c_temp.x1  - radius of the circle
-                  //------------------------------------------------
-      c_temp->x0 += diameter * 0.5;
-      c_temp->y0 += diameter * 0.5;
-      c_temp->x1 = diameter * 0.5;
-      c_temp->y1 = 0;
-      break;
-    case POLYGON:
-                  //-----------------------------------------------
-                  // c_temp.x0  - lengh of the line segments of the polygon
-                  // c_temp.y0  - lower y coordinate of the polygon
-                  // c_temp.x1  - 0
-                  // c_temp.y1  - upper y coordinate of the rectangle
-                  //------------------------------------------------
-        struct polypoints *pt, *ppt;
+        switch ( primitive ) {
+        case RECTANGLE:
+          //-----------------------------------------------
+          // c_temp.x0  - left x coordinate of the rectangle
+          // c_temp.y0  - lower y coordinate of the rectangle
+          // c_temp.x1  - right x coordinate of the rectangle
+          // c_temp.y1  - upper y coordinate of the rectangle
+          //------------------------------------------------
+          c_temp->x1 = cx + width;
+          c_temp->y1 = cy + height;
+          break;
+        case CIRCLE:
+          //-----------------------------------------------
+          // c_temp.x0  - center x point of the circle
+          // c_temp.y0  - center y point of the circle
+          // c_temp.x1  - radius of the circle
+          //------------------------------------------------
+          c_temp->x0 += diameter * 0.5;
+          c_temp->y0 += diameter * 0.5;
+          c_temp->x1 = diameter * 0.5;
+          c_temp->y1 = 0;
+          break;
+        case POLYGON:
+          //-----------------------------------------------
+          // c_temp.x0  - lengh of the line segments of the polygon
+          // c_temp.y0  - lower y coordinate of the polygon
+          // c_temp.x1  - 0
+          // c_temp.y1  - upper y coordinate of the rectangle
+          //------------------------------------------------
+          struct polypoints *pt, *ppt;
 
-      c_temp->x0 = 0.0;
-      c_temp->x1 = 0.0;
-      c_temp->y1 = cy + height;
+          c_temp->x0 = 0.0;
+          c_temp->x1 = 0.0;
+          c_temp->y1 = cy + height;
 
-                  //------------------------------------------------
-      // Create the line-segments that define the polygon.
-                  //------------------------------------------------
-      c_temp->points = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
-      pt->x = cx + width - botWidth * 0.5;
-      pt->y = cy;
+          //------------------------------------------------
+          // Create the line-segments that define the polygon.
+          //------------------------------------------------
+          c_temp->points = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
+          pt->x = cx + width - botWidth * 0.5;
+          pt->y = cy;
 
-      pt->next = ppt = (struct polypoints *)malloc(sizeof(struct polypoints));
-      ppt->x = cx + width - topWidth * 0.5;
-      ppt->y = cy + height;
+          pt->next = ppt = (struct polypoints *)malloc(sizeof(struct polypoints));
+          ppt->x = cx + width - topWidth * 0.5;
+          ppt->y = cy + height;
 
-      length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
-        pow(fabs(ppt->y - pt->y), 2.0));
+          length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
+            pow(fabs(ppt->y - pt->y), 2.0));
 
-      /* add segment length to perimeter */
-      c_temp->x0 += length;
+          /* add segment length to perimeter */
+          c_temp->x0 += length;
 
-      /* keep track of smallest dimension */
-      if(length < minimum_dimension)
-        minimum_dimension = length;
+          /* keep track of smallest dimension */
+          if(length < minimum_dimension)
+            minimum_dimension = length;
 
-      ppt->next = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
-      pt->x = cx + width + topWidth * 0.5;
-      pt->y = cy + height;
+          ppt->next = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
+          pt->x = cx + width + topWidth * 0.5;
+          pt->y = cy + height;
 
-      length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
-        pow(fabs(ppt->y - pt->y), 2.0));
+          length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
+            pow(fabs(ppt->y - pt->y), 2.0));
 
-      /* add segment length to perimeter */
-      c_temp->x0 += length;
+          /* add segment length to perimeter */
+          c_temp->x0 += length;
 
-      /* keep track of smallest dimension */
-      if(length < minimum_dimension)
-        minimum_dimension = length;
+          /* keep track of smallest dimension */
+          if(length < minimum_dimension)
+            minimum_dimension = length;
 
-      pt->next = ppt = (struct polypoints *)malloc(sizeof(struct polypoints));
-      ppt->x = cx + width + botWidth * 0.5;
-      ppt->y = cy;
+          pt->next = ppt = (struct polypoints *)malloc(sizeof(struct polypoints));
+          ppt->x = cx + width + botWidth * 0.5;
+          ppt->y = cy;
 
-      length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
-        pow(fabs(ppt->y - pt->y), 2.0));
+          length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
+            pow(fabs(ppt->y - pt->y), 2.0));
 
-      /* add segment length to perimeter */
-      c_temp->x0 += length;
+          /* add segment length to perimeter */
+          c_temp->x0 += length;
 
-      /* keep track of smallest dimension */
-      if(length < minimum_dimension)
-        minimum_dimension = length;
+          /* keep track of smallest dimension */
+          if(length < minimum_dimension)
+            minimum_dimension = length;
 
-      ppt->next = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
-      pt->x = cx + width - botWidth * 0.5;
-      pt->y = cy;
+          ppt->next = pt = (struct polypoints *)malloc(sizeof(struct polypoints));
+          pt->x = cx + width - botWidth * 0.5;
+          pt->y = cy;
 
-      length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
-        pow(fabs(ppt->y - pt->y), 2.0));
+          length = sqrt(pow(fabs(ppt->x - pt->x), 2.0) +
+            pow(fabs(ppt->y - pt->y), 2.0));
 
-      /* add segment length to perimeter */
-      c_temp->x0 += length;
+          /* add segment length to perimeter */
+          c_temp->x0 += length;
 
-      /* keep track of smallest dimension */
-      if(length < minimum_dimension)
-        minimum_dimension = length;
+          /* keep track of smallest dimension */
+          if(length < minimum_dimension)
+            minimum_dimension = length;
 
-      pt->next = NULL;
-      break;
-    default:
-      printf ("***** Should never get here!!! Invalid primitive type!! *****\n");
-    }
+          pt->next = NULL;
+          break;
+        default:
+          printf ("***** Should never get here!!! Invalid primitive type!! *****\n");
+        }
 
         // RECTANGLE, POLYGON, or CIRCLE
         c_temp->primitive = primitive;
 
-
         //----------------------------------------------------
         // Check if this is a conductor that should be defined as a ground wire.
         //----------------------------------------------------
-        if (  strncmp (name, "gr", 2) )
-        {
-    c_temp->conductivity = conductivity;
-    c_temp->next = *signals;
-    *signals = c_temp;
-    sprintf (c_temp->name, "%s%c%d", name, type, *num_signals);
-    (*num_signals)++;
-    printf ("Conductivity %s = %g siemens/meter\n", c_temp->name, c_temp->conductivity);
-        }
-        else
-        {
-    c_temp->next = *groundwires;
-    c_temp->conductivity = 0.0;
-    c_temp->name[0] = '\0';
-    *groundwires = c_temp;
-    (*num_grounds)++;
+        if (  strncmp (name, "gr", 2) ) {
+          c_temp->conductivity = conductivity;
+          c_temp->next = *signals;
+          *signals = c_temp;
+          sprintf (c_temp->name, "%s%c%d", name, type, *num_signals);
+          (*num_signals)++;
+          printf ("Conductivity %s = %g siemens/meter\n", c_temp->name, c_temp->conductivity);
+        } else {
+          c_temp->next = *groundwires;
+          c_temp->conductivity = 0.0;
+          c_temp->name[0] = '\0';
+          *groundwires = c_temp;
+          (*num_grounds)++;
         }
         cx += pitch;
       }
-
-  }
-      if ( fgets (line, GPGE_MAX, inpf) == NULL )
-  break;
-
-      if ( strlen(line) < 1 )
-  continue;
     }
+    if ( fgets (line, GPGE_MAX, inpf) == NULL )
+      break;
+
+    if ( strlen(line) < 1 )
+      continue;
+  }
 
   d_temp = *dielectrics;
-  while ( d_temp != NULL )
-    {
-      if ( d_temp->x0 == 0 && d_temp->x1 == 0 )
-  {
-    d_temp->x0 = -totWidth;
-    d_temp->x1 = d_temp->x0 + 3.0 * totWidth;
-  }
-      d_temp = d_temp->next;
+  while ( d_temp != NULL ) {
+    if ( d_temp->x0 == 0 && d_temp->x1 == 0 ) {
+      d_temp->x0 = -totWidth;
+      d_temp->x1 = d_temp->x0 + 3.0 * totWidth;
     }
+    d_temp = d_temp->next;
+  }
 
   /* Offset all y dimensions to make top of bottom ground plane at */
   /* y=0.0 */
@@ -921,59 +873,46 @@ int nmmtl_parse_xsctn(char *filename,
   /* ordinarily there should be one of each, but the following code */
   /* is extra robust, just in case there are more. */
 
-  if(*gnd_planes == 0 && *groundwires != NULL)
-  {
-
+  if (*gnd_planes == 0 && *groundwires != NULL) {
     /* loop and take off all elements on groundwire list which */
     /* would qualify as lower ground planes.  If there is more */
     /* than one, so warn the user. */
 
     c_prev = NULL;
     c_temp = *groundwires;
-    while(c_temp != NULL)
-    {
-      if(c_temp->primitive == 'R')
-      {
-  if(c_temp->y1 == 0.0)
-  {
-    lower_ground_planes++;
-    if(lower_ground_planes > 1)
-    {
-      printf ("**** Too many lower groundplanes...reset to 1\n");
-    }
-    *gnd_planes = 1;
-    (*num_grounds)--;
+    while(c_temp != NULL) {
+      if(c_temp->primitive == 'R') {
+        if(c_temp->y1 == 0.0) {
+          lower_ground_planes++;
+          if(lower_ground_planes > 1) {
+            printf ("**** Too many lower groundplanes...reset to 1\n");
+          }
+          *gnd_planes = 1;
+          (*num_grounds)--;
 
-    /* save fullest extent of x dimensions of ground plane */
-    if(ground_x_min > c_temp->x0) ground_x_min = c_temp->x0;
-    if(ground_x_max < c_temp->x1) ground_x_max = c_temp->x1;
+          /* save fullest extent of x dimensions of ground plane */
+          if(ground_x_min > c_temp->x0) ground_x_min = c_temp->x0;
+          if(ground_x_max < c_temp->x1) ground_x_max = c_temp->x1;
 
-    /* record ground plane thickness */
-    *bottom_ground_plane_thickness = c_temp->y1 - c_temp->y0;
+          /* record ground plane thickness */
+          *bottom_ground_plane_thickness = c_temp->y1 - c_temp->y0;
 
-    if(c_prev == NULL)
-    {
-      /* remove first item from the list */
-      *groundwires = c_temp->next;
-      free(c_temp);
-      c_temp = *groundwires;
-    }
-    else
-    {
-      /* remove from list */
-      c_prev->next = c_temp->next;
-      free(c_temp);
-      c_temp = c_prev->next;
-    }
-  }
-  else
-  {
-    c_prev = c_temp; c_temp = c_temp->next;
-  }
-      }
-      else
-      {
-  c_prev = c_temp; c_temp = c_temp->next;
+          if(c_prev == NULL) {
+            /* remove first item from the list */
+            *groundwires = c_temp->next;
+            free(c_temp);
+            c_temp = *groundwires;
+          } else {
+            /* remove from list */
+            c_prev->next = c_temp->next;
+            free(c_temp);
+            c_temp = c_prev->next;
+          }
+        } else {
+          c_prev = c_temp; c_temp = c_temp->next;
+        }
+      } else {
+        c_prev = c_temp; c_temp = c_temp->next;
       }
     }
   }
@@ -982,71 +921,54 @@ int nmmtl_parse_xsctn(char *filename,
   /* Now try to find an upper ground plane - its x dimensions must */
   /* match exactly */
 
-  if(*gnd_planes == 1 && *groundwires != NULL)
-  {
-
+  if(*gnd_planes == 1 && *groundwires != NULL) {
     /* loop and take off all elements on groundwire list which */
     /* would qualify as an upper ground planes.  If there is more */
     /* than one, so warn the user. */
 
     c_prev = NULL;
     c_temp = *groundwires;
-    while(c_temp != NULL)
-    {
-      if(c_temp->primitive == 'R')
-      {
-  if(c_temp->y0 == highest_dielectric &&
-     ground_x_min == c_temp->x0 && ground_x_max == c_temp->x1 )
-  {
-    (*num_grounds)--;
+    while(c_temp != NULL) {
+      if(c_temp->primitive == 'R') {
+        if (c_temp->y0 == highest_dielectric &&
+        ground_x_min == c_temp->x0 && ground_x_max == c_temp->x1 ) {
+          (*num_grounds)--;
 
-    upper_ground_planes++;
-    if(upper_ground_planes > 1)
-    {
-      printf ("**** Too many upper groundplanes...reset to 2\n");
-    }
-    *gnd_planes = 2;
+          upper_ground_planes++;
+          if(upper_ground_planes > 1)
+          {
+            printf ("**** Too many upper groundplanes...reset to 2\n");
+          }
+          *gnd_planes = 2;
 
-    /* record ground plane thickness */
-    *top_ground_plane_thickness = c_temp->y1 - c_temp->y0;
+          /* record ground plane thickness */
+          *top_ground_plane_thickness = c_temp->y1 - c_temp->y0;
 
-    /* remove from the list of groundwires */
-    if(c_prev == NULL)
-    {
-      /* remove first item from the list */
-      *groundwires = c_temp->next;
-      free(c_temp);
-      c_temp = *groundwires;
-    }
-    else
-    {
-      /* remove from list */
-      c_prev->next = c_temp->next;
-      free(c_temp);
-      c_temp = c_prev->next;
-    }
-  }
-  else
-  {
-    c_prev = c_temp; c_temp = c_temp->next;
-  }
-      }
-      else
-      {
-  c_prev = c_temp; c_temp = c_temp->next;
+          /* remove from the list of groundwires */
+          if(c_prev == NULL) {
+            /* remove first item from the list */
+            *groundwires = c_temp->next;
+            free(c_temp);
+            c_temp = *groundwires;
+          } else {
+            /* remove from list */
+            c_prev->next = c_temp->next;
+            free(c_temp);
+            c_temp = c_prev->next;
+          }
+        } else {
+          c_prev = c_temp; c_temp = c_temp->next;
+        }
+      } else {
+        c_prev = c_temp; c_temp = c_temp->next;
       }
     }
   }
-
 
   /* warning to the user if bottom ground plane is missing - it
      will go on and assume one exists, below the lowest dielectric layer */
-
-  if(*gnd_planes < 1)
-  {
-    printf ("************************************\n");
+  if(*gnd_planes < 1) {
     printf ("* Warning: There isn't a groundplane\n");
-    printf ("************************************\n");
   }
 
   *half_minimum_dimension = 0.5 * minimum_dimension;

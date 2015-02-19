@@ -136,7 +136,6 @@ int main(int argc, char **argv) {
 
   /* are there elements to retrieve? - if not - then read graphic file and
      generate them */
-
   if (element_dump) {
     retrieval_file = fopen(ele_dmp_filename,"r");
     if (retrieval_file == NULL) {
@@ -216,7 +215,7 @@ int main(int argc, char **argv) {
       filename, cntr_seg, pln_seg, coupling);
     printf ("risetime: %g  conductivity: %g\n",
       risetime, conductivity);
-    printf ("half_min_dim: %g  grnd_planes: %d  top_grnd_thck: %d\n",
+    printf ("half_min_dim: %g  grnd_planes: %d  top_grnd_thck: %f\n",
       half_minimum_dimension, gnd_planes, top_ground_plane_thickness);
     printf ("bot_grnd_thck: %g  num_sig: %d  num_grounds: %d\n",
       bottom_ground_plane_thickness, num_signals, num_grounds);
@@ -248,9 +247,10 @@ int main(int argc, char **argv) {
 
     /*  Open MMTL results output file  */
     sprintf (filespec, "%s.result", filename);
-    if( (output_file1 = fopen(filespec,"w")) == NULL ) {
-      printf ("*** Could not open %s for output ***\n");
-      return 0;  /* Fatal error; could not open output file */
+    if ((output_file1 = fopen(filespec,"w")) == NULL) {
+      //fatal error; could not open output file
+      printf("Error: cannot open '%s' for output.\n", filespec);
+      return 1;
     }
 
     /* print headers on the output file */
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
     sprintf (filespec, "%s.result_field_plot_data", filename);
 
     if ( (plotFile = fopen(filespec,"w")) == NULL ) {
-      printf ("**** Could not open plot file %s\n", filespec);
+      printf ("Error: cannot open plot file %s\n", filespec);
       return 0;  /* Fatal error; could not open output file */
     }
 

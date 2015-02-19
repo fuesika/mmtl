@@ -49,10 +49,10 @@ void nmmtl_sanity_minfreq(float the_conductivity,
   tmp =  PI * minimumDimension / 10.;
   minimumFrequency = 1.0 / (4.0e-7 * conductivity * pow(tmp, 2));
   minfreq = minimumFrequency/1e6 + 1.0;
-  printf ("%g MHz is the minimum frequency for the surface current assumptions for this cross section\n", minfreq);
+  printf ("%f MHz is the minimum frequency for the surface current assumptions for this cross section\n", minfreq);
   if (output_file1 != NULL)
-    fprintf(output_file1,"Note: minimum frequency for surface current assumptions is %d MHz.", minfreq);
+    fprintf(output_file1, "Note: minimum frequency for surface current assumptions is %f MHz.", minfreq);
   if (output_file2 != NULL)
-    fprintf(output_file2,"Note: minimum frequency for surface current assumptions is %d MHz.", minfreq);
+    fprintf(output_file2, "Note: minimum frequency for surface current assumptions is %f MHz.", minfreq);
 }
 

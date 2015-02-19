@@ -669,39 +669,39 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
 
   /* Now divide things up further */
 
-  if(number_of_intersections == 1)
-  {
+  if(number_of_intersections == 1) {
     /* one intersection */
+    if(ip & IP_I1D0)
+      dseg_index = INITIAL_ENDPOINT;
+    else
+      dseg_index = TERMINAL_ENDPOINT;
 
-    if(ip & IP_I1D0) dseg_index = INITIAL_ENDPOINT;
-    else dseg_index = TERMINAL_ENDPOINT;
-    if(ip & IP_I1C0) cseg_index = INITIAL_ENDPOINT;
-    else cseg_index = TERMINAL_ENDPOINT;
+    if (ip & IP_I1C0)
+      cseg_index = INITIAL_ENDPOINT;
+    else
+      cseg_index = TERMINAL_ENDPOINT;
 
-    if(ip & (IP_I1C0 | IP_I1C1))
-    {
+    if (ip & (IP_I1C0 | IP_I1C1)) {
       /* hit one conductor endpoint */
-
-      if(ip & (IP_I1D0 | IP_I1D1))
-      {
+      if(ip & (IP_I1D0 | IP_I1D1)) {
         /* hit one dielectric endpoint */
-        angle_to_normal =
-    nmmtl_cirseg_angle_to_normal(segment,&intersection1,
-               &dseg,dseg_index);
-        if(tangent)
-        {
-    if(angle_to_normal > 0.0 && cseg_index == INITIAL_ENDPOINT ||
-       angle_to_normal < 0.0 && cseg_index == TERMINAL_ENDPOINT)
-      intersection_type = 14;
-    else
-      intersection_type = 12;
-        }
-        else
-        {
-    if(fabs(angle_to_normal) < PI/2)
-      intersection_type = 2;
-    else
-      intersection_type = 3;
+        angle_to_normal = nmmtl_cirseg_angle_to_normal(segment,
+                                                       &intersection1,
+                                                       &dseg,
+                                                       dseg_index);
+        if (tangent) {
+          //if (angle_to_normal > 0.0 && cseg_index == INITIAL_ENDPOINT ||
+          //angle_to_normal < 0.0 && cseg_index == TERMINAL_ENDPOINT)
+          if ((angle_to_normal > 0. && cseg_index == INITIAL_ENDPOINT)
+          ||  (angle_to_normal < 0. && cseg_index == TERMINAL_ENDPOINT))
+            intersection_type = 14;
+          else
+            intersection_type = 12;
+        } else {
+          if (fabs(angle_to_normal) < .5*PI)
+            intersection_type = 2;
+          else
+            intersection_type = 3;
         }
       } /* one die hit */
       else
@@ -720,32 +720,25 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
         angle_to_normal =
     nmmtl_cirseg_angle_to_normal(segment,&intersection1,
                &dseg,dseg_index);
-        if(tangent)
-        {
-    intersection_type = 11;
-        }
+        if(tangent) {
+          intersection_type = 11;
+        } else {
+          if(fabs(angle_to_normal) < .5*PI)
+            intersection_type = 5;
         else
-        {
-    if(fabs(angle_to_normal) < PI/2)
-      intersection_type = 5;
-    else
-      intersection_type = 4;
+          intersection_type = 4;
         }
       } /* one die hit */
-      else
-      {
+      else {
         /* no die hit, no cond hit */
         if(tangent) intersection_type = 10;
         else intersection_type = 6;
-
       }                      /* no die hit, one cond hit */
     }                        /* no cond hit */
   }                          /* one intersection */
-  else
-  {
+  else {
     /* two intersections */
-    switch(cond_hits)
-    {
+    switch(cond_hits) {
     case 0:
       switch(die_hits)
       {
@@ -755,23 +748,26 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
       }
       break;
     case 1:
-      switch(die_hits)
-      {
+      switch(die_hits) {
       case 0: intersection_type = 18; break;
       case 1:
         /* are conductor and die endpoint intersections different or
      the same intersection ? */
-        if(ip & (IP_I1C0 | IP_I1C1) && ip & (IP_I2D0 | IP_I2D1) ||
-     ip & (IP_I2C0 | IP_I2C1) && ip & (IP_I1D0 | IP_I1D1))
-    intersection_type = 19;     /* different endpoint */
-        else intersection_type = 21;  /* same endpoint */
+        //if (ip & (IP_I1C0 | IP_I1C1) && ip & (IP_I2D0 | IP_I2D1) ||
+     //ip & (IP_I2C0 | IP_I2C1) && ip & (IP_I1D0 | IP_I1D1))
+        if ((ip & (IP_I1C0 | IP_I1C1) && ip & (IP_I2D0 | IP_I2D1))
+        ||  (ip & (IP_I2C0 | IP_I2C1) && ip & (IP_I1D0 | IP_I1D1)))
+          intersection_type = 19;     /* different endpoint */
+        else
+          intersection_type = 21;  /* same endpoint */
         break;
-      case 2: intersection_type = 20; break;
+      case 2:
+        intersection_type = 20;
+        break;
       }
       break;
     case 2:
-      switch(die_hits)
-      {
+      switch(die_hits) {
       case 0: intersection_type = 15; break;
       case 1: intersection_type = 16; break;
       case 2: intersection_type = 17; break;
@@ -783,8 +779,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
   /* Now that we have fully determined the intersection type, take
      the appropriate action based on that type. */
 
-  switch(intersection_type)
-  {
+  switch(intersection_type) {
   case 1 :
     /*
       Endpoint of circle

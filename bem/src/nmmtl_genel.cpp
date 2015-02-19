@@ -164,71 +164,59 @@ int nmmtl_generate_elements(int conductor_counter,
     }
 
     /* if(cls != NULL) cls = cls->next; */
-
   }
 
   /* process the conductor circle segments */
-
-  ccs=conductor_cs;
-  while(ccs != NULL)
-  {
+  ccs = conductor_cs;
+  while(ccs != NULL) {
     current_conductor = ccs->conductor;
-    if(current_conductor != 0)
-    {
+    if(current_conductor != 0) {
       cd[current_conductor].node_start = *node_point_counter;
       nmmtl_generate_elements_ccs(&ccs,&head,&tail,node_point_counter);
-      if(head == NULL)
-      {
-  printf ("**** Error in element generation: from conductor circle segment");
-  return(FAIL);
+      if(head == NULL) {
+        printf ("**** Error in element generation: from conductor circle segment");
+        return(FAIL);
       }
       cd[current_conductor].elements = head;
       cd[current_conductor].node_end = *node_point_counter-1;
       number_elements +=
-  (cd[current_conductor].node_end -
-   cd[current_conductor].node_start + 1)/2;
-    }
-    else
-    {
-      if(gnd_list_head == NULL)
-  cd[0].node_start = *node_point_counter;
+        (cd[current_conductor].node_end -
+         cd[current_conductor].node_start + 1)/2;
+    } else {
+      if (gnd_list_head == NULL)
+        cd[0].node_start = *node_point_counter;
 
       node_point_counter_start = *node_point_counter;
 
-      nmmtl_generate_elements_ccs(&ccs,&head,&tail,node_point_counter);
+      nmmtl_generate_elements_ccs(&ccs, &head, &tail, node_point_counter);
       if(gnd_list_head == NULL)
-  gnd_list_head = head;
+        gnd_list_head = head;
       else
-  gnd_list->next = head;
+        gnd_list->next = head;
 
       gnd_list = tail;
       cd[0].node_end = *node_point_counter-1;
 
-      number_elements +=
-  (cd[0].node_end - node_point_counter_start + 1)/2;
+      number_elements += (cd[0].node_end - node_point_counter_start + 1)/2;
     }
-
     /* if(ccs != NULL) ccs = ccs->next; */
-
   }
 
   /* process the ground planes */
-
-  if(gnd_list_head == NULL)
-  {
+  if(gnd_list_head == NULL) {
     cd[0].node_start = *node_point_counter;
   }
 
   node_point_counter_start = *node_point_counter;
 
   nmmtl_generate_elements_gnd(&gnd_plane_list_head,
-            node_point_counter,
-            gnd_planes,
-            pln_seg,
-            bottom_of_top_plane,
-            left_of_gnd_planes,
-            right_of_gnd_planes,
-            upper_sorted_gdl);
+                              node_point_counter,
+                              gnd_planes,
+                              pln_seg,
+                              bottom_of_top_plane,
+                              left_of_gnd_planes,
+                              right_of_gnd_planes,
+                              upper_sorted_gdl);
 
   /* attach ground plane elements with other ground wire elements */
   if(gnd_list_head == NULL)
@@ -237,16 +225,15 @@ int nmmtl_generate_elements(int conductor_counter,
     gnd_list->next = gnd_plane_list_head;
 
   /* were any ground elements actually generated?  See if counter advanced */
-  if(*node_point_counter == cd[0].node_start)
-  {
+  if (*node_point_counter == cd[0].node_start) {
     cd[0].node_end = 0;
     cd[0].node_start = 0;
+  } else {
+    cd[0].node_end = *node_point_counter - 1;
   }
-  else cd[0].node_end = *node_point_counter-1;
 
-  if(cd[0].node_end != 0)
-    number_elements +=
-      (cd[0].node_end - node_point_counter_start + 1)/2;
+  if (cd[0].node_end != 0)
+    number_elements += (cd[0].node_end - node_point_counter_start + 1)/2;
 
   /* put the ground wire and ground plane elements
      all in the conductor data array */
@@ -254,12 +241,10 @@ int nmmtl_generate_elements(int conductor_counter,
 
 
   /* record how high the conductor nodes go */
-
   *highest_conductor_node = *node_point_counter - 1;
 
 
   /* process the dielectric boundaries */
-
   *die_elements = nmmtl_generate_elements_die(dielectric_segments,
                 node_point_counter,
                 &number_elements,
@@ -273,11 +258,10 @@ int nmmtl_generate_elements(int conductor_counter,
 
   /* dump the elements generated */
 #ifdef NMMTL_DUMP_DIAG
-  nmmtl_dump_elements(conductor_counter,cd,*die_elements);
+  nmmtl_dump_elements(conductor_counter, cd, *die_elements);
 #endif
 
   return(SUCCESS);
-
 }
 
 
