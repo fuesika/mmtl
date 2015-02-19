@@ -1113,30 +1113,30 @@ int nmmtl_overlap_parallel_seg(struct dielectric_sub_segments *list1,
              double *overlap_left, double *overlap_right,
              int *left_overhang, int *right_overhang);
 
-/* nmmtl_parse_graphic.cxx */
-int nmmtl_parse_graphic(char *filename,
-      int *cntr_seg,int *pln_seg,
-      float *coupling,float *risetime,
-      float *conductivity, float *frequency,
-      float *half_minimum_dimension,int *gnd_planes,
+/* nmmtl_parse_xsctn.cxx */
+int nmmtl_parse_xsctn(char *filename,
+      int *cntr_seg,
+      int *pln_seg,
+      float *coupling,
+      float *risetime,
+      float *conductivity,
+      float *half_minimum_dimension,
+      int *gnd_planes,
       float *top_ground_plane_thickness,
       float *bottom_ground_plane_thickness,
       struct dielectric **dielectrics,
       struct contour **signals,
       struct contour **groundwires,
       int *num_signals,
-                  int *num_grounds,
+      int *num_grounds,
       int *units);
 
 /* nmmtl_projections.cxx */
-void nmmtl_project_polygon(COND_PROJ_LIST_P *cond_projections,
-         CONTOURS_P contour);
+void nmmtl_project_polygon(COND_PROJ_LIST_P *cond_projections, CONTOURS_P contour);
 
-void nmmtl_project_rectangle(COND_PROJ_LIST_P *cond_projections,
-           CONTOURS_P contour);
+void nmmtl_project_rectangle(COND_PROJ_LIST_P *cond_projections, CONTOURS_P contour);
 
-void nmmtl_project_circle(COND_PROJ_LIST_P *cond_projections,
-        CONTOURS_P contour);
+void nmmtl_project_circle(COND_PROJ_LIST_P *cond_projections, CONTOURS_P contour);
 
 /* nmmtl_qsp_kernel.cxx */
 int nmmtl_qsp_kernel(int conductor_counter,

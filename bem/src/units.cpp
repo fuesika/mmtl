@@ -448,7 +448,7 @@ int addunit(struct unittype *theunit,const char *toadd,int flip)
 {
   char *scratch,*savescr;
   char *item;
-  char *divider,*subunit,*slash;
+  char *divider, *slash;
   int doingtop;
 
   savescr=scratch=dupstr(toadd);

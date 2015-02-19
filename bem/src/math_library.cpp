@@ -960,7 +960,6 @@ void invert_matrix(int *n,float *a,float *b,
 
 
 
-
 /* ***********************************************************************
  * ROUTINE NAME invert_matrix_cond
  *
@@ -1559,8 +1558,6 @@ void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
 
   extern int n_d_c_init_solve_linear;
 
-  DOUBLE_COMPLEX t1[2];   /* workspace matricies */
-  int rcond;              /* value indicating condition of input matrix */
   int ierr;               /* status flag for call */
   int i,j;                /* loop variable */
   int calc_inv = 1;       /* indicates if inverse of is to be calculated */

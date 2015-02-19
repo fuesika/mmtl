@@ -76,6 +76,7 @@ add_executable(${PROJECT_NAME} nmmtl.cpp
   nmmtl_dc_resistance.cpp
   nmmtl_det_arc_intersections.cpp
   nmmtl_det_intersections.cpp
+  nmmtl_dump.cpp
   nmmtl_dump_geometry.cpp
   nmmtl_eval_circles.cpp
   nmmtl_eval_conductors.cpp

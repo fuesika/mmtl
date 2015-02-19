@@ -98,9 +98,7 @@ void nmmtl_output_headers(FILE *output_file,
   char date[50];   /*  for getting and formatting date/time  */
   time_t tm ;
 
-  struct passwd *user_entry;
   char *userName;
-  static char nullString[] = "";
 
   // look up the user name
   userName = getlogin() ;
@@ -124,6 +122,5 @@ void nmmtl_output_headers(FILE *output_file,
   fprintf(output_file,"Rise Time = %10.4f picoseconds\n",risetime*1.0e12);
   fprintf(output_file,"Contour (conductor) segments [cseg] = %d\n",cntr_seg);
   fprintf(output_file,"Ground Plane/Dielectric segments [dseg] = %d\n",pln_seg);
-
 }
 

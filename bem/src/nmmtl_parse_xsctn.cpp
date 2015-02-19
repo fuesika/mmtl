@@ -134,27 +134,16 @@ void parseVal (char *line, int flg, char *tmp)
 
    SUCCESS, FAIL
 
-
-   CALLING SEQUENCE:
-
-   status = nmmtl_parse_graphic(&cntr_seg,&pln_seg,&coupling,
-   &risetime,
-   &conductivity,&frequency,
-   &half_minimum_dimension,&gnd_planes,
-   &top_ground_plane_thickness,
-   &bottom_ground_plane_thickness,
-   &dielectrics,&signals,&groundwires,
-   &num_signals,&num_grounds,&units);
-
-
-
    */
 
-int nmmtl_parse_graphic(char *filename,
-      int *cntr_seg,int *pln_seg,
-      float *coupling,float *risetime,
-      float *conductivity, float *frequency,
-      float *half_minimum_dimension,int *gnd_planes,
+int nmmtl_parse_xsctn(char *filename,
+      int *cntr_seg,
+      int *pln_seg,
+      float *coupling,
+      float *risetime,
+      float *conductivity,
+      float *half_minimum_dimension,
+      int *gnd_planes,
       float *top_ground_plane_thickness,
       float *bottom_ground_plane_thickness,
       struct dielectric **dielectrics,
@@ -162,8 +151,7 @@ int nmmtl_parse_graphic(char *filename,
       struct contour **groundwires,
       int *num_signals,
       int *num_grounds,
-      int *units)
-{
+      int *units) {
   char meters[] = "meters";
   char seconds[] = "seconds";
   char siemensPmeter[] = "siemens/meter";
@@ -186,7 +174,6 @@ int nmmtl_parse_graphic(char *filename,
   int upper_ground_planes = 0;  /* keep count of drawn ground planes */
   int lower_ground_planes = 0;
   double ground_x_min = DBL_MAX, ground_x_max = DBL_MIN;
-  double trpWidth = 0;
 
   char fullfilespec[1024];
   double totWidth = 0;
@@ -212,21 +199,15 @@ int nmmtl_parse_graphic(char *filename,
   netlist->exists = FALSE;
 
   // now try to open the file
-  sprintf (fullfilespec, "%s.xsctn", filename);
-
-
-
-  // Tue Feb 18 06:05:13 1997 -- Kevin J. Buchs - frequency not used,
-  // Set a default value.
-  *frequency = DEFAULT_FREQUENCY * 1e6;
+  sprintf(fullfilespec, "%s.xsctn", filename);
 
   FILE *inpf;
 
   //-----------------------------------------------
-  // Loss-tangent and Frequency are not used for the calculations.
+  // Loss-tangent not used for the calculations.
   //-----------------------------------------------
   printf ("*********************************************************************\n");
-  printf ("* Warning: lossTangent and frequency are not used in this simulation!\n");
+  printf ("* Warning: lossTangent not used in this simulation!\n");
   printf ("*********************************************************************\n");
 
   if ( ! (inpf = fopen (fullfilespec, "r") ) )
@@ -242,7 +223,6 @@ int nmmtl_parse_graphic(char *filename,
   double arg1;
   char arg2[30];
   int tmp_cntr_seg, tmp_pln_seg;
-  int lgt;
 
   while ( 1 )
     {
@@ -348,7 +328,6 @@ int nmmtl_parse_graphic(char *filename,
   *top_ground_plane_thickness = DEFAULT_GND_THICK / MILS_TO_METERS;
   *bottom_ground_plane_thickness = DEFAULT_GND_THICK / MILS_TO_METERS;
 
-  char unts[40];
   double thickness;
   double yCoord = 0.0;
 
@@ -454,7 +433,7 @@ int nmmtl_parse_graphic(char *filename,
       else if ( strstr (line, "ctangleDielec") != NULL )
   {
     double width, height, xOffset, yOffset, pitch;
-    int indx, number, primitive, type;
+    int indx, number;
 
           //-----------------------------------------------------
     // Create the dielectric structure.
@@ -875,8 +854,6 @@ int nmmtl_parse_graphic(char *filename,
       /* add segment length to perimeter */
       c_temp->x0 += length;
 
-      trpWidth = c_temp->x0;
-
       /* keep track of smallest dimension */
       if(length < minimum_dimension)
         minimum_dimension = length;
@@ -922,7 +899,6 @@ int nmmtl_parse_graphic(char *filename,
   continue;
     }
 
-  double hlfWidt = totWidth / 2.0;
   d_temp = *dielectrics;
   while ( d_temp != NULL )
     {
@@ -937,8 +913,13 @@ int nmmtl_parse_graphic(char *filename,
   /* Offset all y dimensions to make top of bottom ground plane at */
   /* y=0.0 */
 
-  if(offset != 0.0)
-    status = nmmtl_set_offset(offset,*dielectrics,*signals,*groundwires);
+  if (offset != 0.0) {
+    status = nmmtl_set_offset(offset, *dielectrics, *signals, *groundwires);
+    if (status != SUCCESS) {
+      printf("ERROR in nmmtl_set_offset: Cannot set offset\n");
+      exit(FAIL);
+    }
+  }
   highest_dielectric -= offset;
 
   /* now, check to see if ground planes were really specified by */
@@ -1082,5 +1063,3 @@ int nmmtl_parse_graphic(char *filename,
   fclose (inpf);
   return (SUCCESS);
 }
-
-

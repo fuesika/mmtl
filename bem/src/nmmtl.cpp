@@ -36,8 +36,6 @@ extern FILE *plotFile; /* the file the field plot data will be written to */
 
 FILE *dump_file;  /* a file for diagnostics */
 
-//#include "legendre.h"  /* define the Legendre polynomials as globals */
-
 
 /*
  * FUNCTION NAME
@@ -69,7 +67,7 @@ int main(int argc, char **argv) {
   struct contour *sigs = NULL; /* 1st signal (lowest) read in */
   struct contour *groundwires = NULL; /* 1st ground wire read into list */
   int status;
-  char filename [PATH_MAX];  /* base file name (without .graphic extension) */
+  char filename[PATH_MAX];  /* base file name (without .graphic extension) */
   char filespec[PATH_MAX];    /* filespec for fopen() */
   int num_signals = 0;
   int num_grounds = 0;
@@ -83,11 +81,9 @@ int main(int argc, char **argv) {
   float **backward_xtk;
   FILE *output_file1;
   FILE *output_file2;
-  int element_dump = 0;
+  bool element_dump = false;
   char ele_dmp_filename[PATH_MAX];
   FILE *retrieval_file;
-
-  int iop = 0;
 
   /* - - - - - - - - - -  INITIALIZATIONS - - - - - - - - - - - - - - - - */
   dump_file = fopen("nmmtl.dump","w");
@@ -97,9 +93,7 @@ int main(int argc, char **argv) {
   setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
   setvbuf(stderr, NULL, _IOLBF, BUFSIZ);
 
-  //////////////////////////////////////////////////////////////
-  // Get the input and output file names from the command-line.
-  //////////////////////////////////////////////////////////////
+  // Processing command-line arguments
   for (int ii = 0; ii < argc; ii++) {
     switch (ii) {
       case 0:
@@ -115,7 +109,7 @@ int main(int argc, char **argv) {
         break;
       case 4:
         strcpy(ele_dmp_filename, argv[4]);
-        element_dump = 1;
+        element_dump = true;
         break;
       default:
         printf("ERROR: list of input arguments too long.\n\n");
@@ -123,13 +117,13 @@ int main(int argc, char **argv) {
   }
 
   if ((argc < 2) || (argc > 5)) {
-    printf ("MMTL_BEM is a tool for the characterization of transmission line cross-sections.\n\n");
-    printf ("usage: mmtl_bem geometry_fname [c_seg] [p_seg] [dump_fname]\n\n");
-    printf ("Without further options, MMTL_BEM prints this help and exists.\n\n");
-    printf ("  geometry_fname   geometry specification filename\n");
-    printf ("  c_seg            number of contour segments (optional)\n");
-    printf ("  p_seg            number of plane/dielectric segments (optional)\n");
-    printf ("  dump_fname       verbose output specification filename (optional)\n");
+    printf("MMTL_BEM is a tool for the characterization of transmission line cross-sections.\n\n");
+    printf("usage: mmtl_bem geometry_fname [c_seg] [p_seg] [dump_fname]\n\n");
+    printf("Without further options, MMTL_BEM prints this help and exists.\n\n");
+    printf("  geometry_fname   geometry specification filename\n");
+    printf("  c_seg            number of contour segments (optional)\n");
+    printf("  p_seg            number of plane/dielectric segments (optional)\n");
+    printf("  dump_fname       dump of previous run filename (optional, for advanced users)\n");
     return 0;
   }
 
@@ -141,16 +135,9 @@ int main(int argc, char **argv) {
      "File: %s   # contour segs: %d   # plane/diel segs: %d\n",
      filename, cntr_seg, pln_seg);
 
-  /* - - - - - - - - Check for logicals indicating this was a continuation
-     of a previous run, or that we should make this run
-     terminate early and dump elements        - - - - - - - */
-
-  //  element_dump = test_logical(ED_LOGICAL);
-
   /* are there elements to retrieve? - if not - then read graphic file and
      generate them */
 
-  //  ele_dmp_filename = getenv(ER_LOGICAL);
   if (element_dump) {
     retrieval_file = fopen(ele_dmp_filename,"r");
     if (retrieval_file == NULL) {
@@ -160,47 +147,57 @@ int main(int argc, char **argv) {
       strcpy(string,"retrieving signal names from: ");
       strcat(string,ele_dmp_filename);
       printf ("%s\n", string);
-      nmmtl_retrieve(retrieval_file,&cntr_seg,&pln_seg,
-         &coupling,&risetime,&signals,
-         &num_signals,NULL,NULL,NULL,NULL,NULL);
+      nmmtl_retrieve(retrieval_file,
+                     &cntr_seg,
+                     &pln_seg,
+                     &coupling,
+                     &risetime,
+                     &signals,
+                     &num_signals,
+                     NULL,NULL,NULL,NULL,NULL);
     }
   } else {
     /* - - - - - - - -  Read in data from the graphic file  - - - - - - - - */
-    status = nmmtl_parse_graphic(filename,&cntr_seg,
-         &pln_seg,&coupling,&risetime,
-         &conductivity,&frequency,
-         &half_minimum_dimension,&gnd_planes,
-         &top_ground_plane_thickness,
-         &bottom_ground_plane_thickness,
-         &dielectrics,&signals,&groundwires,
-         &num_signals,&num_grounds,&units);
+    status = nmmtl_parse_xsctn(filename,
+                               &cntr_seg,
+                               &pln_seg,
+                               &coupling,
+                               &risetime,
+                               &conductivity,
+                               &half_minimum_dimension,
+                               &gnd_planes,
+                               &top_ground_plane_thickness,
+                               &bottom_ground_plane_thickness,
+                               &dielectrics,
+                               &signals,
+                               &groundwires,
+                               &num_signals,
+                               &num_grounds,
+                               &units);
 
     struct dielectric *d_temp = dielectrics;
     printf ("---- Dielectrics ----\n");
-    while ( d_temp != NULL )
-      {
-        printf ("  (%g,%g) - (%g,%g)  permittivity: %g\n",
-          d_temp->x0, d_temp->y0,
-          d_temp->x1, d_temp->y1, d_temp->constant);
-        d_temp = d_temp->next;
-      }
+    while ( d_temp != NULL ) {
+      printf ("  (%g,%g) - (%g,%g)  permittivity: %g\n",
+        d_temp->x0, d_temp->y0,
+        d_temp->x1, d_temp->y1, d_temp->constant);
+      d_temp = d_temp->next;
+    }
     struct contour *c_temp = signals;
     struct polypoints *ptt;
     printf ("---- Conductors ----\n");
-    while ( c_temp != NULL )
-      {
-        printf ("%s  (%g,%g) - (%g,%g)  conductivity: %g  type: %c\n",
-          c_temp->name, c_temp->x0, c_temp->y0,
-          c_temp->x1, c_temp->y1, c_temp->conductivity, c_temp->primitive);
-        ptt = c_temp->points;
-        while ( ptt != NULL )
-    {
-      printf (" (%g,%g) ", ptt->x, ptt->y);
-      ptt = ptt->next;
-    }
-        printf ("\n");
-        c_temp = c_temp->next;
+    while ( c_temp != NULL ) {
+      printf ("%s  (%g,%g) - (%g,%g)  conductivity: %g  type: %c\n",
+        c_temp->name, c_temp->x0, c_temp->y0,
+        c_temp->x1, c_temp->y1, c_temp->conductivity, c_temp->primitive);
+      ptt = c_temp->points;
+      while ( ptt != NULL ) {
+        printf (" (%g,%g) ", ptt->x, ptt->y);
+        ptt = ptt->next;
       }
+      printf ("\n");
+      c_temp = c_temp->next;
+    }
     c_temp = groundwires;
     printf ("---- GroundWires ----\n");
     while ( c_temp != NULL ) {
@@ -229,20 +226,17 @@ int main(int argc, char **argv) {
     if (status != SUCCESS)
       return 0;
 
-
     /* - - - - - - - -  dump the geometry as read in  - - - - - - - - - */
-    nmmtl_dump_geometry(cntr_seg,pln_seg,coupling,risetime,conductivity,
-      frequency,half_minimum_dimension,
-      gnd_planes,top_ground_plane_thickness,
-      bottom_ground_plane_thickness,dielectrics,signals,
+    nmmtl_dump_geometry(cntr_seg, pln_seg, coupling, risetime, conductivity,
+      frequency, half_minimum_dimension,
+      gnd_planes, top_ground_plane_thickness,
+      bottom_ground_plane_thickness, dielectrics,signals,
       groundwires);
   }
-
 
   /* - - - - - - - -  Allocate space for results  - - - - - - - - - */
 
   /* Are there elements to dump?   If not, proceed normally */
-
   if (!element_dump) {
     electrostatic_induction = (float **) dim2(num_signals,num_signals,sizeof(float));
     inductance = (float **) dim2(num_signals,num_signals,sizeof(float));
@@ -281,7 +275,7 @@ int main(int argc, char **argv) {
   }
 
   /* ------------------------ open the plot file -------------------------- */
-  if (! element_dump) {
+  if (!element_dump) {
     sprintf (filespec, "%s.result_field_plot_data", filename);
 
     if ( (plotFile = fopen(filespec,"w")) == NULL ) {
@@ -294,8 +288,7 @@ int main(int argc, char **argv) {
          bottom_ground_plane_thickness);
   }
 
-
-  /* --------------- warn the user if the frequency is to low ------------- */
+  /* --------------- warn the user if the frequency is too low ------------- */
   nmmtl_spout_off(conductivity,signals,top_ground_plane_thickness,
       bottom_ground_plane_thickness,output_file1,output_file2);
 
@@ -309,7 +302,7 @@ int main(int argc, char **argv) {
              output_file1,output_file2);
 
   /* if we dumped the elements, then there is nothing more to do. */
-  if(element_dump)
+  if (element_dump)
     return 0;
 
   /* if we failed to qsp_calculate,  then there is nothing more to do */
@@ -319,23 +312,20 @@ int main(int argc, char **argv) {
   }
 
   /*           find the dc resistance */
-  nmmtl_dc_resistance(conductivity,signals,
-          Rdc,output_file1,output_file2);
-
+  nmmtl_dc_resistance(conductivity, signals, Rdc, output_file1, output_file2);
 
   /* - - - - - - - - Calculate the Crosstalk   - - - - - - - - - */
   status = nmmtl_xtk_calculate(num_signals,
-             signals,
-             electrostatic_induction,
-             inductance,
-             coupling,
-             risetime,
-             propagation_velocity,
-             forward_xtk,
-             backward_xtk,
-             output_file1,
-             output_file2);
-
+                               signals,
+                               electrostatic_induction,
+                               inductance,
+                               coupling,
+                               risetime,
+                               propagation_velocity,
+                               forward_xtk,
+                               backward_xtk,
+                               output_file1,
+                               output_file2);
   if (status != SUCCESS) {
     fclose(output_file1);
     return 0;

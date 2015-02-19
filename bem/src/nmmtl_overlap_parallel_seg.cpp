@@ -73,7 +73,7 @@ but I did not find one.  So this is sort of a brute force method.
 
 What we know:
 
-We have four points in space, 
+We have four points in space,
 
       S1, E1 (start and end of segment 1)
       S2, E2 (start and end of segment 2)
@@ -86,7 +86,7 @@ start point.  And so the following inequalities are true:
 S1 < E1   and   S2 < E2
 
 Now, the situation may occur where some of these points are the same,
-such that the total number of unique points is only three, or only two. 
+such that the total number of unique points is only three, or only two.
 If we ennumerate all the unique point combinations, and assume that no
 two points are the same, we end up with:
 
@@ -99,7 +99,7 @@ Four unique points:
 (5)   S2  S1  E1  E2
 (6)   S2  S1  E2  E1
 
-Now taking the above list and combining pairs of points which might be 
+Now taking the above list and combining pairs of points which might be
 located at the same coordinate, we get a list of combinations of three
 unique points (take the above 1-6, and merge pairs, removing those that
 violate the inequalities above):
@@ -138,7 +138,7 @@ These is one situation where we have two points which are common points:
 
 (19)  S1S2 E1E2
 
-Now we analyze the above states for possible overlap of segment 1 and 
+Now we analyze the above states for possible overlap of segment 1 and
 segment 2.  These states do not have any overlap:  1, 4, 7, and 13.
 
 For those states which have overlap, we can characterize the overlap by
@@ -149,22 +149,22 @@ leftover for the various states:
 left overhang:
 
 state    segment overhanging
-2            1 
-3            1 
-5            2 
-6            2 
-10           1 
+2            1
+3            1
+5            2
+6            2
+10           1
 15           2
 
 right overhang
 
 state    segment overhanging
-2            2 
-3            1 
-5            2 
-6            1 
-8            2 
-11           1 
+2            2
+3            1
+5            2
+6            1
+8            2
+11           1
 
 For the purposes of sorting this all out, we can assign a unique number
 to each state based on the sorted order of the points.  We will break a
@@ -191,7 +191,7 @@ Here  is the map of states to hex codes:
 15 = 021C
 19 = 003C
 
-We will come up the hex code by sorting the points in ascending order. 
+We will come up the hex code by sorting the points in ascending order.
 Once the code is computed, a switch statement to handle the appropriate
 resulting overlap is executed.
 
@@ -211,7 +211,7 @@ double *overlap_right,
 int *left_overhang,
 int *right_overhang
 
-             The flags indicating if there is any overhang 
+             The flags indicating if there is any overhang
              beyond the region of overlap
 
 RETURN VALUE:
@@ -230,13 +230,13 @@ CALLING SEQUENCE:
 
 int nmmtl_overlap_parallel_seg(struct dielectric_sub_segments *list1,
                                struct dielectric_sub_segments *list2,
-															 double *overlap_left, double *overlap_right,
+                               double *overlap_left, double *overlap_right,
                                int *left_overhang, int *right_overhang)
 {
 
   int overlap = 0;
-	double point[4],tempf;
-  int pointcode[4],tempi,pts;
+  double point[4], tempf;
+  int pointcode[4], tempi;
   unsigned int code;
 
   /* first, unless the segments fall on the same line, there can
@@ -245,7 +245,7 @@ int nmmtl_overlap_parallel_seg(struct dielectric_sub_segments *list1,
   if(list1->at == list2->at)
   {
     /* two arrays to be sorted are set up - one with the coordinate
-       value for the point (point) and the second with the code value 
+       value for the point (point) and the second with the code value
        for what that point represents (pointcode). */
 
     point[0] = list1->start;
@@ -256,7 +256,6 @@ int nmmtl_overlap_parallel_seg(struct dielectric_sub_segments *list1,
     pointcode[2] = 2;
     point[3] = list2->end;
     pointcode[3] = 8;
-    pts = 4;
 
     /* Now order the points based on the coordinate value.  We do this with
        bubble sort - expanded out here - what a lovely piece of code! */
@@ -324,19 +323,19 @@ int nmmtl_overlap_parallel_seg(struct dielectric_sub_segments *list1,
        code in the first array pair entry.  Shift all the entries toward the
        higher numbered array pairs - nulling out the ones not used.  */
 
-    if(point[0] == point[1]) 
+    if(point[0] == point[1])
     {
-      pointcode[1] |= pointcode[0]; 
+      pointcode[1] |= pointcode[0];
       pointcode[0] = 0;
     }
-    if(point[1] == point[2]) 
-    { 
+    if(point[1] == point[2])
+    {
       pointcode[2] |= pointcode[1];
       point[1] = point[0];
       pointcode[1] = pointcode[0];
-      pointcode[0] = 0; 
-    } 
-    if(point[2] == point[3]) 
+      pointcode[0] = 0;
+    }
+    if(point[2] == point[3])
     {
       pointcode[3] |= pointcode[2];
       point[2] = point[1];
@@ -456,15 +455,15 @@ void main()
   struct dielectric_sub_segments list1;
   struct dielectric_sub_segments list2;
   int overlap;
-	double overlap_left,overlap_right;
+  double overlap_left,overlap_right;
   int left_overhang,right_overhang;
 
-  struct x 
+  struct x
   {
-		double s1;
-		double e1;
-		double s2;
-		double e2;
+    double s1;
+    double e1;
+    double s2;
+    double e2;
   }        data[19] = {
   /* four unique points */
   { 1.0, 2.0, 3.0, 4.0 },
@@ -491,10 +490,10 @@ void main()
   };
 
 
-struct y 
+struct y
 {
   int o;
-	double lo,ro;
+  double lo,ro;
   int ol,or;
 }           expected[19] =
   {
@@ -517,7 +516,7 @@ struct y
     /*5*/   {0,0.0,0.0,0,0},
     /*6*/   {1,2.0,3.0,2,0},
     /*G*/   {1,1.0,2.0,0,0}
-	  }; 
+    };
 
 
 
@@ -525,9 +524,9 @@ struct y
    typedef struct dielectric_sub_segments
    {
    struct dielectric_sub_segments *next;
-	 double at;
-	 double start, end;
-	 double epsilon;
+   double at;
+   double start, end;
+   double epsilon;
    int divisions;
    } DIELECTRIC_SUB_SEGMENTS;
    ******************************************/
@@ -542,30 +541,30 @@ struct y
     list1.end =   data[loop].e1;
     list2.start = data[loop].s2;
     list2.end =   data[loop].e2;
-    
+
     overlap = nmmtl_overlap_parallel_seg(&list1,&list2,
-					 &overlap_left,&overlap_right,
-					 &left_overhang,&right_overhang);
+           &overlap_left,&overlap_right,
+           &left_overhang,&right_overhang);
     printf("loop: %d\n",loop);
     if(overlap != expected[loop].o)
       printf("  overlap failed\n");
     else
       printf("  overlap suceeded\n");
-    
+
     if(overlap)
     {
       if(overlap_left != expected[loop].lo)
-	printf("  overlap_left  failed,  wanted: %f, got: %f\n",
-	       expected[loop].ol,overlap_left);
+  printf("  overlap_left  failed,  wanted: %f, got: %f\n",
+         expected[loop].ol,overlap_left);
       if(overlap_right != expected[loop].ro)
-	printf("  overlap_right failed,  wanted: %f, got: %f\n",
-	       expected[loop].or,overlap_right);
+  printf("  overlap_right failed,  wanted: %f, got: %f\n",
+         expected[loop].or,overlap_right);
       if(left_overhang != expected[loop].ol)
-	printf("  left_overhang failed,  wanted: %d, got: %d\n",
-	       expected[loop].lo,left_overhang);
+  printf("  left_overhang failed,  wanted: %d, got: %d\n",
+         expected[loop].lo,left_overhang);
       if(right_overhang != expected[loop].or)
-	printf("  right_overhang failed, wanted: %d, got: %d\n",
-	       expected[loop].ro,right_overhang);
+  printf("  right_overhang failed, wanted: %d, got: %d\n",
+         expected[loop].ro,right_overhang);
     }
   }
 }
