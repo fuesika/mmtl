@@ -36,35 +36,8 @@ extern FILE *plotFile; /* the file the field plot data will be written to */
 
 FILE *dump_file;  /* a file for diagnostics */
 
-#include "legendre.h"  /* define the Legendre polynomials as globals */
+//#include "legendre.h"  /* define the Legendre polynomials as globals */
 
-int nmmtl_fpe_handler_argument = NMMTL_FPE_OTHER;
-
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
-void plotFileInitialization(FILE *plotFile,
-          int units,
-          int gnd_planes,
-          float top_ground_plane_thickness,
-          float bottom_ground_plane_thickness);
-
-void nmmtl_spout_off(float conductivity,
-         CONTOURS_P signals,
-         float top_ground_plane_thickness,
-         float bottom_ground_plane_thickness,
-         FILE *output_file1, FILE *output_file2);
-
-void nmmtl_dc_resistance(float conductivity,CONTOURS_P signals,
-       float **Rdc,FILE *fp1,FILE *fp2);
-
-/*
- *******************************************************************
- **  FUNCTION DEFINITIONS
- *******************************************************************
- */
 
 /*
  * FUNCTION NAME

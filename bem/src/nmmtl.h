@@ -150,47 +150,43 @@ extern const float INFINITE_SLOPE;
 
 
 /* Various global external variables - tables of Legendre Numbers declared
-   in legendre.h and included in nmmtl_main.c */
+   in legendre.h */
+
+#include "legendre.h"  /* define the Legendre polynomials as globals */
 
 /* used in nmmtl_assemble* */
 #define Legendre_root_a_max 10
 #define Legendre_root_a LEGENDRE_10_ROOTS
-extern double Legendre_root_a[];
+extern double const Legendre_root_a[];
 #define Legendre_weight_a LEGENDRE_10_WEIGHTS
-extern double Legendre_weight_a[];
+extern double const Legendre_weight_a[];
 
 /* used in nmmtl_load */
 #define Legendre_root_l_max 10
 #define Legendre_root_l LEGENDRE_10_ROOTS
-extern double Legendre_root_l[];
+extern double const Legendre_root_l[];
 #define Legendre_weight_l LEGENDRE_10_WEIGHTS
-extern double Legendre_weight_l[];
+extern double const Legendre_weight_l[];
 
 /* used in nmmtl_charge */
 #define Legendre_root_c_max 10
 #define Legendre_root_c LEGENDRE_10_ROOTS
-extern double Legendre_root_c[];
+extern double const Legendre_root_c[];
 #define Legendre_weight_c LEGENDRE_10_WEIGHTS
-extern double Legendre_weight_c[];
+extern double const Legendre_weight_c[];
 
 /* used in nmmtl_interval */
 #define Legendre_root_i_max 6
 #define Legendre_root_i LEGENDRE_6_ROOTS
-extern double Legendre_root_i[];
+extern double const Legendre_root_i[];
 #define Legendre_weight_i LEGENDRE_6_WEIGHTS
-extern double Legendre_weight_i[];
-
-
-extern char *range_value;
-int range_int(char *value);
+extern double const Legendre_weight_i[];
 
 
 /*
-
   Define what is the biggest pointer type on this system - such that it
   could allow enough storage to hold a pointer to any item - char, float,
   struct.  Merely for enhanced portability.
-
   */
 
 #ifdef VMS
@@ -721,6 +717,9 @@ int nmmtl_convert_units(float conversion,
                                     struct contour *signals,
                                     struct contour *groundwires);
 
+void nmmtl_dc_resistance(float conductivity,CONTOURS_P signals,
+       float **Rdc,FILE *fp1,FILE *fp2);
+
 /* nmmtl_det_arc_intersections.cxx */
 int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments, DIELECTRIC_SEGMENTS_P *dielectric_segments);
 
@@ -1190,6 +1189,18 @@ void nmmtl_sort_gnd_die_list(GND_DIE_LIST_P lower_gdl_head,
            GND_DIE_LIST_P upper_gdl_head,
            SORTED_GND_DIE_LIST_P *upper_sorted_gdl,
            double left, double right);
+
+void nmmtl_spout_off(float conductivity,
+         CONTOURS_P signals,
+         float top_ground_plane_thickness,
+         float bottom_ground_plane_thickness,
+         FILE *output_file1, FILE *output_file2);
+
+void plotFileInitialization(FILE *plotFile,
+          int units,
+          int gnd_planes,
+          float top_ground_plane_thickness,
+          float bottom_ground_plane_thickness);
 
 /* nmmtl_unload.cxx */
 void nmmtl_unload(float *potential_vector,

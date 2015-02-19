@@ -1,31 +1,31 @@
 #ifndef legendre_h
 #define legendre_h
 
-double LEGENDRE_4_ROOTS[4] = {
+double const LEGENDRE_4_ROOTS[4] = {
                  0.6699905    ,
                  0.9305682    ,
                  0.3300095    ,
                  6.9431841E-02};
-double LEGENDRE_4_WEIGHTS[4] = {
+double const LEGENDRE_4_WEIGHTS[4] = {
                  0.3260726    ,
                  0.1739274    ,
                  0.3260726    ,
                  0.1739274    };
-double LEGENDRE_6_ROOTS[6] = {
+double const LEGENDRE_6_ROOTS[6] = {
                  0.6193096    ,
                  0.8306047    ,
                  0.9662347    ,
                  0.3806904    ,
                  0.1693953    ,
                  3.3765256E-02};
-double LEGENDRE_6_WEIGHTS[6] = {
+double const LEGENDRE_6_WEIGHTS[6] = {
                  0.2339570    ,
                  0.1803808    ,
                  8.5662246E-02,
                  0.2339570    ,
                  0.1803808    ,
                  8.5662246E-02};
-double LEGENDRE_7_ROOTS[7] = {
+double const LEGENDRE_7_ROOTS[7] = {
                  0.7029226    ,
                  0.8707656    ,
                  0.9745539    ,
@@ -33,7 +33,7 @@ double LEGENDRE_7_ROOTS[7] = {
                  0.1292344    ,
                  2.5446057E-02,
                  0.5000000    };
-double LEGENDRE_7_WEIGHTS[7] = {
+double const LEGENDRE_7_WEIGHTS[7] = {
                  0.1909150    ,
                  0.1398527    ,
                  6.4742483E-02,
@@ -41,7 +41,7 @@ double LEGENDRE_7_WEIGHTS[7] = {
                  0.1398527    ,
                  6.4742483E-02,
                  0.2089796    };
-double LEGENDRE_10_ROOTS[10] = {
+double const LEGENDRE_10_ROOTS[10] = {
                  0.5744372    ,
                  0.7166977    ,
                  0.8397048    ,
@@ -52,7 +52,7 @@ double LEGENDRE_10_ROOTS[10] = {
                  0.1602952    ,
                  6.7468315E-02,
                  1.3046741E-02};
-double LEGENDRE_10_WEIGHTS[10] = {
+double const LEGENDRE_10_WEIGHTS[10] = {
                  0.1477621    ,
                  0.1346334    ,
                  0.1095432    ,
@@ -63,7 +63,7 @@ double LEGENDRE_10_WEIGHTS[10] = {
                  0.1095432    ,
                  7.4725673E-02,
                  3.3335671E-02};
-double LEGENDRE_12_ROOTS[12] = {
+double const LEGENDRE_12_ROOTS[12] = {
                  0.5626167    ,
                  0.6839157    ,
                  0.7936590    ,
@@ -76,7 +76,7 @@ double LEGENDRE_12_ROOTS[12] = {
                  0.1150487    ,
                  4.7941387E-02,
                  9.2196763E-03};
-double LEGENDRE_12_WEIGHTS[12] = {
+double const LEGENDRE_12_WEIGHTS[12] = {
                  0.1245735    ,
                  0.1167463    ,
                  0.1015837    ,
