@@ -1,22 +1,11 @@
-
 /*
-
-   FACILITY:  NMMTL
-
-   MODULE DESCRIPTION:
-
-   Contains the global function nmmtl_parse_graphic, and
-   the static functions which it calls:
-
-   AUTHOR(S):
-
-   David Endry
-
-   CREATION DATE:   1-1-86
-
-   COPYRIGHT:   Copyright (C) 1986-92 by Mayo Foundation. All rights reserved.
-
-   */
+FACILITY:           NMMTL
+MODULE DESCRIPTION: Contains the global function nmmtl_parse_graphic, and
+                    the static functions which it calls:
+AUTHOR(S):          David Endry
+CREATION DATE:      1-1-86
+COPYRIGHT:          Copyright (C) 1986-92 by Mayo Foundation. All rights reserved.
+*/
 
 
 /*
@@ -29,29 +18,7 @@
 #include "electro_prototype.h"
 
 #include <string.h>
-#include <ctype.h>
 
-/*
- *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  GLOBALS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
 
 /*
  *******************************************************************
