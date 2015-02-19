@@ -26,7 +26,7 @@
  */
 
 #include "nmmtl.h"
-#include "electro.h"
+#include "electro_prototype.h"
 
 #include <string.h>
 #include <ctype.h>
