@@ -743,7 +743,7 @@ void c_invert_matrix(int *n,COMPLEX *a,COMPLEX *b,
 
   if (ierr != 0) {
     (*status) = FAIL;
-    fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
+    fprintf(stderr,"ELECTRO-F-INVRSINT Error #1 in matrix inversion, NSWC code %d\n", ierr);
     return;
   }
 
@@ -937,7 +937,7 @@ void invert_matrix(int *n,float *a,float *b,
   if (ierr != 0)
     {
       (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
+      fprintf(stderr,"ELECTRO-F-INVRSINT #2 Error in matrix inversion, NSWC code %d\n", ierr);
       return;
     }
 
@@ -1023,7 +1023,7 @@ void invert_matrix_cond(int *n,float *a,float *b,
   if (ierr != 0)
     {
       (*status) = FAIL ;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
+      fprintf(stderr,"ELECTRO-F-INVRSINT #3 Error in matrix inversion, NSWC code %d\n", ierr);
       return;
     }
 
@@ -1078,7 +1078,7 @@ void d_set_invert_matrix(int *n)
 
   return;
 }
-
+
 /* ***********************************************************************
  * ROUTINE NAME  d_init_invert_matrix
  *
@@ -1138,7 +1138,7 @@ void d_init_invert_matrix(int *status)
   return;
 }
 
-
+
 /* ***********************************************************************
  * ROUTINE NAME d_invert_matrix
  *
@@ -1179,9 +1179,7 @@ void d_init_invert_matrix(int *status)
 /* this routine will invert a single precision real matrix */
 
 void d_invert_matrix(int *n,double *a,double *b,
-       int *lda, int *ldb, int *status)
-
-{
+       int *lda, int *ldb, int *status) {
   extern int *invert_matrix_ipvt;
   extern double *d_invert_matrix_wrk;
 
@@ -1196,33 +1194,26 @@ void d_invert_matrix(int *n,double *a,double *b,
          NSWC page 211
       */
 
-  if ((*n) > n_init_invert_matrix)
-    {
-      d_set_invert_matrix(n);
-      d_init_invert_matrix(status);
-    }
-
-
-
-/* first copy a to b */
-
-  for (i = 0; i < (*n); i++)
-    {
-      for (j = 0; j < (*n); j++)
-  {
-    b[i*(*ldb)+j] = a[i*(*lda)+j];
+  if ((*n) > n_init_invert_matrix) {
+    d_set_invert_matrix(n);
+    d_init_invert_matrix(status);
   }
+
+  /* first copy a to b */
+  for (i = 0; i < (*n); i++) {
+    for (j = 0; j < (*n); j++) {
+      b[i*(*ldb)+j] = a[i*(*lda)+j];
     }
+  }
 
   DMSLV(&calc_inv,n,&zero_dim,b,ldb,NULL,&zero_dim,&t1[0],
        &rcond,&ierr,invert_matrix_ipvt,d_invert_matrix_wrk);
 
-  if (ierr != 0)
-    {
-      (*status) = FAIL;
-      fprintf(stderr,"ELECTRO-F-INVRSINT Error in matrix inversion, NSWC code %d\n", ierr);
-      return;
-    }
+  if (ierr != 0) {
+    (*status) = FAIL;
+    fprintf(stderr,"ELECTRO-F-INVRSINT #4 Error in matrix inversion, NSWC code %d\n", ierr);
+    return;
+  }
 
   (*status) = SUCCESS;
   return;

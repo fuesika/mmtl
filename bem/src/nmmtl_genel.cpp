@@ -23,7 +23,6 @@
  **  INCLUDE FILES
  *******************************************************************
  */
-
 #include "nmmtl.h"
 
 /*
@@ -122,47 +121,38 @@ int nmmtl_generate_elements(int conductor_counter,
   cd = *conductor_data;
 
   /* process the conductor line segments */
-
-  cls=conductor_ls;
-  while(cls != NULL)
-  {
+  cls = conductor_ls;
+  while(cls != NULL) {
     current_conductor = cls->conductor;
-    if(current_conductor != 0)
-    {
+    if(current_conductor != 0) {
       cd[current_conductor].node_start = *node_point_counter;
-      nmmtl_generate_elements_cls(&cls,&head,&tail,node_point_counter);
-      if(head == NULL)
-      {
-  printf ("**** Error in element generation: from conductor line segment\n");
-  return(FAIL);
+      nmmtl_generate_elements_cls(&cls, &head, &tail, node_point_counter);
+      if(head == NULL) {
+        printf ("**** Error in element generation: from conductor line segment\n");
+        return(FAIL);
       }
       cd[current_conductor].elements = head;
       cd[current_conductor].node_end = *node_point_counter-1;
       number_elements +=
-  (cd[current_conductor].node_end -
-   cd[current_conductor].node_start + 1)/2;
-
-    }
-    else
-    {
+        (cd[current_conductor].node_end -
+         cd[current_conductor].node_start + 1)/2;
+    } else {
       if(gnd_list_head == NULL)
-  cd[0].node_start = *node_point_counter;
+        cd[0].node_start = *node_point_counter;
 
       node_point_counter_start = *node_point_counter;
 
       nmmtl_generate_elements_cls(&cls,&head,&tail,node_point_counter);
       if(gnd_list_head == NULL)
-  gnd_list_head = head;
+        gnd_list_head = head;
       else
-  gnd_list->next = head;
+        gnd_list->next = head;
 
       gnd_list = tail;
       cd[0].node_end = *node_point_counter-1;
 
-      number_elements +=
-  (cd[0].node_end - node_point_counter_start + 1)/2;
+      number_elements += (cd[0].node_end - node_point_counter_start + 1)/2;
     }
-
     /* if(cls != NULL) cls = cls->next; */
   }
 
@@ -243,7 +233,6 @@ int nmmtl_generate_elements(int conductor_counter,
   /* record how high the conductor nodes go */
   *highest_conductor_node = *node_point_counter - 1;
 
-
   /* process the dielectric boundaries */
   *die_elements = nmmtl_generate_elements_die(dielectric_segments,
                 node_point_counter,
@@ -251,7 +240,7 @@ int nmmtl_generate_elements(int conductor_counter,
                 extent_data);
 
   sprintf(infostring,"%d elements and %d nodes were generated\n  largest matrix to be inverted is %d X %d\n",
-    number_elements,*node_point_counter,*node_point_counter,
+    number_elements, *node_point_counter, *node_point_counter,
     *node_point_counter);
 
   printf ("%s", infostring);

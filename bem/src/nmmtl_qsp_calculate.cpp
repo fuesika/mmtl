@@ -28,21 +28,6 @@
 
 /*
  *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
-/*
- *******************************************************************
  **  GLOBALS
  *******************************************************************
  */
@@ -140,7 +125,8 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
   DELEMENTS_P die_elements = NULL;
   SORTED_GND_DIE_LIST_P lower_sorted_gdl;
   SORTED_GND_DIE_LIST_P upper_sorted_gdl;
-  unsigned int node_point_counter = 0, highest_conductor_node = 0;
+  unsigned int node_point_counter = 0;
+  unsigned int highest_conductor_node = 0;
   FILE *dump_file = NULL;
   FILE *retrieval_file = NULL;
   EXTENT_DATA extent_data;
@@ -205,7 +191,6 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
               &bottom_of_top_plane,
               &left_of_gnd_planes,
               &right_of_gnd_planes);
-
     if(status != SUCCESS) return(status);
 
     /* - - - - - - - - -  set up some extent data  - - - - - - - - - - - - - */
@@ -215,14 +200,13 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
     extent_data.right_cs_extent = right_of_gnd_planes;
 
     /* ---------------- write out extent data to the plot file ------------- */
-    if (plotFile != NULL)
-      {
-  fprintf(plotFile,"Upper Extent: %e\n",bottom_of_top_plane);
-  fprintf(plotFile,"Lower Extent: %e\n",top_of_bottom_plane);
-  fprintf(plotFile,"Right Extent: %e\n",right_of_gnd_planes);
-  fprintf(plotFile,"Left Extent: %e\n",left_of_gnd_planes);
-  fprintf(plotFile,"\n\n");
-      }
+    if (plotFile != NULL) {
+      fprintf(plotFile,"Upper Extent: %e\n",  bottom_of_top_plane);
+      fprintf(plotFile,"Lower Extent: %e\n",  top_of_bottom_plane);
+      fprintf(plotFile,"Right Extent: %e\n",  right_of_gnd_planes);
+      fprintf(plotFile,"Left Extent: %e\n",   left_of_gnd_planes);
+      fprintf(plotFile,"\n\n");
+    }
 
     /* setup other defaults for conductor region */
     /* setup initial values to be impossible and then they will get adjusted according to a
@@ -235,23 +219,16 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
     extent_data.expand_left = FALSE;
     extent_data.expand_right = FALSE;
 
-
-
     /* - - - - - - - -  massage the dielectric segments  - - - - - - - - - - */
-
     status = nmmtl_combine_die(dielectrics,pln_seg,gnd_planes,
              top_of_bottom_plane,
              bottom_of_top_plane,left_of_gnd_planes,
              right_of_gnd_planes,&dielectric_segments,
              &lower_sorted_gdl,&upper_sorted_gdl);
-
     if(status != SUCCESS) return(status);
 
-
     /* - - - - - - - -  process the conductors into elements - - - - - - - - */
-
-    if(gnd_planes == 1)
-    {
+    if(gnd_planes == 1) {
       status = nmmtl_evaluate_conductors(dielectrics,
            bottom_of_top_plane,
            cntr_seg,
@@ -260,9 +237,7 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
            &signals,&groundwires,
            &conductor_ls,&conductor_cs,
            &dielectric_segments);
-    }
-    else
-    {
+    } else {
       status = nmmtl_evaluate_conductors(dielectrics,
            0.0,
            cntr_seg,
@@ -272,8 +247,6 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
            &conductor_ls,&conductor_cs,
            &dielectric_segments);
     }
-
-
     if(status != SUCCESS) return(status);
 
     /* Determine if dielectrc boundary expansion is to be performed.
@@ -302,8 +275,7 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
        */
 
     if( (extent_data.right_cs_extent - extent_data.left_cs_extent)
-        < (2.5 * extent_data.min_cond_height) )
-    {
+        < (2.5 * extent_data.min_cond_height) ) {
       /* this is a candidate for expansion, setup data for such */
       double conductor_center =
             (extent_data.left_cond_extent + extent_data.right_cond_extent) / 2;
@@ -376,8 +348,8 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
 #endif
 
     /* - - - - - - - -  Generate the Elements  - - - - - - - - - */
-
-    status = nmmtl_generate_elements(conductor_counter,&conductor_data,
+    status = nmmtl_generate_elements(conductor_counter,
+             &conductor_data,
              &die_elements,
              &node_point_counter,
              &highest_conductor_node,
@@ -389,26 +361,21 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
              left_of_gnd_planes,right_of_gnd_planes,
              &extent_data);
     if(status != SUCCESS) return(status);
-
   }
 
   /* ---------------- write out contour data to the plot file ------------- */
-  if (plotFile != NULL)
-    {
-      struct contour *conductor;
-      struct dielectric *dieDieDie;
-      conductor = signals;
-      while (conductor != 0)
-  {
-    fprintf(plotFile,"Contour: Signal\n");
-    if (conductor->primitive == 'A')
-      {
+  if (plotFile != NULL) {
+    struct contour *conductor;
+    struct dielectric *dieDieDie;
+    conductor = signals;
+    while (conductor != 0) {
+      fprintf(plotFile,"Contour: Signal\n");
+      if (conductor->primitive == 'A') {
         fprintf(plotFile,"Contour Type: Circle\n");
         fprintf(plotFile,"Radius: %e\n",conductor->x1);
         fprintf(plotFile,"Origin: %e %e\n",conductor->x0,conductor->y0);
       }
-    if (conductor->primitive == 'R')
-      {
+      if (conductor->primitive == 'R') {
         fprintf(plotFile,"Contour Type: Polygon\n");
         fprintf(plotFile,"Number of Points: 4\n");
         fprintf(plotFile,"Point: %e %e\n",conductor->x0,conductor->y0);
@@ -416,45 +383,39 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
         fprintf(plotFile,"Point: %e %e\n",conductor->x1,conductor->y1);
         fprintf(plotFile,"Point: %e %e\n",conductor->x1,conductor->y0);
       }
-    if (conductor->primitive == 'G')
-      {
+      if (conductor->primitive == 'G') {
         int numberOfPoints;
         struct polypoints *point;
 
         numberOfPoints = 0;
         point = conductor->points;
-        while (point != 0)
-    {
-      numberOfPoints++;
-      point = point->next;
-    }
+        while (point != 0) {
+          numberOfPoints++;
+          point = point->next;
+        }
 
         fprintf(plotFile,"Contour Type: Polygon\n");
         fprintf(plotFile,"Number of Points: %d\n",numberOfPoints);
 
         point = conductor->points;
-        while (point != 0)
-    {
-      fprintf(plotFile,"Point: %e %e\n",point->x,point->y);
-      point = point->next;
-    }
+        while (point != 0) {
+          fprintf(plotFile,"Point: %e %e\n",point->x,point->y);
+          point = point->next;
+        }
       }
-    fprintf(plotFile,"\n");
-    conductor = conductor->next;
-  }
+      fprintf(plotFile,"\n");
+      conductor = conductor->next;
+    }
 
-      conductor = groundwires;
-      while (conductor != 0)
-  {
-    fprintf(plotFile,"Contour: Ground\n");
-    if (conductor->primitive == 'A')
-      {
+    conductor = groundwires;
+    while (conductor != 0) {
+      fprintf(plotFile,"Contour: Ground\n");
+      if (conductor->primitive == 'A') {
         fprintf(plotFile,"Contour Type: Circle\n");
         fprintf(plotFile,"Radius: %e\n",conductor->x1);
         fprintf(plotFile,"Origin: %e %e\n",conductor->x0,conductor->y0);
       }
-    if (conductor->primitive == 'R')
-      {
+      if (conductor->primitive == 'R') {
         fprintf(plotFile,"Contour Type: Polygon\n");
         fprintf(plotFile,"Number of Points: 4\n");
         fprintf(plotFile,"Point: %e %e\n",conductor->x0,conductor->y0);
@@ -462,57 +423,53 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
         fprintf(plotFile,"Point: %e %e\n",conductor->x1,conductor->y1);
         fprintf(plotFile,"Point: %e %e\n",conductor->x1,conductor->y0);
       }
-    if (conductor->primitive == 'G')
-      {
+      if (conductor->primitive == 'G') {
         int numberOfPoints;
         struct polypoints *point;
 
         numberOfPoints = 0;
         point = conductor->points;
-        while (point != 0)
-    {
-      numberOfPoints++;
-      point = point->next;
-    }
+        while (point != 0) {
+          numberOfPoints++;
+          point = point->next;
+        }
 
         fprintf(plotFile,"Contour Type: Polygon\n");
         fprintf(plotFile,"Number of Points: %d\n",numberOfPoints);
 
         point = conductor->points;
-        while (point != 0)
-    {
-      fprintf(plotFile,"Point: %e %e\n",point->x,point->y);
-      point = point->next;
-    }
+        while (point != 0) {
+          fprintf(plotFile,"Point: %e %e\n",point->x,point->y);
+          point = point->next;
+        }
       }
-    fprintf(plotFile,"\n");
-    conductor = conductor->next;
-  }
-
-      dieDieDie = dielectrics;
-      while (dieDieDie != 0)
-  {
-    fprintf(plotFile,"Contour: Dielectric\n");
-    fprintf(plotFile,"Contour Type: Polygon\n");
-    fprintf(plotFile,"Number of Points: 4\n");
-    fprintf(plotFile,"Point: %e %e\n",dieDieDie->x0,dieDieDie->y0);
-    fprintf(plotFile,"Point: %e %e\n",dieDieDie->x0,dieDieDie->y1);
-    fprintf(plotFile,"Point: %e %e\n",dieDieDie->x1,dieDieDie->y1);
-    fprintf(plotFile,"Point: %e %e\n",dieDieDie->x1,dieDieDie->y0);
-    fprintf(plotFile,"\n");
-    dieDieDie = dieDieDie->next;
-  }
+      fprintf(plotFile,"\n");
+      conductor = conductor->next;
     }
+
+    dieDieDie = dielectrics;
+    while (dieDieDie != 0) {
+      fprintf(plotFile,"Contour: Dielectric\n");
+      fprintf(plotFile,"Contour Type: Polygon\n");
+      fprintf(plotFile,"Number of Points: 4\n");
+      fprintf(plotFile,"Point: %e %e\n",dieDieDie->x0,dieDieDie->y0);
+      fprintf(plotFile,"Point: %e %e\n",dieDieDie->x0,dieDieDie->y1);
+      fprintf(plotFile,"Point: %e %e\n",dieDieDie->x1,dieDieDie->y1);
+      fprintf(plotFile,"Point: %e %e\n",dieDieDie->x1,dieDieDie->y0);
+      fprintf(plotFile,"\n");
+      dieDieDie = dieDieDie->next;
+    }
+  }
 
   if (dump_file) {
-    nmmtl_dump(dump_file,cntr_seg,pln_seg,coupling,risetime,
-         signals,conductor_counter,conductor_data,
-         die_elements,node_point_counter,
+    nmmtl_dump(dump_file, cntr_seg, pln_seg, coupling,risetime,
+         signals, conductor_counter, conductor_data,
+         die_elements, node_point_counter,
          highest_conductor_node);
   } else {
     /* - - - - - - - -  Do the kernel calculations  - - - - - - - - - */
-    status = nmmtl_qsp_kernel(conductor_counter,conductor_data,die_elements,
-            node_point_counter,highest_conductor_node,
+    status = nmmtl_qsp_kernel(conductor_counter, conductor_data, die_elements,
+            node_point_counter, highest_conductor_node,
             half_minimum_dimension,
             electrostatic_induction,
             inductance,characteristic_impedance,

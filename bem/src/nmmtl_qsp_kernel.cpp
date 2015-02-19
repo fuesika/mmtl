@@ -23,14 +23,8 @@
  **  INCLUDE FILES
  *******************************************************************
  */
-
 #include "nmmtl.h"
 
-/*
- *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
 /*
  *******************************************************************
  **  MACRO DEFINITIONS
@@ -39,11 +33,6 @@
 
 #define no_condition_number yes
 
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
 /*
  *******************************************************************
  **  GLOBALS
@@ -70,23 +59,12 @@ void nmmtl_write_plot_data(
          FILE *outputFile
        );
 
-#ifdef IMSL_LU_ROUTE
-int linrg();
-int lfsrg();
-#endif
-#ifdef IMSL_INV_ROUTE
-int lftrg();
-#endif
-
-
-
 /*
  *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_qsp_kernel
@@ -141,8 +119,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
          float *equivalent_dielectric,
          FILE *output_file1,
          FILE *output_file2,
-         CONTOURS_P signals)
-{
+         CONTOURS_P signals) {
 
   int ic, jc;
   int *ipvt;
@@ -172,7 +149,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
                    sizeof(float));
 
   /* allocate and zero assemble matrix */
-  assemble_matrix = (float **) dim2(node_point_counter,node_point_counter,sizeof(float));
+  assemble_matrix = (float **) dim2(node_point_counter, node_point_counter, sizeof(float));
 
   /* allocate and zero sigma vector */
   sigma_vector = (float *)calloc(node_point_counter,sizeof(float));
@@ -194,9 +171,9 @@ int nmmtl_qsp_kernel(int conductor_counter,
 
      */
 
-  printf ("Calculate LHS (assemble) matrix in free space\n");
+  printf("Calculate LHS (assemble) matrix in free space\n");
 
-  nmmtl_assemble_free_space(conductor_counter,conductor_data,assemble_matrix);
+  nmmtl_assemble_free_space(conductor_counter, conductor_data, assemble_matrix);
 
 #ifdef TRANSPOSE_ASSEMBLE
   for(i = 0; i<conductor_counter; i++) {
@@ -541,7 +518,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
     for (j=0;j <= highest_conductor_node;j++)
       assemble_matrix[i][j] = 0.;
 
-  printf ("Calculate LHS (assemble) matrix in dielectric\n");
+  printf("Calculate LHS (assemble) matrix in dielectric\n");
 
   nmmtl_assemble(conductor_counter,conductor_data,die_elements,
      length_scale,assemble_matrix);

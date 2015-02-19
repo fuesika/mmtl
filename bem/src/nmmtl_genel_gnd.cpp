@@ -23,7 +23,7 @@
  **  INCLUDE FILES
  *******************************************************************
  */
-
+#include <cmath>
 #include "nmmtl.h"
 
 /*
@@ -96,29 +96,29 @@ int nmmtl_generate_elements_gnd(CELEMENTS_P *gnd_plane_list_head,
 #ifdef GND_PLANE_COND_PROJECTION
         COND_PROJ_LIST_P cond_projections,
 #endif
-        SORTED_GND_DIE_LIST_P upper_sorted_gdl)
-{
+        SORTED_GND_DIE_LIST_P upper_sorted_gdl) {
   CELEMENTS_P element,start = NULL;
   unsigned int npcntr;
-  double xhalfincr,x;
-  double width,close_enough;
+  double xhalfincr;
+  double x;
+  double width;
+  double close_enough;
 
   npcntr = *node_point_counter;
   width = right_of_gnd_planes - left_of_gnd_planes;
-  xhalfincr = width/(pln_seg*2);
+  xhalfincr = .5*width/((double)pln_seg);
 
   /* do not apply this constraint to ground planes */
 #ifdef GND_PLANE_MIN_ELEMENT_SIZE
-  if(xhalfincr * 2 > half_minimum_dimension)
-    xhalfincr = half_minimum_dimension / 2;
+  if (xhalfincr * 2. > half_minimum_dimension)
+    xhalfincr = .5*half_minimum_dimension;
 #endif
 
   /* Why is the lower ground plane here - that is not needed */
 
   /* Upper ground plane */
 
-  if(gnd_planes != 2) return(SUCCESS);
-
+  if (gnd_planes != 2) return(SUCCESS);
 
   /* use the conductor projections list in conjunction with the pln_seg
      and half_minimum_dimension, width and xhalfincr are determined
@@ -131,23 +131,13 @@ int nmmtl_generate_elements_gnd(CELEMENTS_P *gnd_plane_list_head,
   /* add in checking against "close_enough"
      to avoid floating point comparison problems */
 
-  while(x < right_of_gnd_planes &&
-  fabs(x - right_of_gnd_planes) > close_enough)
-  {
-
-    /*
-printf("x=%23.20g, right=%23.20g, x-right=%23.20g\n", x,right_of_gnd_planes,x-right_of_gnd_planes);
-*/
-
-
-    if(start == NULL)  /* first time through */
-    {
+  while ((x < right_of_gnd_planes)
+        && (fabs(x - right_of_gnd_planes) > close_enough)) {
+    if(start == NULL) {  /* first time through */
       /* create the head of the list */
       element = (CELEMENTS_P)malloc(sizeof(CELEMENTS));
       start = element;
-    }
-    else /* subsequent times through */
-    {
+    } else { /* subsequent times through */
       /* link up to the last element created */
       element->next = (CELEMENTS_P)malloc(sizeof(CELEMENTS));
       element = element->next;
@@ -174,54 +164,49 @@ printf("x=%23.20g, right=%23.20g, x-right=%23.20g\n", x,right_of_gnd_planes,x-ri
     /* is there a dielectric break sooner than the next normal length-based
        break? */
 
-    if(x+2*xhalfincr > upper_sorted_gdl->key)
-    {
-
+    if (x + 2.*xhalfincr > upper_sorted_gdl->key) {
       /* also - do not project the conductors - for now */
 #ifdef GND_PLANE_COND_PROJECTION
       /* is there a conductor projection break sooner than that? */
-      if(cond_projections != NULL &&
-   upper_sorted_gdl->key > cond_projections->key)
-      {
+      if ((cond_projections != NULL)
+      &&  (upper_sorted_gdl->key > cond_projections->key)) {
 
-  /* advance to the midpoint */
-  x = (x+cond_projections->key)/2;
-  element->xpts[1] = x;
+        /* advance to the midpoint */
+        x = .5*(x + cond_projections->key);
+        element->xpts[1] = x;
 
-  /* advance to the endpoint */
-  x = cond_projections->key;
-  element->xpts[2] = x;
+        /* advance to the endpoint */
+        x = cond_projections->key;
+        element->xpts[2] = x;
 
-  /* advance the conductor projections list */
-  cond_projections = cond_projections->next;
+        /* advance the conductor projections list */
+        cond_projections = cond_projections->next;
 
-      }
-      else /* just use dielectric break */
+      } else /* just use dielectric break */
 #endif
       {
 
-  /* advance to the midpoint */
-  x = (x+upper_sorted_gdl->key)/2;
-  element->xpts[1] = x;
+        /* advance to the midpoint */
+        x = .5*(x + upper_sorted_gdl->key);
+        element->xpts[1] = x;
 
-  /* advance to the endpoint */
-  x = upper_sorted_gdl->key;
-  element->xpts[2] = x;
+        /* advance to the endpoint */
+        x = upper_sorted_gdl->key;
+        element->xpts[2] = x;
 
-  /* advance the dielectric intersections list */
-  upper_sorted_gdl = upper_sorted_gdl->next;
+        /* advance the dielectric intersections list */
+        upper_sorted_gdl = upper_sorted_gdl->next;
       }
-
     }
 
 #ifdef GND_PLANE_COND_PROJECTION
     /* is there a conductor projection break sooner than the next */
     /* normal length-based break? */
-    else if(cond_projections != NULL && x+2*xhalfincr > cond_projections->key)
-    {
+    else if ((cond_projections != NULL)
+    && (x + 2.*xhalfincr > cond_projections->key)) {
 
       /* advance to the midpoint */
-      x = (x+cond_projections->key)/2;
+      x = .5*(x + cond_projections->key);
       element->xpts[1] = x;
 
       /* advance to the endpoint */
@@ -252,7 +237,6 @@ printf("x=%23.20g, right=%23.20g, x-right=%23.20g\n", x,right_of_gnd_planes,x-ri
 
   }   /* while traversing the upper ground plane */
 
-
   /* The next time this variable gets used, it will be a different conductor
      or dielectric and thus we should advance the counter to a new node.
      In other words, there is no physical link between the last node on
@@ -267,8 +251,4 @@ printf("x=%23.20g, right=%23.20g, x-right=%23.20g\n", x,right_of_gnd_planes,x-ri
   *gnd_plane_list_head = start;
 
   return(SUCCESS);
-
 }
-
-
-

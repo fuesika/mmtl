@@ -91,7 +91,7 @@
 /* compound physical constants */
 #define C_SQUARED_INVERTED (1.0/SPEED_OF_LIGHT/SPEED_OF_LIGHT) /* speed of light squared then
                inverted */
-#define ASSEMBLE_CONST_1 1.0/(2.0*PI*AIR_CONSTANT)
+#define ASSEMBLE_CONST_1 .5/(PI*AIR_CONSTANT)
 
 #define EPSILON_NAUGHT C_SQUARED_INVERTED/(PI*4.0e-7L)
 
@@ -1196,6 +1196,3 @@ void nmmtl_unload(float *potential_vector,
       CONDUCTOR_DATA_P conductor_data);
 
 #endif
-
-
-
