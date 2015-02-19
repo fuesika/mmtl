@@ -1,21 +1,10 @@
-
 /*
-  
-  FACILITY:  NMMTL
-  
-  MODULE DESCRIPTION:
-  
-  Contains nmmtl_assemble function.
-  
-  AUTHOR(S):
-  
-  Kevin J. Buchs
-  
-  CREATION DATE:  Mon Mar 30 12:47:58 1992
-  
-  COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
-  
-  */
+FACILITY:           NMMTL
+MODULE DESCRIPTION: Contains nmmtl_assemble function.
+AUTHOR(S):          Kevin J. Buchs
+CREATION DATE:      Mon Mar 30 12:47:58 1992
+COPYRIGHT:          Copyright (C) 1992 by Mayo Foundation. All rights reserved.
+*/
 
 
 /*
@@ -28,36 +17,10 @@
 
 /*
  *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  GLOBALS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
-/*
- *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
   
   FUNCTION NAME:  nmmtl_assemble
@@ -398,5 +361,3 @@ void nmmtl_assemble(int conductor_counter,
     
   } /* while outer looping on die elements */
 }
-
-
