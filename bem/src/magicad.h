@@ -1,8 +1,6 @@
 #ifndef MAGICAD_H_FIXED
 #define MAGICAD_H_FIXED 1
 
-#include <stdio.h>
-
 enum boolean {FALSE=0,TRUE=1};
 
 #define SUCCESS 1

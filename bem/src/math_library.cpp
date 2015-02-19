@@ -1,3 +1,6 @@
+#ifndef math_library_f_h
+#define math_library_f_h
+
 /* one letter prefixes in routine names have the following meanings
    (no prefix indicates single precision real)
      c -- complex data is being used
@@ -41,6 +44,7 @@
 *
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "magicad.h"
 #include "math_library.h"
@@ -2194,3 +2198,5 @@ void dlu_solve_linear(int *n, double *a, double *x, double *b, int *lda,
   (*status) = SUCCESS;
   return;
 }
+
+#endif

@@ -37,7 +37,7 @@ set (src_fortran
   ext/idamax.F
   ext/ipmpar.F
   ext/isamax.F
-  ext/mslv.F  
+  ext/mslv.F
   ext/mtms.F
   ext/sasum.F
   ext/saxpy.F
@@ -56,7 +56,7 @@ add_library (bem_libs STATIC
   #sources for fortran library
   ${src_fortran}
   )
-  
+
 ## Configuration of Executables ################################################
 # bem-binary
 add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
@@ -77,7 +77,6 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_dc_resistance.cpp
   nmmtl_det_arc_intersections.cpp
   nmmtl_det_intersections.cpp
-  nmmtl_dump.cpp
   nmmtl_dump_geometry.cpp
   nmmtl_eval_circles.cpp
   nmmtl_eval_conductors.cpp
@@ -120,7 +119,7 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   remove_all_spaces.cpp
   units.cpp
   )
-    
+
 target_link_libraries(${PROJECT_NAME} bem_libs)
 
 

@@ -33,22 +33,15 @@
  *                                              *
  ***********************************************/
 
-#ifndef magicad_h
-#include "magicad.h"                  /* defines some general constants */
-#endif
-
-#ifndef float_h
+#include <stdio.h>
 #include <float.h>
-#endif
 
-#ifndef __TURBOC__
+#include "magicad.h"                  /* defines some general constants */
+
 #include "math_library.h"             /* info on calling NSWC routines */
 #include "electro_gendata_netlist.h"
-#endif
 
-#ifndef dim_h
 #include "dim.h"                      /* to allow dynamic 2D array allocation*/
-#endif
 
 
 /************** Conditional compilation flags *****************/
@@ -84,29 +77,6 @@
  *            *
  ************************************************/
 
-/* Help library */
-#define HELP_LIBRARY_LOC "nmmtl_prompt_2dlf"
-
-/* These constants are used to distinguish GPGE primitives */
-#define DIE_COLOR1  GREEN        /* dielectric interfaces may be 2 (green) */
-#define DIE_COLOR2  WHITE        /* dielectric interfaces may be 0 (white) */
-#define DIE_COLOR3  OLD_WHITE    /* for old graphic files with white=7 */
-#define GND_COLOR   BLUE         /* ground wires must be 4 (dark blue) */
-#define SIGNAL_COLOR YELLOW      /* signal wires must be 3 (yellow) */
-#define DIELECT 'D'
-#define CONTOUR 'C'              /* either a SIGNAL OR a GROUND */
-#define SIGNAL 'S'
-#define GROUND 'G'
-
-/* various flags */
-
-#define REPEAT 1                 /* final line segments repeat last point */
-#define NOCNST 0.0               /* flags no dielectric constant to output */
-#define NO_COMMENT ".a"          /* mcms_access() no comment log (abort) */
-#define ALLOWANCE .0005
-#define LINE_LEN 100             /* longest line in an electro_data_ file */
-#define EDGE_EFFECTS 1
-#define NO_EDGE_EFFECTS 0
 
 /* program control constants */
 
@@ -116,10 +86,7 @@
 
 #define AIR_CONSTANT 1.0         /* default dielectric constant (air) */
 #define PI                  M_PI
-#define RADIANS_TO_DEGREES  (180.0L/PI)
 #define SPEED_OF_LIGHT      2.99792458E+08L /* meters/second */
-
-#define MU_NAUGHT PI*4.0e-7L
 
 /* compound physical constants */
 #define C_SQUARED_INVERTED (1.0/SPEED_OF_LIGHT/SPEED_OF_LIGHT) /* speed of light squared then
@@ -128,31 +95,16 @@
 
 #define EPSILON_NAUGHT C_SQUARED_INVERTED/(PI*4.0e-7L)
 
-/* define the file extensions used */
-#define GEN_IN  "graphic"             /* graphical representation of design */
-#define MMTL_OUT "nmmtl" /* final output of nmmtl */
-
 /* logical names (i.e. environment variables) */
-#define ER_LOGICAL "NMMTL_ELEMENTS_RETRIEVAL"
-#define ED_LOGICAL "NMMTL_ELEMENTS_DUMP"
 #define EXPAND_VARIABLE "NMMTL_EXPAND_NL"
 
 /* various icon attribute defaults */
-#define DEFAULT_CNTR_SEG 6    /* default number of segments on contours */
-#define DEFAULT_PLN_SEG  15    /* default number of segments on planes */
 #define DEFAULT_RISETIME 1000.0L  /* risetime if icon attribute not used */
 #define DEFAULT_COUPLING 1.0L  /* coupling len if icon attribute not used */
-#define DEFAULT_TO_SCALE .000079375 /* scaling factor if icon attribute not
-               used AND drawing is to scale */
-#define DEFAULT_NOT_SCALE .0000254  /* scaling factor if icon attribute not
-               used AND drawing is not to scale */
+
 #define DEFAULT_FREQUENCY 100.0L   /* frequency if icon attribute not used */
-#define DEFAULT_SURF_RESIST 2.61L /* default surface resistance */
 #define DEFAULT_CONDUCTIVITY 5.8e7L /* mho/meter for Copper */
 #define DEFAULT_GND_THICK 2.54e-5L /* default ground plane thickness meters */
-#define DEFAULT_LEFT_EDGE 0.0L    /* default left edge of structure */
-#define DEFAULT_RIGHT_EDGE 50.0L  /* default right edge of structure */
-
 
 /* What should we set the slope to for a vertical line? */
 /* this is now defined in nmmtl_qsp_kernel */
@@ -162,8 +114,6 @@ extern const float INFINITE_SLOPE;
    the attributes entered. It states that the SIG_NAME primitive attribute
    can be only 10 characters long. SIZE_SIG_NAME must be at least that big. */
 #define SIZE_SIG_NAME 30
-
-#define SIZE_RESP 10       /* Response in TERMINATE for Menus */
 
 /* possible orientations of dielectric-dielectric interface */
 #define VERTICAL_ORIENTATION 0
@@ -185,7 +135,6 @@ extern const float INFINITE_SLOPE;
 /* UNITS Conversions constants */
 
 #define MILS_TO_METERS     2.54e-5L
-#define MICRONS_TO_METERS  1.0e-6L
 #define INCHES_TO_METERS   2.54e-2L
 
 /* which end of segments are you dealing with */
@@ -236,31 +185,6 @@ extern char *range_value;
 int range_int(char *value);
 
 
-
-
-/*
-  Structures
-  */
-
-/* forward references to make C++ happy */
-struct pins;
-struct polypoints;
-struct contour;
-struct dielectric;
-struct dielectric_sub_segments;
-struct dielectric_segments;
-struct circle_segments;
-struct line_segments;
-struct delements;
-struct edgedata;
-struct elements;
-struct conductor_data;
-struct point;
-struct linesegment;
-struct arc;
-struct fpksl;
-struct gnd_die_list;
-
 /*
 
   Define what is the biggest pointer type on this system - such that it
@@ -277,19 +201,6 @@ typedef char *BIGPOINTER;
 #endif
 
 
-/*
-  Structure pins
-
-  linked list of pins and attributes, are used only for polygon polypoints.
-
-  */
-
-typedef struct pins
-{
-  struct pins *left, *right; /* for easy removal of used pins */
-  struct polypoints *att;    /* points to pins list of polypoints */
-  double x, y;                /* position of pin ties it to a polygon */
-} PINS;
 
 /*
 
@@ -465,11 +376,9 @@ typedef struct line_segments
 } LINE_SEGMENTS, *LINE_SEGMENTS_P;
 
 /*
-
   Elements
 
   These are what segments are divided into before numerical processing.
-
   */
 
 /* Dielectric elements */
@@ -589,14 +498,12 @@ typedef struct fpksl
   COND_PROJ_LIST
   */
 /* use the FLT_KEY_LIST to hold Conductor projection data */
-typedef FLT_KEY_LIST COND_PROJ_LIST;
 typedef FLT_KEY_LIST_P COND_PROJ_LIST_P;
 
 /*
   SORTED_GND_DIE_LIST
   */
 /* use the FLT_KEY_LIST to hold Ground plane - Dielectric intersection data */
-typedef FLT_KEY_LIST SORTED_GND_DIE_LIST;
 typedef FLT_KEY_LIST_P SORTED_GND_DIE_LIST_P;
 
 
@@ -646,12 +553,6 @@ typedef struct extent_data
  *   Function Prototypes                 *
  *                                       *
  ****************************************/
-
-int electro_read_icon_section(FILE *fp, NETLIST_REC *netlist, FILE *err);
-
-int electro_generate_netlist(NETLIST_REC *netlist, struct contour *signals,
-           char *node, char *dir, int version, FILE *err);
-
 
 int nmmtl_qsp_calculate(struct dielectric *dielectrics,
             struct contour  *signals,
@@ -840,14 +741,6 @@ void nmmtl_dump(FILE *dump_file,
                 unsigned int node_point_counter,
                 unsigned int highest_conductor_node);
 
-/* nmmtl_dump_dielectric_segments.cxx */
-int nmmtl_dump_dielectric_segment(struct dielectric_segments *seg);
-
-/* nmmtl_dump_elements.cxx */
-void nmmtl_dump_elements(int conductor_counter,
-                         CONDUCTOR_DATA_P conductor_data,
-                         DELEMENTS_P die_elements);
-
 /* nmmtl_dump_geometry.cxx */
 void nmmtl_dump_rectangle(CONTOURS_P contour);
 
@@ -865,11 +758,6 @@ void nmmtl_dump_geometry(int cntr_seg,int pln_seg,
                          struct dielectric *dielectrics,
                          struct contour *signals,
                          struct contour *groundwires);
-
-/* nmmtl_dump_segments.c */
-int nmmtl_dump_segments(DIELECTRIC_SEGMENTS_P ds,
-      LINE_SEGMENTS_P ls,
-      CIRCLE_SEGMENTS_P cs);
 
 /* nmmtl_evaluate_circles.cxx */
 int nmmtl_evaluate_circles(int cntr_seg,
@@ -1015,9 +903,6 @@ int
         struct dielectric_sub_segments **right_seg,
         SORTED_GND_DIE_LIST_P *lower_sorted_gdl,
         SORTED_GND_DIE_LIST_P *upper_sorted_gdl);
-
-/* nmmtl_fpe_handler.cxx */
-void nmmtl_fpe_handler(void *arg);
 
 /* nmmtl_gen_netlist_from_icon.cxx */
 int nmmtl_gen_netlist_from_icon(NETLIST_REC *netlist,
@@ -1315,10 +1200,6 @@ void nmmtl_sort_gnd_die_list(GND_DIE_LIST_P lower_gdl_head,
 void nmmtl_unload(float *potential_vector,
       int conductor_number,
       CONDUCTOR_DATA_P conductor_data);
-
-/* helper function used inside gi_test_real_or_sweep.cxx */
-/* Probably used elsewhere */
-int is_real(char *string);
 
 #endif
 
