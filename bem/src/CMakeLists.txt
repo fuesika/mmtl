@@ -59,13 +59,12 @@ add_library (bem_libs STATIC
 
 ## Configuration of Executables ################################################
 # bem-binary
-add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
+add_executable(${PROJECT_NAME} nmmtl.cpp
   assemble.cpp
   assemble_free_space.cpp
   dim2.cpp
   free2.cpp
   math_library.cpp
-  nmmtl.cpp
   nmmtl_add_to_sorted_list.cpp
   nmmtl_angle_of_intersection.cpp
   nmmtl_build_gnd_die_list.cpp
@@ -91,7 +90,6 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_genel_cls.cpp
   nmmtl_genel_die.cpp
   nmmtl_genel_gnd.cpp
-  nmmtl_gen_netlist_from_icon.cpp
   nmmtl_intersections.cpp
   nmmtl_interval.cpp
   nmmtl_jacobian.cpp
@@ -103,6 +101,7 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_output_headers.cpp
   nmmtl_output_matrices.cpp
   nmmtl_overlap_parallel_seg.cpp
+  nmmtl_parse_xsctn.cpp
   nmmtl_qsp_calculate.cpp
   nmmtl_qsp_kernel.cpp
   nmmtl_retrieve.cpp

@@ -904,11 +904,6 @@ int
         SORTED_GND_DIE_LIST_P *lower_sorted_gdl,
         SORTED_GND_DIE_LIST_P *upper_sorted_gdl);
 
-/* nmmtl_gen_netlist_from_icon.cxx */
-int nmmtl_gen_netlist_from_icon(NETLIST_REC *netlist,
-        struct contour *signals,
-        char *basename);
-
 /* nmmtl_genel.cxx */
 int nmmtl_generate_elements(int conductor_counter,
           CONDUCTOR_DATA_P *conductor_data,

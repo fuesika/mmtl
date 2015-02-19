@@ -18,7 +18,6 @@ COPYRIGHT:          Copyright (C) 1986-92 by Mayo Foundation. All rights reserve
 #include "electro_prototype.h"
 
 #include <string.h>
-#include <stdio.h>
 
 
 /*
