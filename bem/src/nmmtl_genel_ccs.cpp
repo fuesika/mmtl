@@ -68,7 +68,7 @@ int nmmtl_generate_elements_ccs(CIRCLE_SEGMENTS_P *ccsp,
   CIRCLE_SEGMENTS_P ccs;
   CELEMENTS_P element,start = NULL;
   unsigned int divisions;
-  register unsigned int npcntr;
+  unsigned int npcntr;
   unsigned int first_node;
   double anglehalfincr,angleincr,angle;
   double x,y;

@@ -72,12 +72,12 @@ int nmmtl_orphans(CIRCLE_SEGMENTS_P *conductor_cs,
             DIELECTRICS_P dielectrics,
             double air_starts,
             DIELECTRIC_SEGMENTS_P *dielectric_segments) {
-  register CIRCLE_SEGMENTS_P cs;
-  register LINE_SEGMENTS_P ls;
-  POINT center;                    /* this can't be register as per DEC C */
-  register double radius;
-  LINESEG LS;                      /* this can't be register as per DEC C */
-  register DIELECTRICS_P die;
+  CIRCLE_SEGMENTS_P cs;
+  LINE_SEGMENTS_P ls;
+  POINT center;
+  double radius;
+  LINESEG LS;
+  DIELECTRICS_P die;
   DIELECTRIC_SEGMENTS_P ds, ds_temp;
 
   /* first look for orphaned conductor line segments - both epsilon

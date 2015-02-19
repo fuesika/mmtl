@@ -86,7 +86,8 @@ void nmmtl_interval_c(double x,
   double Jacobian;
   double dx1,dx2,dy1,dy2,d1,d2;
   double Greens_Function;
-  double nu0,nu1;
+  double nu0;
+  //double nu1;
 
 
   /* zero out output */
@@ -115,9 +116,9 @@ void nmmtl_interval_c(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
-      nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
+      //nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -189,7 +190,8 @@ void nmmtl_interval_self_c(double x,
   double Greens_Function;
   double alpha; /* coeficient for interval splitting */
   double local_coord;
-  double nu0,nu1;
+  double nu0;
+  //double nu1;
 
   /* zero out output */
   for(i = 0; i < INTERP_PTS; i++)
@@ -228,9 +230,9 @@ void nmmtl_interval_self_c(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
-      nmmtl_shape_c_edge(local_coord,shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
+      //nmmtl_shape_c_edge(local_coord,shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(local_coord,shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -281,9 +283,9 @@ void nmmtl_interval_self_c(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
-      nmmtl_shape_c_edge(local_coord,shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
+      //nmmtl_shape_c_edge(local_coord,shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(local_coord,shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -344,7 +346,8 @@ void nmmtl_interval_c_fs(double x,
   double Jacobian;
   double dx1,dx2,dy1,dy2,d1,d2;
   double Greens_Function;
-  double nu0,nu1;
+  double nu0;
+  //double nu1;
 
 
   /* zero out output */
@@ -373,9 +376,9 @@ void nmmtl_interval_c_fs(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->free_space_nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
-      nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
+      //nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(Legendre_root_i[Legendre_counter],shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -443,7 +446,8 @@ void nmmtl_interval_self_c_fs(double x,
   double Greens_Function;
   double alpha; /* coeficient for interval splitting */
   double local_coord;
-  double nu0,nu1;
+  double nu0;
+  //double nu1;
 
   /* zero out output */
   for(i = 0; i < INTERP_PTS; i++)
@@ -482,9 +486,9 @@ void nmmtl_interval_self_c_fs(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->free_space_nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
-      nmmtl_shape_c_edge(local_coord,shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
+      //nmmtl_shape_c_edge(local_coord,shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(local_coord,shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -535,9 +539,9 @@ void nmmtl_interval_self_c_fs(double x,
       /* if given edge is really an edge, set the true value of nu,
    otherwise, don't really care */
       nu0 = cel->edge[0] ? cel->edge[0]->free_space_nu : 0;
-      nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
-      nmmtl_shape_c_edge(local_coord,shape,cel,
-       nu0,nu1);
+      //nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
+      //nmmtl_shape_c_edge(local_coord,shape,cel,nu0,nu1);
+      nmmtl_shape_c_edge(local_coord,shape,cel,nu0);
     }
 
     dx1 = x - X;
@@ -559,7 +563,6 @@ void nmmtl_interval_self_c_fs(double x,
 }
 
 
-
 /*
 
   FUNCTION NAME:  nmmtl_interval_d()

@@ -79,7 +79,7 @@ void nmmtl_nl_expand(double xstart,double xend,double incr_start,float epsilonpl
 {
 
   DELEMENTS_P element;
-  register unsigned int npcntr;
+  unsigned int npcntr;
   double xincr,xhalfincr,x;
   int first_element;
   extern double NON_LINEARITY_FACTOR;

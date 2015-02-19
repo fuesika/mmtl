@@ -57,8 +57,7 @@ void nmmtl_assemble(int conductor_counter,
         CONDUCTOR_DATA_P conductor_data,
         DELEMENTS_P die_elements,
         float length_scale,
-        float **assemble_matrix)
-{
+        float **assemble_matrix) {
 
   int i,j,cond_num,inner_cond_num;
   CELEMENTS_P cel,inner_cel;
@@ -69,7 +68,8 @@ void nmmtl_assemble(int conductor_counter,
   double value[INTERP_PTS];
   double Jacobian;
   double coef1,coef2;
-  float nu0,nu1;
+  float nu0;
+  //float nu1;
 
   /* matrix should be zeroed */
 
@@ -102,9 +102,9 @@ void nmmtl_assemble(int conductor_counter,
     /* if given edge is really an edge, set the true value of nu,
        otherwise, don't really care */
     nu0 = cel->edge[0] ? cel->edge[0]->nu : 0;
-    nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
-    nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter],shape,cel,
-           nu0,nu1);
+    //nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
+    //nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter],shape,cel,nu0,nu1);
+    nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter],shape,cel,nu0);
   }
 
   nmmtl_jacobian_c(Legendre_root_a[Legendre_counter],cel,&Jacobian);

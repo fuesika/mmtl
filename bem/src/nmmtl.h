@@ -1167,14 +1167,9 @@ int nmmtl_set_offset(double offset,struct dielectric *dielectrics,
          struct contour *groundwires);
 
 /* nmmtl_shape.c */
-void nmmtl_shape_c_edge(double point,
-      double *shape,
-      CELEMENTS_P cel,
-      float nu0,
-      float nu1);
+void nmmtl_shape_c_edge(double point, double *shape, CELEMENTS_P cel, float nu0);
 
-void nmmtl_shape(double point,
-     double *shape);
+void nmmtl_shape(double point, double *shape);
 
 /* nmmtl_sort_gnd_die_list.cxx */
 void nmmtl_sort_gnd_die_list(GND_DIE_LIST_P lower_gdl_head,

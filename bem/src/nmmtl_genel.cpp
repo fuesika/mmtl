@@ -111,7 +111,7 @@ int nmmtl_generate_elements(int conductor_counter,
   CIRCLE_SEGMENTS_P ccs;
   CELEMENTS_P head,tail,gnd_list,gnd_list_head = NULL;
   CELEMENTS_P gnd_plane_list_head = NULL;
-  register unsigned int node_point_counter_start;
+  unsigned int node_point_counter_start;
   int number_elements = 0;
   char infostring[256];
 
