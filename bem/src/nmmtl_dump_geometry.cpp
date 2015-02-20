@@ -70,17 +70,17 @@ extern FILE *dump_file;
   */
 void nmmtl_dump_geometry(int cntr_seg,
                          int pln_seg,
-                         float coupling,
-                         float risetime,
-                         float the_conductivity,
-                         float half_minimum_dimension,
+                         double coupling,
+                         double risetime,
+                         double the_conductivity,
+                         double half_minimum_dimension,
                          int gnd_planes,
-                         float top_ground_plane_thickness,
-                         float bottom_ground_plane_thickness,
+                         double top_ground_plane_thickness,
+                         double bottom_ground_plane_thickness,
                          struct dielectric *dielectrics,
                          struct contour *signals,
                          struct contour *groundwires) {
-  float conductivity = the_conductivity;
+  double conductivity = the_conductivity;
 
   fprintf(dump_file,"\n\n\t\tDUMP OF GEOMETRY\n\n");
   fprintf(dump_file,

@@ -51,7 +51,7 @@
 
   int conductor_counter,             - how many conductors
   CONDUCTOR_DATA_P conductor_data,   - array of data on conductors
-  float **assemble_matrix            - out: resultant assemble matrix
+  double **assemble_matrix            - out: resultant assemble matrix
 
   RETURN VALUE:
 
@@ -66,9 +66,10 @@
 
 void nmmtl_assemble_free_space(int conductor_counter,
                                CONDUCTOR_DATA_P conductor_data,
-                               float **assemble_matrix) {
+                               double **assemble_matrix) {
   int i,j,cond_num,inner_cond_num;
-  CELEMENTS_P cel,inner_cel;
+  CELEMENTS_P cel;
+  CELEMENTS_P inner_cel;
   int Legendre_counter;
   double x,y;  /* interpolated coordinates */
   double shape[INTERP_PTS];
@@ -102,10 +103,10 @@ void nmmtl_assemble_free_space(int conductor_counter,
           nu0 = cel->edge[0] ? cel->edge[0]->free_space_nu : 0;
           //nu1 = cel->edge[1] ? cel->edge[1]->free_space_nu : 0;
           //nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter],shape,cel,nu0,nu1);
-          nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter],shape,cel,nu0);
+          nmmtl_shape_c_edge(Legendre_root_a[Legendre_counter], shape, cel, nu0);
         }
 
-        nmmtl_jacobian_c(Legendre_root_a[Legendre_counter],cel,&Jacobian);
+        nmmtl_jacobian_c(Legendre_root_a[Legendre_counter], cel, &Jacobian);
 
         /* Now an inner loop over all the elements, performing an
            integration in each call to nmmtl_interval_*** */
@@ -184,7 +185,4 @@ void nmmtl_assemble_free_space(int conductor_counter,
       cel = cel->next;
     } /* while outer looping on elments of a conductor */
   } /* while outer looping on conductors */
-
 }
-
-

@@ -53,8 +53,8 @@
 int nmmtl_retrieve(FILE *retrieve_file,
              int *cntr_seg,
              int *pln_seg,
-             float *coupling,
-             float *risetime,
+             double *coupling,
+             double *risetime,
              CONTOURS_P *psignals,
              int *sig_cnt,
              int *pconductor_counter,
@@ -70,10 +70,10 @@ int nmmtl_retrieve(FILE *retrieve_file,
   CONDUCTOR_DATA_P conductor_data;
   DELEMENTS_P die_elements;
   int temp[2];
-  float ftemp[2];
+  double ftemp[2];
 
 
-  if(fscanf(retrieve_file,"%d %d %g %g\n",
+  if(fscanf(retrieve_file,"%d %d %lf %lf\n",
       &temp[0],&temp[1],&ftemp[0],&ftemp[1]) != 4) return(FAIL);
   *cntr_seg = temp[0];
   *pln_seg = temp[1];
@@ -153,7 +153,7 @@ int nmmtl_retrieve(FILE *retrieve_file,
       ce->edge[0] = NULL;
       ce->edge[1] = NULL;
 
-      sscanf(line,"%f %d %d",&ce->epsilon,&edge0,&edge1);
+      sscanf(line,"%lf %d %d",&ce->epsilon,&edge0,&edge1);
 
       /* skip over first three fields */
       i = 0;
@@ -166,7 +166,7 @@ int nmmtl_retrieve(FILE *retrieve_file,
 
       if (edge0) {
         ce->edge[0] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
-        sscanf(&line[i],"%f %f",&ce->edge[0]->nu,
+        sscanf(&line[i],"%lf %lf",&ce->edge[0]->nu,
                &ce->edge[0]->free_space_nu);
         /* skip these two fields */
         while(line[i] != ' ') i++;
@@ -177,7 +177,7 @@ int nmmtl_retrieve(FILE *retrieve_file,
       if (edge1) {
 
         ce->edge[1] = (EDGEDATA_P)malloc(sizeof(EDGEDATA));
-        sscanf(&line[i],"%f %f",&ce->edge[1]->nu,
+        sscanf(&line[i],"%lf %lf",&ce->edge[1]->nu,
                &ce->edge[1]->free_space_nu);
         /* skip these two fields */
         while(line[i] != ' ') i++;
@@ -210,7 +210,7 @@ int nmmtl_retrieve(FILE *retrieve_file,
 
     die_elements->next = NULL;
     if(sscanf(line,
-              "%f %f %f %f\n",
+              "%lf %lf %lf %lf\n",
               &die_elements->epsilonplus,
               &die_elements->epsilonminus,
               &die_elements->normalx,
@@ -228,4 +228,3 @@ int nmmtl_retrieve(FILE *retrieve_file,
   }
   return(SUCCESS);
 }
-

@@ -6,18 +6,18 @@
 
 #include "nmmtl.h"
 
-void nmmtl_sanity_minfreq(float the_conductivity,
+void nmmtl_sanity_minfreq(double the_conductivity,
          CONTOURS_P signals,
-         float top_ground_plane_thickness,
-         float bottom_ground_plane_thickness,
+         double top_ground_plane_thickness,
+         double bottom_ground_plane_thickness,
          FILE *output_file1,
          FILE *output_file2) {
   CONTOURS_P item;
-  float minimumDimension = FLT_MAX;
-  float minimumFrequency;
-  float tmp;
-  float minfreq;
-  float conductivity = the_conductivity;
+  double minimumDimension = DBL_MAX;
+  double minimumFrequency;
+  double tmp;
+  double minfreq;
+  double conductivity = the_conductivity;
 
   //search for the minimum dimension
   if (top_ground_plane_thickness < minimumDimension)

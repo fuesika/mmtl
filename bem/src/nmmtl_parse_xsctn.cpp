@@ -139,13 +139,13 @@ void parseVal (char *line, int flg, char *tmp)
 int nmmtl_parse_xsctn(char *filename,
       int *cntr_seg,
       int *pln_seg,
-      float *coupling,
-      float *risetime,
-      float *conductivity,
-      float *half_minimum_dimension,
+      double *coupling,
+      double *risetime,
+      double *conductivity, //FIXME: unused argument
+      double *half_minimum_dimension,
       int *gnd_planes,
-      float *top_ground_plane_thickness,
-      float *bottom_ground_plane_thickness,
+      double *top_ground_plane_thickness,
+      double *bottom_ground_plane_thickness,
       struct dielectric **dielectrics,
       struct contour **signals,
       struct contour **groundwires,
@@ -169,7 +169,7 @@ int nmmtl_parse_xsctn(char *filename,
   double highest_dielectric = -1.0e20; /* the level of the top of the highest */
                                       /* dielectric, initialized to some very*/
                                       /* unlikely number. */
-  float minimum_dimension = FLT_MAX;
+  double minimum_dimension = DBL_MAX;
 
   int upper_ground_planes = 0;  /* keep count of drawn ground planes */
   int lower_ground_planes = 0;
@@ -290,11 +290,10 @@ int nmmtl_parse_xsctn(char *filename,
   //
   // Establish a default RISETIME if riseTime is set to zero.
   //
-  if ( *risetime == 0 )
-    {
-      *risetime = DEFAULT_RISETIME * 1.0e-12;
-      printf ("Assign a default value of %g to risetime\n", *risetime);
-    }
+  if (*risetime == 0) {
+    *risetime = DEFAULT_RISETIME * 1.0e-12;
+    printf ("Assign a default value of %g to risetime\n", *risetime);
+  }
 
   //
   // Establish a default COUPLING if the coupling-length is set to zero.
@@ -389,7 +388,7 @@ int nmmtl_parse_xsctn(char *filename,
         // Thickness of the dielectric
         //-----------------------------------------------
         if ( strstr (line, "-permittivity") != NULL )
-          sscanf (line, "%*s %f", &d_temp->constant);
+          sscanf (line, "%*s %lf", &d_temp->constant);
 
         //-----------------------------------------------
         // End of this dielectric definition
@@ -448,7 +447,7 @@ int nmmtl_parse_xsctn(char *filename,
         // Permittivity of the dielectric
         //-----------------------------------------------
         if ( strstr (line, "-permittivity") != NULL )
-          sscanf (line, "%*s %f", &d_temp->constant);
+          sscanf (line, "%*s %lf", &d_temp->constant);
 
         //-----------------------------------------------
         // Number of conductors to the set
@@ -500,7 +499,7 @@ int nmmtl_parse_xsctn(char *filename,
         }
       }
 
-      float cx = xOffset;
+      double cx = xOffset;
       for ( indx = 0; indx < number; ++indx ) {
         //-----------------------------------------------
         // d_temp.x0  - left x coordinate of the rectangle
@@ -535,7 +534,7 @@ int nmmtl_parse_xsctn(char *filename,
     //-----------------------------------------------------
     else if ( strstr (line, "Conductors") != NULL ) {
       double width, botWidth, topWidth, height, xOffset, yOffset, pitch;
-      double diameter, conductivity;
+      double diameter, tmp_cond2;
       int indx, number, primitive, type;
       char name[500];
 
@@ -563,7 +562,7 @@ int nmmtl_parse_xsctn(char *filename,
         //-----------------------------------------------
         if ( strstr (line, "-conductivity") != NULL ) {
           parseVal (line, 1, tmp);
-          conversion (tmp, siemensPmeter, conductivity);
+          conversion (tmp, siemensPmeter, tmp_cond2);
         }
 
         //-----------------------------------------------
@@ -822,15 +821,17 @@ int nmmtl_parse_xsctn(char *filename,
         // Check if this is a conductor that should be defined as a ground wire.
         //----------------------------------------------------
         if (  strncmp (name, "gr", 2) ) {
-          c_temp->conductivity = conductivity;
+          c_temp->conductivity = tmp_cond2;
           c_temp->next = *signals;
           *signals = c_temp;
           sprintf (c_temp->name, "%s%c%d", name, type, *num_signals);
           (*num_signals)++;
-          printf ("Conductivity %s = %g siemens/meter\n", c_temp->name, c_temp->conductivity);
+          printf("Conductivity %s = %g siemens/meter\n",
+                 c_temp->name,
+                 c_temp->conductivity);
         } else {
           c_temp->next = *groundwires;
-          c_temp->conductivity = 0.0;
+          c_temp->conductivity = 0.;
           c_temp->name[0] = '\0';
           *groundwires = c_temp;
           (*num_grounds)++;
@@ -971,7 +972,7 @@ int nmmtl_parse_xsctn(char *filename,
     printf ("* Warning: There isn't a groundplane\n");
   }
 
-  *half_minimum_dimension = 0.5 * minimum_dimension;
+  *half_minimum_dimension = .5 * minimum_dimension;
 
   /* all done, return status of close_files */
   fclose (inpf);

@@ -52,25 +52,24 @@
  *******************************************************************
  */
 
-static float EPSILON_TERM; /* the constant term in nu equation */
-static float THETA2;       /* constant in nu equation */
-static float THETA_TERM;   /* constant in nu equation 2*theta1 - theta2 */
+static double EPSILON_TERM; /* the constant term in nu equation */
+static double THETA2;       /* constant in nu equation */
+static double THETA_TERM;   /* constant in nu equation 2*theta1 - theta2 */
 
 /*
  *******************************************************************
  **  FUNCTION DECLARATIONS
  *******************************************************************
  */
-extern "C" void FMIN(float (*nmmtl_nu_function)(float *), float *a,
-  float *b, float *x, float *w, float *aerr, float *rerr,
-  float *error, int *ind);
+extern "C" void FMIN(double (*nmmtl_nu_function)(double *), double *a,
+  double *b, double *x, double *w, double *aerr, double *rerr,
+  double *error, int *ind);
 /*
  *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_find_nu
@@ -107,12 +106,15 @@ extern "C" void FMIN(float (*nmmtl_nu_function)(float *), float *a,
 
   */
 
-float nmmtl_find_nu(float epsilon1,float epsilon2,float theta1,float theta2) {
-  float a,b;
-  float nu;
-  float fofnu;
-  float AERR,RERR;
-  float ERROR;
+double nmmtl_find_nu(double epsilon1,
+                     double epsilon2,
+                     double theta1,
+                     double theta2) {
+  double a,b;
+  double nu;
+  double fofnu;
+  double AERR,RERR;
+  double ERROR;
   int IND;
 
   /* setup constants to call to FMIN */
@@ -176,14 +178,13 @@ float nmmtl_find_nu(float epsilon1,float epsilon2,float theta1,float theta2) {
   CALLING SEQUENCE:
 
   */
-float nmmtl_nu_function(float *nu)
+double nmmtl_nu_function(double *nu)
 {
-  float x;
+  double x;
   x = sin(*nu * THETA2) - sin(*nu * THETA_TERM) * EPSILON_TERM;
   return( x * x );
 }
 
-
 /*
 
   FUNCTION NAME:  main (test this module)
@@ -211,8 +212,8 @@ float nmmtl_nu_function(float *nu)
 
 main()
 {
-  float nu;
-  float theta1;
+  double nu;
+  double theta1;
 
 
   printf("symmetry test1\n");
@@ -238,20 +239,11 @@ main()
   THETA_TERM = 2*theta1 - THETA2;
 
   nu = 0.0;
-  while(nu >= 0.0F)
-  {
+  while(nu >= 0.0F) {
     printf("enter nu:\n");
     scanf("%f",&nu);
     if(nu < 0.0F) break;
     printf("f(nu)=%f\n\n",nmmtl_nu_function(&nu));
   }
-
 }
-
 #endif
-
-
-
-
-
-

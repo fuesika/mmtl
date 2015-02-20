@@ -21,6 +21,7 @@ echo "[done]";
 
 #start cmake
 echo "Run cmake..";
+#cmake ../ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$INST_PRFX
 cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INST_PRFX
 
 ## make MMTL-BEM ###############################################################

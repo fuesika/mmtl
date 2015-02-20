@@ -70,7 +70,6 @@ typedef struct chain
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_generate_elements

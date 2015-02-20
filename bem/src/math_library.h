@@ -131,7 +131,7 @@ extern "C" void c_mult_matricies(int *ra,int *carb, int *cb,
          int *lda, int *ldb, int *ldc,int *status);
 
 extern "C" void mult_matricies(int *ra,int *carb, int *cb,
-         float *a, float *b, float *c,
+         double *a, double *b, double *c,
          int *lda, int *ldb, int *ldc,int *status);
 
 
@@ -146,11 +146,11 @@ extern "C" void set_invert_matrix(int *n);
 
 extern "C" void init_invert_matrix(int *status);
 
-extern "C" void invert_matrix(int *n,float *a,float *b,
+extern "C" void invert_matrix(int *n,double *a,double *b,
          int *lda, int *ldb, int *status);
 
-extern "C" void invert_matrix_cond(int *n,float *a,float *b,
-           int *lda, int *ldb, float *rcond,
+extern "C" void invert_matrix_cond(int *n,double *a,double *b,
+           int *lda, int *ldb, double *rcond,
            int *status);
 
 extern "C" void d_set_invert_matrix(int *n);
@@ -176,13 +176,13 @@ extern "C" void d_c_init_solve_linear(int * status);
 extern "C" void d_c_solve_linear(int *n, DOUBLE_COMPLEX *a, DOUBLE_COMPLEX *b,
           DOUBLE_COMPLEX *c, int *lda, int *status);
 
-extern "C" void lu_factor(int *n, float *a, float *lu, int *lda,
+extern "C" void lu_factor(int *n, double *a, double *lu, int *lda,
      int *ipvt, int *status);
 
-extern "C" void lu_factor_cond(int *n, float *a, float *lu, int *lda,
-     int *ipvt, float *rcond, int *status);
+extern "C" void lu_factor_cond(int *n, double *a, double *lu, int *lda,
+     int *ipvt, double *rcond, int *status);
 
-extern "C" void lu_solve_linear(int *n, float *a, float *x, float *b, int *lda,
+extern "C" void lu_solve_linear(int *n, double *a, double *x, double *b, int *lda,
      int *ipvt, int *status);
 
 extern "C" void dlu_factor(int *n, double *a, double *lu, int *lda,
@@ -196,18 +196,18 @@ extern "C" void dlu_solve_linear(int *n, double *a, double *x, double *b,
 extern "C" void FFT(COMPLEX *c, int *n, int *sign, int *ierr);
 
 extern "C" void CEIGV(int *bal,
-     float *c_calc_eigenvalues_ar,float *c_calc_eigenvalues_ai,
+     double *c_calc_eigenvalues_ar,double *c_calc_eigenvalues_ai,
      int *n1, int *n2,
-     float *c_calc_eigenvalues_wr,float *c_calc_eigenvalues_wi,
-     float *c_calc_eigenvalues_zr,float *c_calc_eigenvalues_zi,
+     double *c_calc_eigenvalues_wr,double *c_calc_eigenvalues_wi,
+     double *c_calc_eigenvalues_zr,double *c_calc_eigenvalues_zi,
      int *ierr,
-     float *c_calc_eigenvalues_temp);
+     double *c_calc_eigenvalues_temp);
 
 extern "C"  void CMTMS(int *ra, int *carb, int *cb, COMPLEX *a, int *lda,
          COMPLEX *b, int *ldb, COMPLEX *c, int *ldc);
 
-extern "C"  void MTMS(int *ra,int *carb,int *cb,float *a,int *lda,
-        float *b,int *ldb,float *c,int *ldc);
+extern "C"  void MTMS(int *ra,int *carb,int *cb,double *a,int *lda,
+        double *b,int *ldb,double *c,int *ldc);
 
 extern "C"  void CMSLV1(int *calc_inv,int *n,int *zero_dim1,
           COMPLEX *c_solve_linear_a, int *lda,
@@ -218,9 +218,9 @@ extern "C"  void CMSLV1(int *calc_inv,int *n,int *zero_dim1,
           COMPLEX *c_invert_matrix_wrk);
 
 extern "C"  void MSLV(int *calc_inv,int *n,int *zero_dim1,
-        float *b,int *ldb,int *dum,int *zero_dim2,
-        float *t1, float *rcond,int *ierr,
-        int *invert_matrix_ipvt,float *invert_matrix_wrk);
+        double *b,int *ldb,int *dum,int *zero_dim2,
+        double *t1, double *rcond,int *ierr,
+        int *invert_matrix_ipvt,double *invert_matrix_wrk);
 
 extern "C"  void DMSLV(int *calc_inv,int *n,int *zero_dim1,
         double *b,int *ldb,int *dum,int *zero_dim2,
@@ -240,12 +240,12 @@ extern "C"  void DCMSLV(int *calc_inv,
           int *d_c_solve_linear_ipvt,
           double *d_c_solve_linear_wrk);
 
-extern "C" void SGEFA(float *lu, int *lda, int *n, int *ipvt, int *info);
+extern "C" void SGEFA(double *lu, int *lda, int *n, int *ipvt, int *info);
 
-extern "C" void SGECO(float *lu, int *lda, int *n, int *ipvt, float *rcond,
+extern "C" void SGECO(double *lu, int *lda, int *n, int *ipvt, double *rcond,
                  int *info);
 
-extern "C" void SGESL(float *a, int *lda, int *n, int *ipvt, float *x, int *job);
+extern "C" void SGESL(double *a, int *lda, int *n, int *ipvt, double *x, int *job);
 
 extern "C" void DGEFA(double *lu, int *lda, int *n, int *ipvt, int *info);
 

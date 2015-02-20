@@ -29,16 +29,6 @@
 
 /*
  *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
  **  PREPROCESSOR CONSTANTS
  *******************************************************************
  */
@@ -55,24 +45,12 @@
 #define IP_I2C1 128
 
 
-
-/*
- *******************************************************************
- **  GLOBALS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
 /*
  *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_determine_arc_intersectio
@@ -829,7 +807,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
     {
       /* intersection to initial endpoint is inside */
       dieseg->end_in_conductor |= 0X02;  /* set bit 2 */
-      new_ds->end_in_conductor &= 0XFFFFFFFE;  /* clear bit 1 */
+      new_ds->end_in_conductor &= (unsigned char)0XFFFFFFFE;  /* clear bit 1 */
 
       if( ip & IP_I1C0 )
         segment->epsilon[0] = dieseg->epsilonplus;
@@ -839,7 +817,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
     else
     {
       /* intersection to initial endpoint is outside */
-      dieseg->end_in_conductor &= 0XFFFFFFFD;  /* clear bit 2 */
+      dieseg->end_in_conductor &= (unsigned char)0XFFFFFFFD;  /* clear bit 2 */
       new_ds->end_in_conductor |= 0X01;  /* set bit 1 */
 
       if( ip & IP_I1C0 )
@@ -1055,7 +1033,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
       segment->epsilon[1] = dieseg->epsilonminus;
 
       dieseg->end_in_conductor |= 0X02;  /* set bit 2 */
-      new_ds->end_in_conductor &= 0XFFFFFFFE;  /* clear bit 1 */
+      new_ds->end_in_conductor &= (unsigned char)0XFFFFFFFE;  /* clear bit 1 */
     }
     else
     {
@@ -1064,7 +1042,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
       new_cs->epsilon[0] = dieseg->epsilonminus;
       segment->epsilon[1] = dieseg->epsilonplus;
 
-      dieseg->end_in_conductor &= 0XFFFFFFFD;  /* clear bit 2 */
+      dieseg->end_in_conductor &= (unsigned char)0XFFFFFFFD;  /* clear bit 2 */
       new_ds->end_in_conductor |= 0X01;  /* set bit 1 */
     }
 
@@ -1115,8 +1093,8 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
     new_ds->end_in_conductor = dieseg->end_in_conductor;
     new_ds->orientation = dieseg->orientation;
     /* neither ends in a conductor - so clear the bits */
-    dieseg->end_in_conductor &= 0XFFFD;  /* clear bit 2 */
-    new_ds->end_in_conductor &= 0XFFFE;  /* clear bit 1 */
+    dieseg->end_in_conductor &= (unsigned char)0XFFFD;  /* clear bit 2 */
+    new_ds->end_in_conductor &= (unsigned char)0XFFFE;  /* clear bit 1 */
 
     /* find which intersection comes first on circle segment */
 
@@ -1517,8 +1495,8 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
     new_ds->end_in_conductor = dieseg->end_in_conductor;
     new_ds->orientation = dieseg->orientation;
     /* neither ends in a conductor - so clear the bits */
-    dieseg->end_in_conductor &= 0XFFFD;  /* clear bit 2 */
-    new_ds->end_in_conductor &= 0XFFFE;  /* clear bit 1 */
+    dieseg->end_in_conductor &= (unsigned char)0XFFFD;  /* clear bit 2 */
+    new_ds->end_in_conductor &= (unsigned char)0XFFFE;  /* clear bit 1 */
 
     if(ip & IP_I1C0)
     {
@@ -1790,8 +1768,8 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
     new_ds->end_in_conductor = dieseg->end_in_conductor;
     new_ds->orientation = dieseg->orientation;
     /* neither ends in a conductor - so clear the bits */
-    dieseg->end_in_conductor &= 0XFFFD;  /* clear bit 2 */
-    new_ds->end_in_conductor &= 0XFFFE;  /* clear bit 1 */
+    dieseg->end_in_conductor &= (unsigned char)0XFFFD;  /* clear bit 2 */
+    new_ds->end_in_conductor &= (unsigned char)0XFFFE;  /* clear bit 1 */
 
     /* find the angle of the intersections */
     inter_angle[0] =

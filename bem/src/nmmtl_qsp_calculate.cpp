@@ -72,17 +72,17 @@ double NON_LINEARITY_FACTOR;
   struct contour  *signals,
   struct contour  *groundwires,
   int gnd_planes,
-  float half_minimum_dimension,
+  double half_minimum_dimension,
   int cntrs_seg,
   int pln_seg,
 
   outputs:
 
-  float **electrostatic_induction,
-  float **inductance,
-  float *characteristic_impedance,
-  float *propagation_velocity,
-  float *equivalent_dielectric,
+  double **electrostatic_induction,
+  double **inductance,
+  double *characteristic_impedance,
+  double *propagation_velocity,
+  double *equivalent_dielectric,
   FILE *output_file1, *output_file2
 
   RETURN VALUE:
@@ -99,16 +99,16 @@ int nmmtl_qsp_calculate(struct dielectric *dielectrics,
             struct contour  *signals,
             struct contour  *groundwires,
             int gnd_planes,
-            float half_minimum_dimension,
+            double half_minimum_dimension,
             int cntr_seg,
             int pln_seg,
-            float coupling,
-            float risetime,
-            float **electrostatic_induction,
-            float **inductance,
-            float *characteristic_impedance,
-            float *propagation_velocity,
-            float *equivalent_dielectric,
+            double coupling,
+            double risetime,
+            double **electrostatic_induction,
+            double **inductance,
+            double *characteristic_impedance,
+            double *propagation_velocity,
+            double *equivalent_dielectric,
             FILE *output_file1,
             FILE *output_file2) {
   /* local variables */

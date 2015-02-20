@@ -34,27 +34,6 @@
  *******************************************************************
  */
 
-
-/*
-  FUNCTION NAME:  getlogin
-
-  This compatibility function is supplied for broken
-  systems like Windows where you can't call simple
-  posix functions like getlogin().
-*/
-#ifndef HAVE_GETLOGIN
-#include <stdlib.h>
-char *getlogin() {
-  char *name ;
-  name = getenv("USERNAME");
-  if ( name == NULL ) {
-    name = getenv("USER");
-  }
-  return name;
-}
-#endif
-
-
 /*
 
   FUNCTION NAME:  nmmtl_output_headers()
@@ -90,27 +69,18 @@ void nmmtl_output_headers(FILE *output_file,
         int num_signals,
         int num_grounds,
         int num_ground_planes,
-        float coupling,
-        float risetime,
+        double coupling,
+        double risetime,
         int cntr_seg,
-        int pln_seg)
-{
+        int pln_seg) {
   char date[50];   /*  for getting and formatting date/time  */
   time_t tm ;
-
-  char *userName;
-
-  // look up the user name
-  userName = getlogin() ;
-  if ( userName == NULL ) {
-    userName = (char *)&"Username Unknown";
-  }
 
   time(&tm) ;
   strftime(date,sizeof(date),"%Y %m %d %H:%M:%S", localtime(&tm) );
 
 
-  fprintf(output_file,"\n%s %s %s\n\n",date,userName,"NMMTL_2DLF");
+  fprintf(output_file,"\n%s %s\n\n",date,"NMMTL_2DLF");
   fprintf(output_file,"File = %s\n",filename);
   fprintf(output_file,
     "Number of Signal Lines  = %3d\n", num_signals);

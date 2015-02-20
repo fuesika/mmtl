@@ -39,11 +39,10 @@ static const char rcsid[] =
 
 static const char *powerstring="^";
 
-static struct
-  {
+static struct {
   const char *uname;
   const char *uval;
-  } unittable[MAXUNITS];
+} unittable[MAXUNITS];
 
 struct unittype
   {
@@ -52,17 +51,16 @@ struct unittype
   double factor;
   };
 
-static struct
-  {
+static struct {
   const char *prefixname;
   const char *prefixval;
-  } prefixtable[MAXPREFIXES];
+} prefixtable[MAXPREFIXES];
 
 
 static char *NULLUNIT=(char *)"";
 
-static int unitcount=0;
-static int prefixcount=0;
+static int unitcount    = 0;
+static int prefixcount  = 0;
 
 void setunits(void);
 
@@ -819,9 +817,7 @@ void usage()
 //
 //F@///////////////////////////////////////////////////////////////////////////
 
-int conversion(char *from_string, char *to_string,
-                                        double &scaled_number)
-  {
+int conversion(char *from_string, char *to_string, double &scaled_number) {
   char *remove_all_spaces(char *string);
   char *local_from_string = strdup(from_string);
   char *havestr, *wantstr;
@@ -879,7 +875,7 @@ int conversion(char *from_string, char *to_string,
       // and scale factor.  In this way, '1.0ps', '1.0 ps', '1000.0fs',
       // '1000.0 fs', '1e3fs', and '1e3 fs' are converted correctly.
       //
-      j = strlen(havestr);
+      j = (int)strlen(havestr);
       unitspt = j;
       while ( !isdigit(havestr[unitspt]) )
     {

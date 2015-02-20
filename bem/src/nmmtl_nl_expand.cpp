@@ -71,8 +71,8 @@
 
   */
 
-void nmmtl_nl_expand(double xstart,double xend,double incr_start,float epsilonplus,
-                     float epsilonminus,float normaly,double y,
+void nmmtl_nl_expand(double xstart, double xend, double incr_start, double epsilonplus,
+                     double epsilonminus, double normaly, double y,
                      unsigned int *node_point_counter,
                      DELEMENTS_P *element_p, int *number_elements,
                      unsigned int common_node)

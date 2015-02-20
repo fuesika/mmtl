@@ -53,14 +53,14 @@ int main(int argc, char **argv) {
   int units;
   int cntr_seg; /* desired # segments on contours */
   int pln_seg; /* desired # segments on planes */
-  float coupling; /* coupling length (icon attr.) */
-  float risetime; /* signal risetime (icon attr.) */
-  float conductivity; /* conductivity or converted surface */
+  double coupling; /* coupling length (icon attr.) */
+  double risetime; /* signal risetime (icon attr.) */
+  double conductivity; /* conductivity or converted surface */
                       /* resistance (icon attr.) */
   int gnd_planes; /* # ground planes in file (1 or 2 needed) */
-  float top_ground_plane_thickness; /* icon attr. */
-  float bottom_ground_plane_thickness; /* icon attr. */
-  float half_minimum_dimension = -1.0; /* unset value */
+  double top_ground_plane_thickness; /* icon attr. */
+  double bottom_ground_plane_thickness; /* icon attr. */
+  double half_minimum_dimension = -1.0; /* unset value */
   struct dielectric *dielectrics = NULL; /* points to lowest layer in list */
   struct contour *signals = NULL; /* 1st signal (lowest) read in */
   struct contour *sigs = NULL; /* 1st signal (lowest) read in */
@@ -70,14 +70,14 @@ int main(int argc, char **argv) {
   char filespec[PATH_MAX];    /* filespec for fopen() */
   int num_signals = 0;
   int num_grounds = 0;
-  float **electrostatic_induction;
-  float **inductance;
-  float **Rdc;
-  float *characteristic_impedance;
-  float *propagation_velocity;
-  float *equivalent_dielectric;
-  float **forward_xtk;
-  float **backward_xtk;
+  double **electrostatic_induction;
+  double **inductance;
+  double **Rdc;
+  double *characteristic_impedance;
+  double *propagation_velocity;
+  double *equivalent_dielectric;
+  double **forward_xtk;
+  double **backward_xtk;
   FILE *output_file1;
   FILE *output_file2;
   bool element_dump = false;
@@ -236,14 +236,14 @@ int main(int argc, char **argv) {
 
   /* Are there elements to dump?   If not, proceed normally */
   if (!element_dump) {
-    electrostatic_induction = (float **) dim2(num_signals,num_signals,sizeof(float));
-    inductance = (float **) dim2(num_signals,num_signals,sizeof(float));
-    characteristic_impedance = (float *)malloc(sizeof(float) * num_signals);
-    propagation_velocity = (float *)malloc(sizeof(float) * num_signals);
-    equivalent_dielectric = (float *)calloc(num_signals,sizeof(float));
-    forward_xtk = (float **) dim2(num_signals,num_signals,sizeof(float));
-    backward_xtk = (float **) dim2(num_signals,num_signals,sizeof(float));
-    Rdc = (float **) dim2(num_signals,num_signals,sizeof(float));
+    electrostatic_induction = (double **) dim2(num_signals,num_signals,sizeof(double));
+    inductance = (double **) dim2(num_signals,num_signals,sizeof(double));
+    characteristic_impedance = (double *)malloc(sizeof(double) * num_signals);
+    propagation_velocity = (double *)malloc(sizeof(double) * num_signals);
+    equivalent_dielectric = (double *)calloc(num_signals,sizeof(double));
+    forward_xtk = (double **) dim2(num_signals,num_signals,sizeof(double));
+    backward_xtk = (double **) dim2(num_signals,num_signals,sizeof(double));
+    Rdc = (double **) dim2(num_signals,num_signals,sizeof(double));
 
     /*  Open MMTL results output file  */
     sprintf (filespec, "%s.result", filename);
@@ -256,13 +256,12 @@ int main(int argc, char **argv) {
     /* print headers on the output file */
     /* pass in the number of pure ground wires plus one if an upper
        ground plane exists */
-    nmmtl_output_headers(output_file1, filename,num_signals,
-       num_grounds, gnd_planes,
-       coupling,risetime,cntr_seg,pln_seg);
+    nmmtl_output_headers(output_file1, filename, num_signals,
+       num_grounds, gnd_planes, coupling, risetime, cntr_seg, pln_seg);
 
     sigs = signals;
     for (sigs = signals; sigs != NULL; sigs = sigs->next) {
-      float cndvty = conductivity;
+      double cndvty = conductivity;
       if (sigs->conductivity != 0.0)
         cndvty = sigs->conductivity;
       fprintf (output_file1, "Conductivity %s = %g siemens/meter\n",
@@ -296,13 +295,13 @@ int main(int argc, char **argv) {
                        output_file1, output_file2);
 
   /* - - - - - - - - Calculate the Quasi-static Parameters - - - - - - - - */
-  status = nmmtl_qsp_calculate(dielectrics,signals,groundwires,
-             gnd_planes,half_minimum_dimension,
-             cntr_seg,pln_seg,coupling,risetime,
+  status = nmmtl_qsp_calculate(dielectrics, signals, groundwires,
+             gnd_planes, half_minimum_dimension,
+             cntr_seg, pln_seg, coupling,risetime,
              electrostatic_induction,
-             inductance,characteristic_impedance,
-             propagation_velocity,equivalent_dielectric,
-             output_file1,output_file2);
+             inductance, characteristic_impedance,
+             propagation_velocity, equivalent_dielectric,
+             output_file1, output_file2);
 
   /* if we dumped the elements, then there is nothing more to do. */
   if (element_dump)

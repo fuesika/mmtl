@@ -86,7 +86,6 @@
 
 
   */
-
 int nmmtl_generate_elements(int conductor_counter,
           CONDUCTOR_DATA_P *conductor_data,
           DELEMENTS_P *die_elements,
@@ -101,8 +100,7 @@ int nmmtl_generate_elements(int conductor_counter,
           double bottom_of_top_plane,
           double left_of_gnd_planes,
           double right_of_gnd_planes,
-          EXTENT_DATA_P extent_data)
-{
+          EXTENT_DATA_P extent_data) {
 
   unsigned int current_conductor;
   CONDUCTOR_DATA_P cd;
@@ -115,7 +113,6 @@ int nmmtl_generate_elements(int conductor_counter,
   char infostring[256];
 
   /* allocate the array of conductor data */
-
   *conductor_data = (CONDUCTOR_DATA_P)
     calloc(1,sizeof(CONDUCTOR_DATA) * (conductor_counter + 1));
   cd = *conductor_data;
@@ -137,7 +134,7 @@ int nmmtl_generate_elements(int conductor_counter,
         (cd[current_conductor].node_end -
          cd[current_conductor].node_start + 1)/2;
     } else {
-      if(gnd_list_head == NULL)
+      if (gnd_list_head == NULL)
         cd[0].node_start = *node_point_counter;
 
       node_point_counter_start = *node_point_counter;

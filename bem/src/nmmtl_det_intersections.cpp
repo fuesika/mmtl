@@ -29,16 +29,6 @@
 
 /*
  *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
  **  PREPROCESSOR CONSTANTS
  *******************************************************************
  */
@@ -68,24 +58,10 @@
 
 /*
  *******************************************************************
- **  GLOBALS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
-
-float nmmtl_find_nu(float epsilon1,float epsilon2,float theta1,float theta2);
-
-/*
- *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_determine_intersections
@@ -199,8 +175,10 @@ int nmmtl_determine_intersections(LINE_SEGMENTS_P *line_segments,
   POINT intersection1,intersection2;
   LINE_SEGMENTS_P segment, new_ls = NULL, new_ls_2;
   DIELECTRIC_SEGMENTS_P dieseg, last_dieseg, new_ds;
-  float theta1,turn_angle;
-  float deltax,deltay;
+  double theta1;
+  double turn_angle;
+  double deltax;
+  double deltay;
   long int it;  /* intersection type - recordkeeping flag for IP_* */
   long int cl;  /* colinear type - recordkeeping flag for CL_* */
   int vert_cond, vert_die; /* flags indicating that these are vertical
@@ -322,8 +300,9 @@ int nmmtl_determine_intersections(LINE_SEGMENTS_P *line_segments,
 
     /* compute NU */
     segment->nu[0] = nmmtl_find_nu(dieseg->epsilonplus,
-                 dieseg->epsilonminus,
-                 theta1,segment->theta2[0]);
+                                   dieseg->epsilonminus,
+                                   theta1,
+                                   segment->theta2[0]);
     segment->edge_pair[0]->nu[1] = segment->nu[0];
     segment->free_space_nu[0] = PI/segment->theta2[0];
     segment->edge_pair[0]->free_space_nu[1] =
@@ -579,13 +558,13 @@ int nmmtl_determine_intersections(LINE_SEGMENTS_P *line_segments,
         /* initial portion of dielectric segment is outside of the
      conductor */
         new_ds->end_in_conductor |= 1;       /* set bit 1 */
-        dieseg->end_in_conductor &= 0XFFFD;  /* clear bit 2 */
+        dieseg->end_in_conductor &= (unsigned char)0XFFFD;  /* clear bit 2 */
       }
       else
       {
         /* terminal portion of dielectric segment is outside of the
      conductor */
-        new_ds->end_in_conductor &= 0XFFFE;  /* clear bit 1 */
+        new_ds->end_in_conductor &= (unsigned char)0XFFFE;  /* clear bit 1 */
         dieseg->end_in_conductor |= 2;       /* set bit 2 */
       }
     }   /* if intersection in middle of dielectric segment */

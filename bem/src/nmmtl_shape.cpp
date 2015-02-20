@@ -71,7 +71,6 @@ COMPILATION ERROR ERROR ---      INTERP_PTS != 3       --- ERROR ERROR
    *******************************************************************
    */
 
-  
   /*
 
     FUNCTION NAME:  nmmtl_shape_c_edge
@@ -107,7 +106,7 @@ COMPILATION ERROR ERROR ---      INTERP_PTS != 3       --- ERROR ERROR
     */
 
 //void nmmtl_shape_c_edge(double point, double *shape, CELEMENTS_P cel, float nu0, float nu1) {
-void nmmtl_shape_c_edge(double point, double *shape, CELEMENTS_P cel, float nu0) {
+void nmmtl_shape_c_edge(double point, double *shape, CELEMENTS_P cel, double nu0) {
   int i;
   double X,Y; /* interpolated points */
   double numerator,denominator;
@@ -198,7 +197,7 @@ void nmmtl_shape_c_edge(double point, double *shape, CELEMENTS_P cel, float nu0)
             Thu Nov 23 05:32:55 1995 -- Kevin Buchs
     */
 
-    if(numerator < 1.0e-20) numerator = 1.0e-20;
+    if (numerator < 1.0e-20) numerator = 1.0e-20;
 
 
     /* Calculate the denominator and compute the effect on the shape

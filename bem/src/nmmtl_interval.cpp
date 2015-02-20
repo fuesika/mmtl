@@ -59,8 +59,8 @@
   double *value     - output coeficient values of integration
   int outer_cond_flag - flags that the outer element is a conductor -
   determines the Green's Function used.
-  float normalx,   - normals on outer element
-  float normaly,
+  double normalx,   - normals on outer element
+  double normaly,
 
   RETURN VALUE:
 
@@ -75,8 +75,8 @@ void nmmtl_interval_c(double x,
           CELEMENTS_P cel,
           double *value,
           int outer_cond_flag,
-          float normalx,
-          float normaly)
+          double normalx,
+          double normaly)
 {
 
   int i;
@@ -581,7 +581,7 @@ void nmmtl_interval_self_c_fs(double x,
   int outer_cond_flag - flags that the outer element is a conductor -
   determines the Green's Function used.
   double normalx,   - normals on outer element
-  float normaly,
+  double normaly,
 
   RETURN VALUE:
 
@@ -596,8 +596,8 @@ void nmmtl_interval_d(double x,
           DELEMENTS_P del,
           double *value,
           int outer_cond_flag,
-          float normalx,
-          float normaly)
+          double normalx,
+          double normaly)
 {
 
   int i;
@@ -673,8 +673,8 @@ void nmmtl_interval_d(double x,
   DELEMENTS_P del, - dielectric element
   double *value     - output coeficient values of integration
   double point      - the point at which to break the self element
-  float normalx,   - normals on outer element
-  float normaly,
+  double normalx,   - normals on outer element
+  double normaly,
 
   RETURN VALUE:
 
@@ -689,8 +689,8 @@ void nmmtl_interval_self_d(double x,
          DELEMENTS_P del,
          double *value,
          double point,
-         float normalx,
-         float normaly)
+         double normalx,
+         double normaly)
 {
 
   int i;

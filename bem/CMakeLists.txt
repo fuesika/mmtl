@@ -6,12 +6,13 @@ enable_language(CXX)
 
 
 # g++
-set (CMAKE_CXX_FLAGS_RELEASE "-Wunused -Werror -Wuninitialized -Wall -Wextra")
-#set (CMAKE_CXX_FLAGS_RELEASE "-Wconversion")
-#set (CMAKE_CXX_FLAGS_DEBUG "-Wextra")
+set (CMAKE_CXX_FLAGS_RELEASE "-O2 -g -Wall -Wextra -Wshadow -fno-common -Werror -Wno-maybe-uninitialized")
+#set (CMAKE_CXX_FLAGS_DEBUG   "-O0    -Wall -Wextra -Wshadow -fno-common -Werror -Wconversion -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -Wunused -Wuninitialized")
+set (CMAKE_CXX_FLAGS_DEBUG   "-O0    -Wall -Wextra -Wshadow -fno-common -Werror -Wconversion                 -Wpointer-arith -Wcast-align -Wwrite-strings -fshort-enums -Wunused -Wuninitialized")
 
 # gfortran
-#set (CMAKE_Fortran_FLAGS_RELEASE "-m64 -mcmodel=medium -O2 -cpp -ffree-line-length-0 -fopenmp -fno-realloc-lhs")
+set (CMAKE_Fortran_FLAGS_RELEASE "-m64 -mcmodel=medium -O2 -cpp -ffree-line-length-0 -fopenmp -fno-realloc-lhs -fdefault-real-8")
+set (CMAKE_Fortran_FLAGS_DEBUG   "-m64 -mcmodel=medium -O2 -cpp -ffree-line-length-0 -fopenmp -fno-realloc-lhs -fdefault-real-8")
 
 # Debug is default
 SET(CMAKE_BUILD_TYPE DEBUG CACHE STRING "default to debug")

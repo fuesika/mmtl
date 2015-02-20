@@ -65,7 +65,6 @@ static void nmmtl_jacobian(double local,
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_jacobian_d
@@ -93,13 +92,10 @@ static void nmmtl_jacobian(double local,
   nmmtl_jacobian_d(local_coord,del,&Jacobian);
   */
 
-void nmmtl_jacobian_d(double local,DELEMENTS_P del,double *Jacobian)
-{
+void nmmtl_jacobian_d(double local,DELEMENTS_P del,double *Jacobian) {
   nmmtl_jacobian(local,del->xpts,del->ypts,Jacobian);
 }
 
-
-
 /*
 
   FUNCTION NAME:  nmmtl_jacobian_c
@@ -127,14 +123,11 @@ void nmmtl_jacobian_d(double local,DELEMENTS_P del,double *Jacobian)
   nmmtl_jacobian_c(local_coord,cel,&Jacobian);
   */
 
-void nmmtl_jacobian_c(double local,CELEMENTS_P cel,double *Jacobian)
-{
-  nmmtl_jacobian(local,cel->xpts,cel->ypts,Jacobian);
+void nmmtl_jacobian_c(double local, CELEMENTS_P cel, double *Jacobian) {
+  nmmtl_jacobian(local, cel->xpts, cel->ypts, Jacobian);
 }
 
 
-
-
 /*
 
   FUNCTION NAME:  nmmtl_jacobian

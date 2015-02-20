@@ -64,38 +64,34 @@
   */
 
 void nmmtl_dump(FILE *dump_file,
-    int cntr_seg,
-    int pln_seg,
-    float coupling,
-    float risetime,
-    struct contour *signals,
-    int conductor_counter,
-    CONDUCTOR_DATA_P conductor_data,
-    DELEMENTS_P die_elements,
-    unsigned int node_point_counter,
-    unsigned int highest_conductor_node)
-{
+                int cntr_seg,
+                int pln_seg,
+                double coupling,
+                double risetime,
+                struct contour *signals,
+                int conductor_counter,
+                CONDUCTOR_DATA_P conductor_data,
+                DELEMENTS_P die_elements,
+                unsigned int node_point_counter,
+                unsigned int highest_conductor_node) {
   CELEMENTS_P ce;
   int cntr,i;
 
   fprintf(dump_file,"%d %d %g %g\n",cntr_seg,pln_seg,
     coupling,risetime);
 
-  for(;signals != NULL; signals = signals->next)
-  {
+  for(;signals != NULL; signals = signals->next) {
     fprintf(dump_file,"=%s\n",signals->name);
   }
   fputs("\n",dump_file);
 
   fprintf(dump_file,"%d %d %d\n",node_point_counter,highest_conductor_node,
     conductor_counter);
-  for(cntr=0;cntr <= conductor_counter;cntr++)
-  {
+  for (cntr=0;cntr <= conductor_counter;cntr++) {
     fprintf(dump_file,"%d %d \n",
       conductor_data[cntr].node_start,
       conductor_data[cntr].node_end);
-    for(ce = conductor_data[cntr].elements;ce != NULL;ce = ce->next)
-    {
+    for (ce = conductor_data[cntr].elements;ce != NULL;ce = ce->next) {
       fprintf(dump_file,"%g ",ce->epsilon);
       if(ce->edge[0]) fputs("1 ",dump_file);
       else fputs("0 ",dump_file);
@@ -114,13 +110,11 @@ void nmmtl_dump(FILE *dump_file,
     fputs(".\n",dump_file);
   }
 
-  for(; die_elements != NULL; die_elements = die_elements->next)
-  {
+  for(; die_elements != NULL; die_elements = die_elements->next) {
     fprintf(dump_file,"%g %g %g %g\n",
       die_elements->epsilonplus,die_elements->epsilonminus,
       die_elements->normalx,die_elements->normaly);
-    for(i = 0; i < 3; i++)
-    {
+    for(i = 0; i < 3; i++) {
       fprintf(dump_file,"%d %-23.21g %-23.21g\n",die_elements->node[i],
         die_elements->xpts[i],die_elements->ypts[i]);
     }
@@ -129,4 +123,3 @@ void nmmtl_dump(FILE *dump_file,
   /* signify end of dielectric elements with a zero epsilon value */
   fputs(".\n",dump_file);
 }
-

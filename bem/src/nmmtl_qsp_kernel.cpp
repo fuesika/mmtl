@@ -41,8 +41,7 @@
 
 FILE *plotFile=NULL;
 
-/* What should we set the slope to for a vertical line? */
-const float INFINITE_SLOPE = FLT_MAX;
+const double INFINITE_SLOPE = DBL_MAX;
 
 /*
  *******************************************************************
@@ -55,7 +54,7 @@ void nmmtl_write_plot_data(
          int conductor_counter,
          DELEMENTS_P die_elements,
          CONDUCTOR_DATA_P conductor_data,
-         float *sigma_vector,
+         double *sigma_vector,
          FILE *outputFile
        );
 
@@ -112,50 +111,50 @@ int nmmtl_qsp_kernel(int conductor_counter,
          unsigned int node_point_counter,
          unsigned int highest_conductor_node,
          double length_scale,
-         float **electrostatic_induction,
-         float **inductance,
-         float *characteristic_impedance,
-         float *propagation_velocity,
-         float *equivalent_dielectric,
+         double **electrostatic_induction,
+         double **inductance,
+         double *characteristic_impedance,
+         double *propagation_velocity,
+         double *equivalent_dielectric,
          FILE *output_file1,
          FILE *output_file2,
          CONTOURS_P signals) {
 
   int ic, jc;
   int *ipvt;
-  float **assemble_matrix;
-  float *sigma_vector;
-  float *potential_vector;
+  double **assemble_matrix;
+  double *sigma_vector;
+  double *potential_vector;
 #ifndef no_condition_number
-  float rcond;
+  double rcond;
 #endif
   int status;
   int int_status;
   int matrix_order;
   unsigned int i;
   unsigned int j;
-  float **electrostatic_induction_free_space;
+  double **electrostatic_induction_free_space;
   char msg[256];
   char asmsg1[512],asmsg2[512]; /* strings for asymmetry messages */
-  float error,error_sum,error_max;
+  double error,error_sum,error_max;
   unsigned int error_count;
   CONTOURS_P activeLine;
 
   /* - - - - - - - -  Allocate the matricies and vectors  - - - - - - - - - */
 
   /* allocate and zero space for free space electrostatic induction */
-  electrostatic_induction_free_space = (float **) dim2(conductor_counter,
+  electrostatic_induction_free_space = (double **) dim2(conductor_counter,
                    conductor_counter,
-                   sizeof(float));
+                   sizeof(double));
 
   /* allocate and zero assemble matrix */
-  assemble_matrix = (float **) dim2(node_point_counter, node_point_counter, sizeof(float));
+  assemble_matrix = (double **) dim2(node_point_counter, node_point_counter, sizeof(double));
 
   /* allocate and zero sigma vector */
-  sigma_vector = (float *)calloc(node_point_counter,sizeof(float));
+  sigma_vector = (double *)calloc(node_point_counter,sizeof(double));
 
   /* allocate and zero potential vector */
-  potential_vector = (float *)calloc(node_point_counter,sizeof(float));
+  potential_vector = (double *)calloc(node_point_counter,sizeof(double));
 
 
   /* - - - - - - - -  Free Space Solution  - - - - - - - - - */
@@ -178,7 +177,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
 #ifdef TRANSPOSE_ASSEMBLE
   for(i = 0; i<conductor_counter; i++) {
     for(j = i+1; j<conductor_counter; j++) {
-      static float temp;
+      static double temp;
       temp = assemble_matrix[i][j];
       assemble_matrix[i][j] = assemble_matrix[j][i];
       assemble_matrix[j][i] = temp;
@@ -252,7 +251,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
   /* but don't follow exit... */
   if(test_logical("NMMTL_CONDITION_NUMBER"))
     {
-      float t;
+      double t;
       t = 1.0 + rcond;
       if( t == 1.0 )
   printf ("Assemble(free space) Matrix Condition Number: Warning %g\n",rcond);
@@ -282,16 +281,11 @@ int nmmtl_qsp_kernel(int conductor_counter,
 
   /* do for each conductor being charged */
 
-  for (ic = 1; ic <= conductor_counter; ++ic)
-  {
-
+  for (ic = 1; ic <= conductor_counter; ++ic) {
     /* Calculate RHS of matrix equation */
-
     sprintf(msg,"calculate RHS (load) matrix for conductor %d\n",ic);
-
     printf ("%s", msg);
-
-    nmmtl_load_free_space(potential_vector,ic,conductor_data);
+    nmmtl_load_free_space(potential_vector, ic, conductor_data);
 
     printf ("Solve system of equations\n");
 
@@ -425,7 +419,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
   /* but don't follow exit... */
   if(test_logical("NMMTL_CONDITION_NUMBER"))
     {
-      float t;
+      double t;
       t = 1.0 + rcond;
       if ( t == 1.0 )
   printf ("Capacitance Matrix Condition Number: Warning %g\n",rcond);
@@ -485,7 +479,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
   (Note values greater than 1%% are a probable indication of too few elements.\n\
   Try adjusting CSEG and DSEG attributes.)\n\
 **********",
-        error_max*100,error_sum*100/error_count);
+        error_max*100.,error_sum*100./error_count);
       printf ("%s", asmsg1);
     }
     else
@@ -493,7 +487,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
       sprintf(asmsg1,
         "  Asymmetry ratio for inductance matrix:\n\
      %f%% (max), %f%% (average)\n",
-        error_max*100,error_sum*100/error_count);
+        error_max*100.,error_sum*100./error_count);
       printf ("%s", asmsg1);
     }
   }
@@ -526,7 +520,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
 #ifdef TRANSPOSE_ASSEMBLE
   for(i = 0; i < node_point_counter; i++) {
     for(j = i+1; j < node_point_counter; j++) {
-      static float temp;
+      static double temp;
       temp = assemble_matrix[i][j];
       assemble_matrix[i][j] = assemble_matrix[j][i];
       assemble_matrix[j][i] = temp;
@@ -596,7 +590,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
   /* but don't follow exit... */
   if(test_logical("NMMTL_CONDITION_NUMBER"))
     {
-      float t;
+      double t;
       t = 1.0 + rcond;
       if( t == 1.0 )
   printf ("Assemble Matrix Condition Number: Warning %g\n",rcond);
@@ -635,7 +629,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
 
     printf ("%s", msg);
 
-    nmmtl_load(potential_vector,ic,conductor_data);
+    nmmtl_load(potential_vector, ic, conductor_data);
 
     printf ("Solve system of equations\n");
 
@@ -682,8 +676,8 @@ int nmmtl_qsp_kernel(int conductor_counter,
       *
       */
 
-    lu_solve_linear(&matrix_order,assemble_matrix[0],sigma_vector,
-        potential_vector,(int *)&node_point_counter,ipvt,
+    lu_solve_linear(&matrix_order, assemble_matrix[0], sigma_vector,
+        potential_vector, (int *)&node_point_counter, ipvt,
         &int_status);
 
     // int_status will always be returned as SUCCESS, but check in case
@@ -701,16 +695,15 @@ int nmmtl_qsp_kernel(int conductor_counter,
      conductor_data,electrostatic_induction[ic-1]);
 
     /* if the main opened the plotFile, then write out the plot data */
-    if (plotFile != NULL)
-      {
-  nmmtl_write_plot_data(
-            activeLine,
-            conductor_counter,
-            die_elements,
-            conductor_data,
-            sigma_vector,
-            plotFile
-          );
+    if (plotFile != NULL) {
+      nmmtl_write_plot_data(
+                activeLine,
+                conductor_counter,
+                die_elements,
+                conductor_data,
+                sigma_vector,
+                plotFile
+              );
       }
 
     /* zero out RHS vector for ic-th conductor */
@@ -750,7 +743,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
   (Note values greater than 1%% are a probable indication of too few elements.\n\
   Try adjusting CSEG and DSEG attributes.)\n\
 **********",
-        error_max*100,error_sum*100/error_count);
+        error_max*100.,error_sum*100./error_count);
       printf ("%s", asmsg2);
 
     }
@@ -759,7 +752,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
       sprintf(asmsg2,
         "  Asymmetry ratio for electrostatic induction matrix:\n\
      %f%% (max), %f%% (average).\n",
-        error_max*100,error_sum*100/error_count);
+        error_max*100.,error_sum*100./error_count);
       printf ("%s", asmsg2);
     }
   }
@@ -801,10 +794,8 @@ int nmmtl_qsp_kernel(int conductor_counter,
     }
   }
 
-
   /* NOW: calculate the characteristic impedance and the propagation
      velocity */
-
   status = nmmtl_charimp_propvel_calculate(conductor_counter,
              signals,
              electrostatic_induction,
@@ -818,12 +809,7 @@ int nmmtl_qsp_kernel(int conductor_counter,
 
   if(status != SUCCESS) return(status);
 
-
   /* Don't need to save this - since it is not returned */
-
   free2((void **)electrostatic_induction_free_space);
-
   return(SUCCESS);
-
 }
-

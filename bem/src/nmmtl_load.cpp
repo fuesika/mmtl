@@ -23,41 +23,14 @@
  **  INCLUDE FILES
  *******************************************************************
  */
-
 #include "nmmtl.h"
 
-/*
- *******************************************************************
- **  STRUCTURE DECLARATIONS AND TYPE DEFINTIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  MACRO DEFINITIONS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  PREPROCESSOR CONSTANTS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  GLOBALS
- *******************************************************************
- */
-/*
- *******************************************************************
- **  FUNCTION DECLARATIONS
- *******************************************************************
- */
 /*
  *******************************************************************
  **  FUNCTION DEFINITIONS
  *******************************************************************
  */
 
-
 /*
 
   FUNCTION NAME:  nmmtl_load
@@ -86,16 +59,15 @@
 
   */
 
-void nmmtl_load(float *potential_vector,
+void nmmtl_load(double *potential_vector,
     int conductor_number,
-    CONDUCTOR_DATA_P conductor_data)
-{
+    CONDUCTOR_DATA_P conductor_data) {
   unsigned int Legendre_counter;
   int i;
   double shape[INTERP_PTS];
   double Jacobian;
   CELEMENTS_P cel;
-  float nu0;
+  double nu0;
   //float nu1;
 
 #ifdef BEM3_VARIANT
@@ -106,27 +78,22 @@ void nmmtl_load(float *potential_vector,
   /* assume the potential_vector is already zeroed */
 
   cel = conductor_data[conductor_number].elements;
-  while(cel != NULL)
-  {
-    for(Legendre_counter = 0; Legendre_counter < Legendre_root_l_max;
-  Legendre_counter++)
-    {
-      if(cel->edge[0] != NULL || cel->edge[1] != NULL)
-      {
+  while (cel != NULL) {
+    for (Legendre_counter = 0; Legendre_counter < Legendre_root_l_max; Legendre_counter++) {
+      if (cel->edge[0] != NULL || cel->edge[1] != NULL) {
   /* if given edge is really an edge, set the true value of nu,
      otherwise, don't really care */
   nu0 = cel->edge[0] ? cel->edge[0]->nu : 0;
   //nu1 = cel->edge[1] ? cel->edge[1]->nu : 0;
   //nmmtl_shape_c_edge(Legendre_root_l[Legendre_counter],shape,cel,nu0,nu1);
   nmmtl_shape_c_edge(Legendre_root_l[Legendre_counter],shape,cel,nu0);
+      } else {
+        nmmtl_shape(Legendre_root_l[Legendre_counter],shape);
       }
-      else
-  nmmtl_shape(Legendre_root_l[Legendre_counter],shape);
 
       nmmtl_jacobian_c(Legendre_root_l[Legendre_counter],cel,&Jacobian);
 
-      for(i=0; i < INTERP_PTS; i++)
-      {
+      for(i=0; i < INTERP_PTS; i++) {
 #ifdef BEM3_VARIANT
   potential_vector[cel->node[i]] +=
     coef * Legendre_weight_a[Legendre_counter] * shape[i] * Jacobian;
@@ -173,7 +140,7 @@ void nmmtl_load(float *potential_vector,
 
   */
 
-void nmmtl_load_free_space(float *potential_vector,
+void nmmtl_load_free_space(double *potential_vector,
          int conductor_number,
          CONDUCTOR_DATA_P conductor_data) {
   unsigned int Legendre_counter;
@@ -181,7 +148,7 @@ void nmmtl_load_free_space(float *potential_vector,
   double shape[INTERP_PTS];
   double Jacobian;
   CELEMENTS_P cel;
-  float nu0;
+  double nu0;
   //float nu1;
 
 #ifdef BEM3_VARIANT

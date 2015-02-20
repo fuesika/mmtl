@@ -40,7 +40,7 @@ COPYRIGHT:          Copyright (C) 1992 by Mayo Foundation. All rights reserved.
   CONDUCTOR_DATA_P conductor_data,   - array of data on conductors
   DELEMENTS_P die_elements,          - all die element data
   double length_scale,                - a scale factor based on element length
-  float **assemble_matrix            - out: resultant assemble matrix
+  double **assemble_matrix            - out: resultant assemble matrix
 
   RETURN VALUE:
 
@@ -56,8 +56,8 @@ COPYRIGHT:          Copyright (C) 1992 by Mayo Foundation. All rights reserved.
 void nmmtl_assemble(int conductor_counter,
         CONDUCTOR_DATA_P conductor_data,
         DELEMENTS_P die_elements,
-        float length_scale,
-        float **assemble_matrix) {
+        double length_scale,
+        double **assemble_matrix) {
 
   int i,j,cond_num,inner_cond_num;
   CELEMENTS_P cel,inner_cel;
@@ -68,29 +68,24 @@ void nmmtl_assemble(int conductor_counter,
   double value[INTERP_PTS];
   double Jacobian;
   double coef1,coef2;
-  float nu0;
-  //float nu1;
+  double nu0;
+  //double nu1;
 
   /* matrix should be zeroed */
 
   /* first create outer loop on the the conductor elements - by looping on
      both conductors and then each element of each conductor */
 
-  for(cond_num = 0; cond_num <= conductor_counter; cond_num++)
-  {
+  for(cond_num = 0; cond_num <= conductor_counter; cond_num++) {
     cel=conductor_data[cond_num].elements;
-    while(cel != NULL)
-    {
-      for(Legendre_counter = 0; Legendre_counter < Legendre_root_a_max;
-    Legendre_counter++)
-      {
-  nmmtl_shape(Legendre_root_a[Legendre_counter],shape);
+    while(cel != NULL) {
+      for(Legendre_counter = 0; Legendre_counter < Legendre_root_a_max; Legendre_counter++) {
+        nmmtl_shape(Legendre_root_a[Legendre_counter],shape);
 
   /* interpolate x,y coordinate using no_edge shape function */
-  x = 0.0;
-  y = 0.0;
-  for(i=0;i < INTERP_PTS;i++)
-  {
+  x = 0.;
+  y = 0.;
+  for(i=0; i < INTERP_PTS; i++) {
     x += shape[i]*cel->xpts[i];
     y += shape[i]*cel->ypts[i];
   }
@@ -119,21 +114,18 @@ void nmmtl_assemble(int conductor_counter,
 
   /* PART 1 */
 
-  for(inner_cond_num = 0; inner_cond_num < cond_num;
-      inner_cond_num++)
-  {
+  for(inner_cond_num = 0; inner_cond_num < cond_num; inner_cond_num++) {
     inner_cel=conductor_data[inner_cond_num].elements;
-    while(inner_cel != NULL)
-    {
+    while(inner_cel != NULL) {
       /* outer element is a conductor - TRUE,0,0 for last args */
       nmmtl_interval_c(x,y,inner_cel,value,TRUE,0,0);
 
       /* now add in the contributions to the the basis points */
       for(i=0;i < INTERP_PTS;i++)
-        for(j=0;j < INTERP_PTS;j++)
-        {
+        for(j=0;j < INTERP_PTS;j++) {
 #ifdef BEM3_VARIANT
-    double x,y;
+    double x;
+    double y;
     x = ASSEMBLE_CONST_1 / 4e-12;
     y = Legendre_weight_a[Legendre_counter];
     assemble_matrix[inner_cel->node[j]][cel->node[i]] +=
@@ -149,7 +141,6 @@ void nmmtl_assemble(int conductor_counter,
   } /* for inner looping on the conductors */
 
   /* PART 2 */
-
   inner_cel=conductor_data[inner_cond_num].elements;
   while(inner_cel != NULL)
   {
@@ -173,8 +164,8 @@ void nmmtl_assemble(int conductor_counter,
     x * y * shape[i] * value[j] * Jacobian;
 #else
         assemble_matrix[inner_cel->node[j]][cel->node[i]] +=
-    ASSEMBLE_CONST_1 * Legendre_weight_a[Legendre_counter] *
-      shape[i] * value[j] * Jacobian;
+          ASSEMBLE_CONST_1 * Legendre_weight_a[Legendre_counter] *
+          shape[i] * value[j] * Jacobian;
 #endif
       }
 
@@ -183,13 +174,9 @@ void nmmtl_assemble(int conductor_counter,
 
 
   /* PART 3 */
-
-  for(inner_cond_num++; inner_cond_num <= conductor_counter;
-      inner_cond_num++)
-  {
+  for(inner_cond_num++; inner_cond_num <= conductor_counter; inner_cond_num++) {
     inner_cel=conductor_data[inner_cond_num].elements;
-    while(inner_cel != NULL)
-    {
+    while(inner_cel != NULL) {
       /* outer element is a conductor - TRUE,0,0 for last args */
       nmmtl_interval_c(x,y,inner_cel,value,TRUE,0,0);
 
@@ -234,8 +221,8 @@ void nmmtl_assemble(int conductor_counter,
     x * y * shape[i] * value[j] * Jacobian;
 #else
         assemble_matrix[inner_del->node[j]][cel->node[i]] +=
-    ASSEMBLE_CONST_1 * Legendre_weight_a[Legendre_counter] *
-      shape[i] * value[j] * Jacobian;
+          ASSEMBLE_CONST_1 * Legendre_weight_a[Legendre_counter] *
+          shape[i] * value[j] * Jacobian;
 #endif
       }
     inner_del = inner_del->next;
@@ -308,7 +295,7 @@ void nmmtl_assemble(int conductor_counter,
     {
       /* outer element is not a conductor - FALSE,normalx,normaly
          for last args */
-      nmmtl_interval_c(x,y,inner_cel,value,FALSE,del->normalx,
+      nmmtl_interval_c(x, y, inner_cel, value, FALSE, del->normalx,
            del->normaly);
 
       /* now add in the contributions to the the basis points */

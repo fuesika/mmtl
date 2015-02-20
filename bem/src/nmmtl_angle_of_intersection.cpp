@@ -63,22 +63,20 @@
 
   */
 
-
-float nmmtl_angle_of_intersection(float x1, float y1, float x2, float y2)
-{
-  float angle;
-  float length1,length2;
+double nmmtl_angle_of_intersection(double x1, double y1, double x2, double y2) {
+  double angle;
+  double length1;
+  double length2;
 
   length1 = sqrt(x1*x1 + y1*y1);
   length2 = sqrt(x2*x2 + y2*y2);
 
   /* determine angle by doing dot product */
-
   angle = acos( (x1*x2 + y1*y2)/(length1*length2) );
 
   /* determine sign by doing cross product */
-
-  if((x1*y2 - x2*y1) < 0) angle *= -1.0;
+  if ((x1*y2 - x2*y1) < 0)
+    angle *= -1.0;
 
   return(angle);
 }

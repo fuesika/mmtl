@@ -58,15 +58,11 @@
 
 GND_DIE_LIST_P nmmtl_build_gnd_die_list(GND_DIE_LIST_P *head,
           GND_DIE_LIST_P tail,
-          DIELECTRICS_P dielectrics)
-{
-  if(*head == NULL)
-  {
+          DIELECTRICS_P dielectrics) {
+  if(*head == NULL) {
     tail = (GND_DIE_LIST_P)malloc(sizeof(GND_DIE_LIST));
     *head = tail;
-  }
-  else
-  {
+  } else {
     tail->next = (GND_DIE_LIST_P)malloc(sizeof(GND_DIE_LIST));
     tail = tail->next;
   }
