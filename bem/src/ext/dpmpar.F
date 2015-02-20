@@ -23,15 +23,15 @@ C-----------------------------------------------------------------------
       DOUBLE PRECISION B, BINV, BM1, ONE, W, Z
 C
       IF (I .GT. 1) GO TO 10
-         B = IPMPAR(4)
+         B = dble(IPMPAR(4))
          M = IPMPAR(8)
          DPMPAR = B**(1 - M)
          RETURN
 C
    10 IF (I .GT. 2) GO TO 20
-         B = IPMPAR(4)
+         B = dble(IPMPAR(4))
          EMIN = IPMPAR(9)
-         ONE = FLOAT(1)
+         ONE = dble(1)
          BINV = ONE/B
          W = B**(EMIN + 2)
          DPMPAR = ((W * BINV) * BINV) * BINV
@@ -41,9 +41,9 @@ C
       M = IPMPAR(8)
       EMAX = IPMPAR(10)
 C
-      B = IBETA
-      BM1 = IBETA - 1
-      ONE = FLOAT(1)
+      B = dble(IBETA)
+      BM1 = dble(IBETA - 1)
+      ONE = 1.D0
       Z = B**(M - 1)
       W = ((Z - ONE)*B + BM1)/(B*Z)
 C

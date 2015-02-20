@@ -37,7 +37,7 @@ set (src_fortran
   ext/idamax.F
   ext/ipmpar.F
   ext/isamax.F
-  ext/mslv.F  
+  ext/mslv.F
   ext/mtms.F
   ext/sasum.F
   ext/saxpy.F
@@ -56,24 +56,24 @@ add_library (bem_libs STATIC
   #sources for fortran library
   ${src_fortran}
   )
-  
+
 ## Configuration of Executables ################################################
 # bem-binary
-add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
+add_executable(${PROJECT_NAME} nmmtl.cpp
   assemble.cpp
   assemble_free_space.cpp
   dim2.cpp
-  electro_read_icon_section.cpp
   free2.cpp
   math_library.cpp
   nmmtl_add_to_sorted_list.cpp
   nmmtl_angle_of_intersection.cpp
   nmmtl_build_gnd_die_list.cpp
   nmmtl_charge.cpp
-  nmmtl_circle_segments.cpp
   nmmtl_charimp_propvel_calculate.cpp
+  nmmtl_circle_segments.cpp
   nmmtl_combine_die.cpp
   nmmtl_containment.cpp
+  nmmtl_dc_resistance.cpp
   nmmtl_det_arc_intersections.cpp
   nmmtl_det_intersections.cpp
   nmmtl_dump.cpp
@@ -86,7 +86,6 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_find_ground_planes.cpp
   nmmtl_find_nu.cpp
   nmmtl_form_die_subseg.cpp
-  nmmtl_gen_netlist_from_icon.cpp
   nmmtl_genel.cpp
   nmmtl_genel_ccs.cpp
   nmmtl_genel_cls.cpp
@@ -103,13 +102,13 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   nmmtl_output_headers.cpp
   nmmtl_output_matrices.cpp
   nmmtl_overlap_parallel_seg.cpp
-  nmmtl_dc_resistance.cpp
+  nmmtl_parse_xsctn.cpp
   nmmtl_qsp_calculate.cpp
   nmmtl_qsp_kernel.cpp
   nmmtl_retrieve.cpp
+  nmmtl_sanity_minfreq.cpp
   nmmtl_set_offset.cpp
   nmmtl_shape.cpp
-  nmmtl_spout_off.cpp
   nmmtl_sort_gnd_die_list.cpp
   nmmtl_unload.cpp
   nmmtl_write_plot_data.cpp
@@ -119,9 +118,8 @@ add_executable(${PROJECT_NAME} nmmtl_parse_xsctn.cpp
   plotFileInitialization.cpp
   remove_all_spaces.cpp
   units.cpp
-  nmmtl.cpp
   )
-    
+
 target_link_libraries(${PROJECT_NAME} bem_libs)
 
 

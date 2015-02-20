@@ -22,13 +22,13 @@ C-----------------------------------------------------------------------
       INTEGER EMIN, EMAX
 C
       IF (I .GT. 1) GO TO 10
-         B = IPMPAR(4)
+         B = float(IPMPAR(4))
          M = IPMPAR(5)
          SPMPAR = B**(1 - M)
          RETURN
 C
    10 IF (I .GT. 2) GO TO 20
-         B = IPMPAR(4)
+         B = float(IPMPAR(4))
          EMIN = IPMPAR(6)
          ONE = FLOAT(1)
          BINV = ONE/B
@@ -40,9 +40,9 @@ C
       M = IPMPAR(5)
       EMAX = IPMPAR(7)
 C
-      B = IBETA
-      BM1 = IBETA - 1
-      ONE = FLOAT(1)
+      B = float(IBETA)
+      BM1 = float(IBETA - 1)
+      ONE = 1.e0
       Z = B**(M - 1)
       W = ((Z - ONE)*B + BM1)/(B*Z)
 C

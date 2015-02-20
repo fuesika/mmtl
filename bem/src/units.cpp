@@ -1,26 +1,29 @@
+#ifndef units_h
+#define units_h
+
 //@M///////////////////////////////////////////////////////////////////////////
 //
 //  Module Name           units.cxx
-//  Description       
-//  Author            
-//  Creation Date         
+//  Description
+//  Author
+//  Creation Date
 //
-//  Copyright (C) by Mayo Foundation for Medical Education and Research.  
+//  Copyright (C) by Mayo Foundation for Medical Education and Research.
 //  All rights reserved.
 //
-static const char rcsid[] = 
+static const char rcsid[] =
 "$Id: units.cpp,v 1.1 2002/10/01 19:03:38 zahn Exp $";
 //
 //M@///////////////////////////////////////////////////////////////////////////
 
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
-#include<ctype.h>
-#include<limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <limits.h>
 
 
-#define VERSION "1.0"
+//#define VERSION "1.0"
 
 #define TRUE 1
 #define FALSE 0
@@ -36,11 +39,10 @@ static const char rcsid[] =
 
 static const char *powerstring="^";
 
-static struct
-  {
+static struct {
   const char *uname;
   const char *uval;
-  } unittable[MAXUNITS];
+} unittable[MAXUNITS];
 
 struct unittype
   {
@@ -49,17 +51,16 @@ struct unittype
   double factor;
   };
 
-static struct
-  {
+static struct {
   const char *prefixname;
   const char *prefixval;
-  } prefixtable[MAXPREFIXES];
+} prefixtable[MAXPREFIXES];
 
 
 static char *NULLUNIT=(char *)"";
 
-static int unitcount=0;
-static int prefixcount=0;
+static int unitcount    = 0;
+static int prefixcount  = 0;
 
 void setunits(void);
 
@@ -75,7 +76,7 @@ char *dupstr(const char *str)
     }
   strcpy(ret,str);
   return(ret);
-} 
+}
 
 
 void setunits(void)
@@ -373,7 +374,7 @@ void initializeunit(struct unittype *theunit)
 int addsubunit(char *product[], char *toadd)
 {
   char **ptr;
-  
+
   for(ptr=product;*ptr && *ptr!=NULLUNIT;ptr++);
   if (ptr>=product+MAXSUBUNITS)
     {
@@ -391,37 +392,37 @@ void showunit(struct unittype *theunit)
   char **ptr;
   int printedslash;
   int counter=1;
-  
+
   printf("\t%.8g",theunit->factor);
   for(ptr=theunit->numerator;*ptr;ptr++)
       {
       if (ptr>theunit->numerator && **ptr &&
-	  !strcmp(*ptr,*(ptr-1))) counter++;
+    !strcmp(*ptr,*(ptr-1))) counter++;
       else
-	  {
-	  if (counter>1) printf("%s%d",powerstring,counter);
-	  if (**ptr) printf(" %s",*ptr);
-	  counter=1;
-	  }
+    {
+    if (counter>1) printf("%s%d",powerstring,counter);
+    if (**ptr) printf(" %s",*ptr);
+    counter=1;
+    }
       }
   if (counter>1) printf("%s%d",powerstring,counter);
   counter=1;
   printedslash=0;
   for(ptr=theunit->denominator;*ptr;ptr++)
       {
-      if (ptr>theunit->denominator && **ptr && 
-	  !strcmp(*ptr,*(ptr-1))) counter++;
+      if (ptr>theunit->denominator && **ptr &&
+    !strcmp(*ptr,*(ptr-1))) counter++;
       else
-	  {
-	  if (counter>1) printf("%s%d",powerstring,counter);
-	  if (**ptr)
-	      { 
-	      if (!printedslash) printf(" /");
-	      printedslash=1;
-	      printf(" %s",*ptr);
-	      }
-	  counter=1;
-	  }
+    {
+    if (counter>1) printf("%s%d",powerstring,counter);
+    if (**ptr)
+        {
+        if (!printedslash) printf(" /");
+        printedslash=1;
+        printf(" %s",*ptr);
+        }
+    counter=1;
+    }
       }
   if (counter>1) printf("%s%d",powerstring,counter);
   printf("\n");
@@ -432,12 +433,12 @@ void zeroerror()
 {
 //  fprintf(stderr,"Unit reduces to zero\n");
   printf ("**** Units unspecified\n");
-}   
+}
 
 //
-//   Adds the specified string to the unit. 
+//   Adds the specified string to the unit.
 //   Flip is 0 for adding normally, 1 for adding reciprocal.
-// 
+//
 //   Returns 0 for successful addition, nonzero on error.
 //
 
@@ -445,13 +446,13 @@ int addunit(struct unittype *theunit,const char *toadd,int flip)
 {
   char *scratch,*savescr;
   char *item;
-  char *divider,*subunit,*slash;
+  char *divider, *slash;
   int doingtop;
-  
+
   savescr=scratch=dupstr(toadd);
-  for(slash=scratch+1;*slash;slash++) 
-    if (*slash=='-' && 
-	(tolower(*(slash-1))!='e' || !strchr(".0123456789",*(slash+1))))
+  for(slash=scratch+1;*slash;slash++)
+    if (*slash=='-' &&
+  (tolower(*(slash-1))!='e' || !strchr(".0123456789",*(slash+1))))
       *slash=' ';
   slash=strchr(scratch,'/');
   if (slash) *slash=0;
@@ -460,81 +461,81 @@ int addunit(struct unittype *theunit,const char *toadd,int flip)
       {
       item=strtok(scratch," *\t\n/");
       while(item)
-	  {
-	  if (strchr("0123456789.",*item))
-	      {
-	      //
-	      // Item is a number.
-	      //
-	      double num;
-	      
-	      divider=strchr(item,'|');
-	      if (divider)
-		  {
-		  *divider=0;
-		  num=atof(item);
-		  if (!num)
-		      {
-		      //
-		      // Allow zero values, but do not convert them.
-		      //
-//		      zeroerror();
-//		      return 1;
-		      return 0;
-		      }
-		  if (doingtop^flip) theunit->factor *= num;
-		  else  theunit->factor /=num;
-		  num=atof(divider+1);
-		  if (!num)
-		      {
-		      //
-		      // Allow zero values, but do not convert them.
-		      //
-//		      zeroerror();
-//		      return 1;
-		      return 0;
-		      }
-		  if (doingtop^flip) theunit->factor /= num;
-		  else theunit->factor *= num;
-		  }
-	      else
-		  {
-		  num=atof(item);
-		  if (!num)
-		      {
-		      //
-		      // Allow zero values, but do not convert them.
-		      //
-//		      zeroerror();
-//		      return 1;
-		      return 0;
-		      }
-		  if (doingtop^flip) theunit->factor *= num;
-		  else theunit->factor /= num;
-		  }
-	      }
-	  else
-	      {
-	      //
-	      // Item is not a number.
-	      //
-	      int repeat=1;
-	      if (strchr("23456789",item[strlen(item)-1]))
-		  {
-		  repeat=item[strlen(item)-1]-'0';
-		  item[strlen(item)-1]=0;
-		  }
-	      for(;repeat;repeat--)
-		if (addsubunit(doingtop^flip?theunit->numerator:theunit->denominator,item))
-		  return 1;
-	      }
-	  item=strtok(NULL," *\t/\n");
-	  }
+    {
+    if (strchr("0123456789.",*item))
+        {
+        //
+        // Item is a number.
+        //
+        double num;
+
+        divider=strchr(item,'|');
+        if (divider)
+      {
+      *divider=0;
+      num=atof(item);
+      if (!num)
+          {
+          //
+          // Allow zero values, but do not convert them.
+          //
+//          zeroerror();
+//          return 1;
+          return 0;
+          }
+      if (doingtop^flip) theunit->factor *= num;
+      else  theunit->factor /=num;
+      num=atof(divider+1);
+      if (!num)
+          {
+          //
+          // Allow zero values, but do not convert them.
+          //
+//          zeroerror();
+//          return 1;
+          return 0;
+          }
+      if (doingtop^flip) theunit->factor /= num;
+      else theunit->factor *= num;
+      }
+        else
+      {
+      num=atof(item);
+      if (!num)
+          {
+          //
+          // Allow zero values, but do not convert them.
+          //
+//          zeroerror();
+//          return 1;
+          return 0;
+          }
+      if (doingtop^flip) theunit->factor *= num;
+      else theunit->factor /= num;
+      }
+        }
+    else
+        {
+        //
+        // Item is not a number.
+        //
+        int repeat=1;
+        if (strchr("23456789",item[strlen(item)-1]))
+      {
+      repeat=item[strlen(item)-1]-'0';
+      item[strlen(item)-1]=0;
+      }
+        for(;repeat;repeat--)
+    if (addsubunit(doingtop^flip?theunit->numerator:theunit->denominator,item))
+      return 1;
+        }
+    item=strtok(NULL," *\t/\n");
+    }
       doingtop--;
       if (slash)
-	  {
-	  scratch=slash+1;
-	  }
+    {
+    scratch=slash+1;
+    }
       else doingtop--;
       } while (doingtop>=0 );
   free(savescr);
@@ -552,7 +553,7 @@ void sortunit(struct unittype *theunit)
 {
   char **ptr;
   int count;
-  
+
   for(count=0,ptr=theunit->numerator;*ptr;ptr++,count++);
   qsort(theunit->numerator, count, sizeof(char *), compare);
   for(count=0,ptr=theunit->denominator;*ptr;ptr++,count++);
@@ -564,20 +565,20 @@ void cancelunit(struct unittype *theunit)
 {
   char **den,**num;
   int comp;
-  
+
   den=theunit->denominator;
   num=theunit->numerator;
-  
+
   while(*num && *den)
     {
       comp=strcmp(*den,*num);
       if (!comp)
-	{
-	  //      if (*den!=NULLUNIT) free(*den);
-	  //	if (*num!=NULLUNIT) free(*num);
-	  *den++=NULLUNIT;
-	  *num++=NULLUNIT;
-	}
+  {
+    //      if (*den!=NULLUNIT) free(*den);
+    //  if (*num!=NULLUNIT) free(*num);
+    *den++=NULLUNIT;
+    *num++=NULLUNIT;
+  }
       else if (comp<0) den++;
       else num++;
     }
@@ -587,7 +588,7 @@ void cancelunit(struct unittype *theunit)
 
 
 //
-//   Looks up the definition for the specified unit.  
+//   Looks up the definition for the specified unit.
 //   Returns a pointer to the definition or a null pointer
 //   if the specified unit does not appear in the units table.
 //
@@ -598,7 +599,7 @@ const char *lookupunit(char *unit)
   {
   int i;
   char *copy;
-  
+
   for(i=0;i<unitcount;i++)
       {
       if (!strcmp(unittable[i].uname,unit)) return unittable[i].uval;
@@ -609,14 +610,14 @@ const char *lookupunit(char *unit)
       copy=dupstr(unit);
       copy[strlen(copy)-1]=0;
       for(i=0;i<unitcount;i++)
-	  {
-	  if (!strcmp(unittable[i].uname,copy))
-	      {
-	      strcpy(buffer,copy);
-	      free(copy);
-	      return buffer;
-	      }
-	  } 
+    {
+    if (!strcmp(unittable[i].uname,copy))
+        {
+        strcpy(buffer,copy);
+        free(copy);
+        return buffer;
+        }
+    }
       free(copy);
       }
   if (unit[strlen(unit)-1]=='s')
@@ -624,43 +625,43 @@ const char *lookupunit(char *unit)
       copy=dupstr(unit);
       copy[strlen(copy)-1]=0;
       for(i=0;i<unitcount;i++)
-	  {
-	  if (!strcmp(unittable[i].uname,copy))
-	      {
-	      strcpy(buffer,copy);
-	      free(copy);
-	      return buffer;
-	      }
-	  }
+    {
+    if (!strcmp(unittable[i].uname,copy))
+        {
+        strcpy(buffer,copy);
+        free(copy);
+        return buffer;
+        }
+    }
       if (copy[strlen(copy)-1]=='e')
-	  {
-	  copy[strlen(copy)-1]=0;
-	  for(i=0;i<unitcount;i++)
-	      {
-	      if (!strcmp(unittable[i].uname,copy))
-		  {
-		  strcpy(buffer,copy);
-		  free(copy);
-		  return buffer;
-		  }
-	      }
-	  }
+    {
+    copy[strlen(copy)-1]=0;
+    for(i=0;i<unitcount;i++)
+        {
+        if (!strcmp(unittable[i].uname,copy))
+      {
+      strcpy(buffer,copy);
+      free(copy);
+      return buffer;
+      }
+        }
+    }
       free(copy);
       }
   for(i=0;i<prefixcount;i++)
       {
       if (!strncmp(prefixtable[i].prefixname,unit,
-		   strlen(prefixtable[i].prefixname)))
-	  {
-	  unit += strlen(prefixtable[i].prefixname);
-	  if (!strlen(unit) || lookupunit(unit))
-	      {
-	      strcpy(buffer,prefixtable[i].prefixval);
-	      strcat(buffer," ");
-	      strcat(buffer,unit);
-	      return buffer;
-	      }
-	  }
+       strlen(prefixtable[i].prefixname)))
+    {
+    unit += strlen(prefixtable[i].prefixname);
+    if (!strlen(unit) || lookupunit(unit))
+        {
+        strcpy(buffer,prefixtable[i].prefixval);
+        strcat(buffer," ");
+        strcat(buffer,unit);
+        return buffer;
+        }
+    }
       }
   return 0;
   }
@@ -668,7 +669,7 @@ const char *lookupunit(char *unit)
 
 
 //
-//   reduces a product of symbolic units to primitive units. 
+//   reduces a product of symbolic units to primitive units.
 //   The three low bits are used to return flags:
 //
 //     bit 0 (1) set on if reductions were performed without error.
@@ -681,43 +682,43 @@ const char *lookupunit(char *unit)
 
 int reduceproduct(struct unittype *theunit, int flip)
   {
-  
+
   const char *toadd;
   char **product;
   int didsomething=2;
-  
+
   if (flip) product=theunit->denominator;
   else product=theunit->numerator;
 
   for(;*product;product++)
       {
       for(;;)
-	  {
-	  if (!strlen(*product)) break;
-	  toadd=lookupunit(*product);
-	  if (!toadd)
-	      {
-	      char tempstring[PATH_MAX];
-	      sprintf(tempstring, "Unknown units: %s", *product);
+    {
+    if (!strlen(*product)) break;
+    toadd=lookupunit(*product);
+    if (!toadd)
+        {
+        char tempstring[PATH_MAX];
+        sprintf(tempstring, "Unknown units: %s", *product);
               printf ("%s\n", tempstring);
-//	      printf("unknown unit '%s'\n",*product);
-	      return ERROR;
-	      }
-	  if (strchr(toadd,PRIMITIVECHAR)) break;
-	  didsomething=1;
-	  if (*product!=NULLUNIT)
-	      {
-	      free (*product);
-	      *product=NULLUNIT;
-	      }
-	  if (addunit(theunit, toadd, flip)) return ERROR;
-	  }
+//        printf("unknown unit '%s'\n",*product);
+        return ERROR;
+        }
+    if (strchr(toadd,PRIMITIVECHAR)) break;
+    didsomething=1;
+    if (*product!=NULLUNIT)
+        {
+        free (*product);
+        *product=NULLUNIT;
+        }
+    if (addunit(theunit, toadd, flip)) return ERROR;
+    }
       }
   return didsomething;
   }
 
 
-// 
+//
 //   Reduces numerator and denominator of the specified unit.
 //   Returns 0 on success, or 1 on unknown unit error.
 //
@@ -755,12 +756,12 @@ int compareproducts(char **one,char **two)
 
 int compareunits(struct unittype *first, struct unittype *second)
   {
-  return 
+  return
     compareproducts(first->numerator,second->numerator) ||
     compareproducts(first->denominator,second->denominator);
   }
 
-// 
+//
 //   Reduces numerator and denominator of the specified unit.
 //   Returns 0 on success, or 1 on unknown unit error.
 //
@@ -785,7 +786,7 @@ void showanswer(struct unittype *have, struct unittype *want)
   else
       {
       printf("\t* %.8g\n\t/ %.8g\n",have->factor/want->factor,
-	     want->factor/have->factor);
+       want->factor/have->factor);
       }
   }
 
@@ -804,21 +805,19 @@ void usage()
 //@F///////////////////////////////////////////////////////////////////////////
 //
 //  Function Name         conversion
-//  Description       
+//  Description
 //
 // This sample subroutine converts a "from string" (consisting of a floating
-// point number (-13, 25, 1567.2e6) and possibly a scale factor (micro, nano, 
+// point number (-13, 25, 1567.2e6) and possibly a scale factor (micro, nano,
 // pico) and units(meters, henries, seconds) to a to string (consisting
 // only of scale factor and units).
 //
-//  Formal Arguments  
-//  Return Value      
+//  Formal Arguments
+//  Return Value
 //
 //F@///////////////////////////////////////////////////////////////////////////
 
-int conversion(char *from_string, char *to_string, 
-                                        double &scaled_number)
-  {
+int conversion(char *from_string, char *to_string, double &scaled_number) {
   char *remove_all_spaces(char *string);
   char *local_from_string = strdup(from_string);
   char *havestr, *wantstr;
@@ -830,9 +829,9 @@ int conversion(char *from_string, char *to_string,
 
   //
   // Remove any spaces embedded in the from_string to facilitate parsing.
-  // 
+  //
   remove_all_spaces(local_from_string);
-  
+
   //
   // Read the ASCII units file for each conversion, which allows
   // more conversions to be added 'on the fly'.
@@ -855,13 +854,13 @@ int conversion(char *from_string, char *to_string,
       //
       havestr = new char[strlen(local_from_string)+2];
       //
-      // If a negative sign is present at the beginning of the number, then 
-      // strip it since the units converter cannot handle it.  Flag this as 
-      // the case, and restore the negative sign later to the converted 
-      // number.  
+      // If a negative sign is present at the beginning of the number, then
+      // strip it since the units converter cannot handle it.  Flag this as
+      // the case, and restore the negative sign later to the converted
+      // number.
       //
       if(local_from_string[0] != '-')
-	  {
+    {
           strcpy(havestr, local_from_string);
           }
       else
@@ -871,27 +870,27 @@ int conversion(char *from_string, char *to_string,
           }
       //
       // Scan backwards in the string until the first digit is found.
-      // Any character at or before this point is assumed to be the physical 
-      // number and any character after this point is assumed to be the units 
-      // and scale factor.  In this way, '1.0ps', '1.0 ps', '1000.0fs', 
+      // Any character at or before this point is assumed to be the physical
+      // number and any character after this point is assumed to be the units
+      // and scale factor.  In this way, '1.0ps', '1.0 ps', '1000.0fs',
       // '1000.0 fs', '1e3fs', and '1e3 fs' are converted correctly.
       //
-      j = strlen(havestr);
+      j = (int)strlen(havestr);
       unitspt = j;
       while ( !isdigit(havestr[unitspt]) )
-	  {
+    {
           unitspt--;
           if(unitspt < 0)     // no physical number was provided.
               {
-	      unitspt = j;        
-              break; 
+        unitspt = j;
+              break;
               }
           }
-      // 
+      //
       // Insert a space after the physical number (before the units).
       //
       for(i = j; i > unitspt; --i)
-	  {
+    {
           havestr[i+1] = havestr[i];
           }
       havestr[i+1] = ' ';
@@ -919,49 +918,49 @@ int conversion(char *from_string, char *to_string,
       initializeunit(&want);
       addunit(&want,wantstr,0);
       if (completereduce(&want) == 0)
-	  {
-	  //
-	  // For the simple case of a 0.0 value, the number is 0.0 in any 
-	  // units.  No conversion is performed and the 0.0 value is returned.
-	  //
-	  if(1 == sscanf(havestr, "%lf", &number))
-              {          
-	      if (number == 0.0)
-	          {
-	          scaled_number = 0.0;
-	          status = SUCCESS;
-	          }
-	      else
-	          {
-	          //
-	          // Return the result.
-	          //
-	          if (negative_number == FALSE)
-		      {
-		      scaled_number = have.factor/want.factor;
-		      }
-	          else
-		      {
-		      scaled_number = -1.0*have.factor/want.factor;
-		      }
-	          status = SUCCESS;
-	          }
+    {
+    //
+    // For the simple case of a 0.0 value, the number is 0.0 in any
+    // units.  No conversion is performed and the 0.0 value is returned.
+    //
+    if(1 == sscanf(havestr, "%lf", &number))
+              {
+        if (number == 0.0)
+            {
+            scaled_number = 0.0;
+            status = SUCCESS;
+            }
+        else
+            {
+            //
+            // Return the result.
+            //
+            if (negative_number == FALSE)
+          {
+          scaled_number = have.factor/want.factor;
+          }
+            else
+          {
+          scaled_number = -1.0*have.factor/want.factor;
+          }
+            status = SUCCESS;
+            }
               }
          else
-	      {
-	      //
-	      // An error has occurred during the conversion.
-     	      //
-	      status = FAIL;
+        {
+        //
+        // An error has occurred during the conversion.
+            //
+        status = FAIL;
               }
-	  }
+    }
       else
-	  {
-	  //
-	  // An error has occurred during the conversion.
-	  //
-	  status = FAIL;
-	  }
+    {
+    //
+    // An error has occurred during the conversion.
+    //
+    status = FAIL;
+    }
       }
   else
       {
@@ -982,5 +981,4 @@ int conversion(char *from_string, char *to_string,
   return (status);
   }
 
-
-
+#endif
