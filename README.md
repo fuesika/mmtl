@@ -1,3 +1,12 @@
+Introduction
+------------
+This branch contains reviewed code only that has been transferred to a
+CMake-based build process. For the full and patched original code, refer to the
+branch *old_code* in this git-repository.
+
+Original Information
+--------------------
+
 TNT is the graphical front end supporting 2-D electromagnetic field
 solvers developed at the Mayo Special Purpose Processor Development
 Group (Mayo SPPDG).  These field solvers can compute per-unit-length
@@ -26,7 +35,7 @@ Download
 
 Original Win32-binaries and sources for TNT and MMTL field solver programs available on the web (discontinued since 2004):
 * http://mmtl.sourceforge.net/
-  
+
 For the latest and patched version refer to:
 * https://github.com/fuesika/mmtl
 
