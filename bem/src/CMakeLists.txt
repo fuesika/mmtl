@@ -6,43 +6,13 @@
 #  having a big library hanging around.
 #----------------------------------------------------------------
 set (src_fortran
-  ext/fft.F
   ext/fmin.F
-  ext/caxpy.F
-  ext/cdivid.F
-  ext/cdotc.F
-  ext/cgedi.F
-  ext/cgefa.F
-  ext/cgesl.F
-  ext/cmslv1.F
-  ext/cmtms.F
-  ext/cscal.F
-  ext/cswap.F
-  ext/dasum.F
-  ext/daxpy.F
-  ext/dcfact.F
-  ext/dcminv.F
-  ext/dcmslv.F
-  ext/dcsol.F
-  ext/ddot.F
-  ext/dgeco.F
-  ext/dgedi.F
-  ext/dgefa.F
-  ext/dgesl.F
-  ext/dmslv.F
-  ext/dpmpar.F
-  ext/dscal.F
-  ext/dswap.F
-  ext/icamax.F
-  ext/idamax.F
   ext/ipmpar.F
   ext/isamax.F
   ext/mslv.F
-  ext/mtms.F
   ext/sasum.F
   ext/saxpy.F
   ext/sdot.F
-  ext/sfft.F
   ext/sgeco.F
   ext/sgedi.F
   ext/sgefa.F

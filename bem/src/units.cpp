@@ -1,29 +1,19 @@
-#ifndef units_h
-#define units_h
-
-//@M///////////////////////////////////////////////////////////////////////////
-//
-//  Module Name           units.cxx
+//  Module Name           units.cpp
 //  Description
 //  Author
-//  Creation Date
+//  Creation Date         2002/10/01
 //
 //  Copyright (C) by Mayo Foundation for Medical Education and Research.
 //  All rights reserved.
-//
-static const char rcsid[] =
-"$Id: units.cpp,v 1.1 2002/10/01 19:03:38 zahn Exp $";
-//
-//M@///////////////////////////////////////////////////////////////////////////
+
+#ifndef units_h
+#define units_h
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <limits.h>
-
-
-//#define VERSION "1.0"
 
 #define TRUE 1
 #define FALSE 0
@@ -44,12 +34,11 @@ static struct {
   const char *uval;
 } unittable[MAXUNITS];
 
-struct unittype
-  {
+struct unittype {
   char *numerator[MAXSUBUNITS];
   char *denominator[MAXSUBUNITS];
   double factor;
-  };
+};
 
 static struct {
   const char *prefixname;
@@ -65,23 +54,19 @@ static int prefixcount  = 0;
 void setunits(void);
 
 
-char *dupstr(const char *str)
-{
+char *dupstr(const char *str) {
   char *ret;
   ret = (char*)malloc(strlen(str)+1);
-  if (!ret)
-    {
-      fprintf(stderr,"Memory allocation error\n");
-      exit(3);
-    }
+  if (!ret) {
+    fprintf(stderr,"Memory allocation error\n");
+    exit(3);
+  }
   strcpy(ret,str);
   return(ret);
 }
 
 
-void setunits(void)
-{
-
+void setunits(void) {
   unittable[0].uname = "m";
   unittable[0].uval = "!a!";
   unittable[1].uname = "kg";
@@ -359,36 +344,34 @@ void setunits(void)
   unittable[90].uname = "mhz";
   unittable[90].uval = "1e+6 /sec";
 
- unitcount = 91;
- prefixcount = 47;
+  unitcount = 91;
+  prefixcount = 47;
 }
 
 
-void initializeunit(struct unittype *theunit)
-{
+void initializeunit(struct unittype *theunit) {
   theunit->factor=1.0;
   theunit->numerator[0]=theunit->denominator[0]=NULL;
 }
 
 
-int addsubunit(char *product[], char *toadd)
-{
+int addsubunit(char *product[], char *toadd) {
   char **ptr;
 
-  for(ptr=product;*ptr && *ptr!=NULLUNIT;ptr++);
-  if (ptr>=product+MAXSUBUNITS)
-    {
-      fprintf(stderr,"Memory overflow in unit reduction\n");
-      return 1;
+  for (ptr=product;*ptr && *ptr!=NULLUNIT;ptr++);
+    if (ptr>=product+MAXSUBUNITS) {
+        fprintf(stderr,"Memory overflow in unit reduction\n");
+        return 1;
     }
-  if (!*ptr) *(ptr+1)=0;
-  *ptr=dupstr(toadd);
+  if (!*ptr)
+    *(ptr+1) = 0;
+
+  *ptr = dupstr(toadd);
   return 0;
 }
 
 
-void showunit(struct unittype *theunit)
-{
+void showunit(struct unittype *theunit) {
   char **ptr;
   int printedslash;
   int counter=1;
@@ -429,21 +412,15 @@ void showunit(struct unittype *theunit)
 }
 
 
-void zeroerror()
-{
-//  fprintf(stderr,"Unit reduces to zero\n");
+void zeroerror() {
   printf ("**** Units unspecified\n");
 }
 
-//
 //   Adds the specified string to the unit.
 //   Flip is 0 for adding normally, 1 for adding reciprocal.
 //
 //   Returns 0 for successful addition, nonzero on error.
-//
-
-int addunit(struct unittype *theunit,const char *toadd,int flip)
-{
+int addunit(struct unittype *theunit, const char *toadd, int flip) {
   char *scratch,*savescr;
   char *item;
   char *divider, *slash;
@@ -470,133 +447,104 @@ int addunit(struct unittype *theunit,const char *toadd,int flip)
         double num;
 
         divider=strchr(item,'|');
-        if (divider)
-      {
-      *divider=0;
-      num=atof(item);
-      if (!num)
-          {
-          //
-          // Allow zero values, but do not convert them.
-          //
-//          zeroerror();
-//          return 1;
-          return 0;
+        if (divider) {
+          *divider=0;
+          num=atof(item);
+          if (!num) {
+            // Allow zero values, but do not convert them.
+            return 0;
           }
-      if (doingtop^flip) theunit->factor *= num;
-      else  theunit->factor /=num;
-      num=atof(divider+1);
-      if (!num)
-          {
-          //
-          // Allow zero values, but do not convert them.
-          //
-//          zeroerror();
-//          return 1;
-          return 0;
+          if (doingtop^flip)
+            theunit->factor *= num;
+          else
+            theunit->factor /=num;
+          num = atof(divider+1);
+          if (!num) {
+            // Allow zero values, but do not convert them.
+            return 0;
           }
-      if (doingtop^flip) theunit->factor /= num;
-      else theunit->factor *= num;
-      }
-        else
-      {
-      num=atof(item);
-      if (!num)
-          {
-          //
-          // Allow zero values, but do not convert them.
-          //
-//          zeroerror();
-//          return 1;
-          return 0;
+          if (doingtop^flip)
+            theunit->factor /= num;
+          else
+            theunit->factor *= num;
+        } else {
+          num = atof(item);
+          if (!num) {
+            // Allow zero values, but do not convert them.
+            return 0;
           }
-      if (doingtop^flip) theunit->factor *= num;
-      else theunit->factor /= num;
-      }
+          if (doingtop^flip)
+            theunit->factor *= num;
+          else
+            theunit->factor /= num;
         }
-    else
-        {
-        //
+      } else {
         // Item is not a number.
-        //
-        int repeat=1;
-        if (strchr("23456789",item[strlen(item)-1]))
-      {
-      repeat=item[strlen(item)-1]-'0';
-      item[strlen(item)-1]=0;
-      }
-        for(;repeat;repeat--)
-    if (addsubunit(doingtop^flip?theunit->numerator:theunit->denominator,item))
-      return 1;
+        int repeat = 1;
+        if (strchr("23456789",item[strlen(item)-1])) {
+          repeat=item[strlen(item)-1]-'0';
+          item[strlen(item)-1]=0;
         }
-    item=strtok(NULL," *\t/\n");
+        for(;repeat;repeat--)
+          if (addsubunit(doingtop^flip?theunit->numerator:theunit->denominator,item))
+            return 1;
+      }
+      item=strtok(NULL," *\t/\n");
     }
+    doingtop--;
+    if (slash) {
+      scratch=slash+1;
+    } else {
       doingtop--;
-      if (slash)
-    {
-    scratch=slash+1;
     }
-      else doingtop--;
-      } while (doingtop>=0 );
+  } while (doingtop>=0 );
   free(savescr);
   return 0;
 }
 
 
-int compare(const void *item1, const void *item2)
-{
+int compare(const void *item1, const void *item2) {
   return strcmp(*(char **) item1, * (char **) item2);
 }
 
 
-void sortunit(struct unittype *theunit)
-{
+void sortunit(struct unittype *theunit) {
   char **ptr;
   int count;
 
-  for(count=0,ptr=theunit->numerator;*ptr;ptr++,count++);
-  qsort(theunit->numerator, count, sizeof(char *), compare);
-  for(count=0,ptr=theunit->denominator;*ptr;ptr++,count++);
-  qsort(theunit->denominator, count, sizeof(char *), compare);
+  for(count=0,ptr=theunit->numerator; *ptr; ptr++,count++);
+    qsort(theunit->numerator, count, sizeof(char *), compare);
+  for(count=0,ptr=theunit->denominator; *ptr; ptr++,count++);
+    qsort(theunit->denominator, count, sizeof(char *), compare);
 }
 
 
-void cancelunit(struct unittype *theunit)
-{
+void cancelunit(struct unittype *theunit) {
   char **den,**num;
   int comp;
 
-  den=theunit->denominator;
-  num=theunit->numerator;
+  den = theunit->denominator;
+  num = theunit->numerator;
 
-  while(*num && *den)
-    {
-      comp=strcmp(*den,*num);
-      if (!comp)
-  {
-    //      if (*den!=NULLUNIT) free(*den);
-    //  if (*num!=NULLUNIT) free(*num);
-    *den++=NULLUNIT;
-    *num++=NULLUNIT;
-  }
-      else if (comp<0) den++;
-      else num++;
+  while(*num && *den) {
+    comp = strcmp(*den,*num);
+    if (!comp) {
+      *den ++= NULLUNIT;
+      *num ++= NULLUNIT;
+    } else if (comp<0) {
+      den++;
+    } else {
+      num++;
     }
+  }
 }
-
-
-
-
-//
-//   Looks up the definition for the specified unit.
-//   Returns a pointer to the definition or a null pointer
-//   if the specified unit does not appear in the units table.
-//
 
 static char buffer[100];  /* buffer for lookupunit answers with prefixes */
 
-const char *lookupunit(char *unit)
-  {
+//Looks up the definition for the specified unit.
+//Returns a pointer to the definition or a null pointer
+//if the specified unit does not appear in the units table.
+const char *lookupunit(char *unit) {
   int i;
   char *copy;
 
@@ -680,8 +628,7 @@ const char *lookupunit(char *unit)
 
 #define ERROR 4
 
-int reduceproduct(struct unittype *theunit, int flip)
-  {
+int reduceproduct(struct unittype *theunit, int flip) {
 
   const char *toadd;
   char **product;
@@ -718,11 +665,8 @@ int reduceproduct(struct unittype *theunit, int flip)
   }
 
 
-//
 //   Reduces numerator and denominator of the specified unit.
 //   Returns 0 on success, or 1 on unknown unit error.
-//
-
 int reduceunit(struct unittype *theunit)
   {
   int ret;
