@@ -44,7 +44,7 @@ void nmmtl_output_charimp_propvel(FILE *output_fp, /* output file ptr */
           struct contour *signals) {
 
   struct contour *sig_line1;  /* signal ptr */
-  int i;      /* array indices */
+  unsigned int i;      /* array indices */
 
   /********************************************************************
    *                                                                   *
@@ -54,15 +54,17 @@ void nmmtl_output_charimp_propvel(FILE *output_fp, /* output file ptr */
   fprintf(output_fp, "\nCharacteristic Impedance (Ohms):\n");
   for (sig_line1 = signals, i = 0;
        sig_line1 != NULL;
-       sig_line1 = sig_line1->next, i++)
-  {
-    fprintf(output_fp, "For Signal Line ::%s= %g\n", sig_line1->name,
-      characteristic_impedance[i]);
+       sig_line1 = sig_line1->next, i++) {
+    fprintf(output_fp, "For Signal Line ::%s= %g\n",
+            sig_line1->name,
+            characteristic_impedance[i]);
   }
 
   /* odd/even char. imped. if 2 conductors */
-  if(i == 2 && even_odd != 0 && even_odd[0] != -1.0 && even_odd[1] != -1.0)
-  {
+  if ((i == 2)
+  &&  (even_odd != 0)
+  &&  (even_odd[0] != -1.)
+  &&  (even_odd[1] != -1.)) {
     fprintf(output_fp, "\nCharacteristic Impedance Odd/Even (Ohms):\n");
     fprintf(output_fp, "  odd= %g\n even= %g\n",even_odd[0],even_odd[1]);
   }
@@ -89,15 +91,17 @@ void nmmtl_output_charimp_propvel(FILE *output_fp, /* output file ptr */
   fprintf(output_fp, "\nPropagation Velocity (meters/second):\n");
   for (sig_line1 = signals, i = 0;
        sig_line1 != NULL;
-       sig_line1 = sig_line1->next, i++)
-  {
-    fprintf(output_fp, "For Signal Line ::%s= %15.7e\n", sig_line1->name,
-      propagation_velocity[i]);
+       sig_line1 = sig_line1->next, i++) {
+    fprintf(output_fp, "For Signal Line ::%s= %15.7e\n",
+            sig_line1->name,
+            propagation_velocity[i]);
   }
 
   /* odd/even prop. vel. if 2 conductors */
-  if(i == 2 && even_odd != 0 && even_odd[2] != -1.0 && even_odd[3] != -1.0)
-  {
+  if ((i == 2)
+  &&  (even_odd != 0)
+  &&  (even_odd[2] != -1.)
+  &&  (even_odd[3] != -1.)) {
     fprintf(output_fp, "\nPropagation Velocity Odd/Even (meters/second):\n");
     fprintf(output_fp, "  odd= %g\n even= %g\n",even_odd[2],even_odd[3]);
   }
@@ -110,19 +114,19 @@ void nmmtl_output_charimp_propvel(FILE *output_fp, /* output file ptr */
   fprintf(output_fp, "\nPropagation Delay (seconds/meter):\n");
   for (sig_line1 = signals, i = 0;
        sig_line1 != NULL;
-       sig_line1 = sig_line1->next, i++)
-  {
-    fprintf(output_fp, "For Signal Line ::%s= %15.7e\n", sig_line1->name,
-      1.0/propagation_velocity[i]);
+       sig_line1 = sig_line1->next, i++) {
+    fprintf(output_fp, "For Signal Line ::%s= %15.7e\n",
+            sig_line1->name,
+            1./propagation_velocity[i]);
   }
 
   /* odd/even prop. delay if 2 conductors */
-  if(i == 2 && even_odd != 0 && even_odd[2] != -1.0 && even_odd[3] != -1.0)
-  {
+  if ((i == 2)
+  &&  (even_odd != 0)
+  &&  (even_odd[2] != -1.)
+  &&  (even_odd[3] != -1.)) {
     fprintf(output_fp, "\nPropagation Delay Odd/Even (seconds/meter):\n");
     fprintf(output_fp, "  odd= %g\n",1.0/even_odd[2]);
     fprintf(output_fp, " even= %g\n",1.0/even_odd[3]);
   }
-
 }
-

@@ -32,11 +32,14 @@
 #include "nmmtl.h"
 
 void nmmtl_output_crosstalk(FILE *output_fp, double **forward_xtk,
-          double **backward_xtk, struct contour *signals)
-{
+          double **backward_xtk, struct contour *signals) {
 
-  struct contour *sig_line1, *sig_line2;    /* signal ptrs */
-  int i,j;            /* array indices */
+  //signal ptrs
+  struct contour *sig_line1;
+  struct contour *sig_line2;
+  //loop indices for array access
+  unsigned int i;
+  unsigned int j;
 
   /********************************************************************
    *                                                                   *
@@ -47,21 +50,19 @@ void nmmtl_output_crosstalk(FILE *output_fp, double **forward_xtk,
   fprintf(output_fp, "FXT(Active Signal, Passive Signal)\n");
   for (sig_line1 = signals, i = 0;
        sig_line1 != NULL;
-       sig_line1 = sig_line1->next, i++)
-  {
+       sig_line1 = sig_line1->next, i++) {
     for (sig_line2 = signals, j = 0;
-   sig_line2 != NULL;
-   sig_line2 = sig_line2->next, j++)
-    {
-      if (j > i)
-      {
-  if(forward_xtk[i][j] != 0.0)
-    fprintf(output_fp, "FXT( ::%s , ::%s )= %11.5e = %11.5f dB\n",
-      sig_line1->name, sig_line2->name, forward_xtk[i][j],
-      (20.0 * log10(fabs(forward_xtk[i][j]))));
-  else
-    fprintf(output_fp, "FXT( ::%s , ::%s )= %11.5e = infinite dB\n",
-      sig_line1->name, sig_line2->name, forward_xtk[i][j]);
+         sig_line2 != NULL;
+         sig_line2 = sig_line2->next, j++) {
+      if (j > i) {
+        if (forward_xtk[i][j] != 0.0) {
+          fprintf(output_fp, "FXT( ::%s , ::%s )= %11.5e = %11.5f dB\n",
+            sig_line1->name, sig_line2->name, forward_xtk[i][j],
+            (20.0 * log10(fabs(forward_xtk[i][j]))));
+        } else {
+          fprintf(output_fp, "FXT( ::%s , ::%s )= %11.5e = infinite dB\n",
+            sig_line1->name, sig_line2->name, forward_xtk[i][j]);
+        }
       }
     }
   }
@@ -75,24 +76,21 @@ void nmmtl_output_crosstalk(FILE *output_fp, double **forward_xtk,
   fprintf(output_fp, "BXT(Active Signal, Passive Signal)\n");
   for (sig_line1 = signals, i = 0;
        sig_line1 != NULL;
-       sig_line1 = sig_line1->next, i++)
-  {
+       sig_line1 = sig_line1->next, i++) {
     for (sig_line2 = signals, j = 0;
-   sig_line2 != NULL;
-   sig_line2 = sig_line2->next, j++)
-    {
-      if (j > i)
-      {
-  if(backward_xtk[i][j] != 0.0)
-    fprintf(output_fp, "BXT( ::%s , ::%s )= %11.5e = %11.5f dB\n",
-      sig_line1->name, sig_line2->name, backward_xtk[i][j],
-      (20.0 * log10(fabs(backward_xtk[i][j]))));
-  else
-    fprintf(output_fp, "BXT( ::%s , ::%s )= %11.5e = infinite dB\n",
-      sig_line1->name, sig_line2->name, backward_xtk[i][j]);
+         sig_line2 != NULL;
+         sig_line2 = sig_line2->next, j++) {
+      if (j > i) {
+        if (backward_xtk[i][j] != 0.0) {
+          fprintf(output_fp, "BXT( ::%s , ::%s )= %11.5e = %11.5f dB\n",
+            sig_line1->name, sig_line2->name, backward_xtk[i][j],
+            (20.0 * log10(fabs(backward_xtk[i][j]))));
+        } else {
+          fprintf(output_fp, "BXT( ::%s , ::%s )= %11.5e = infinite dB\n",
+            sig_line1->name, sig_line2->name, backward_xtk[i][j]);
+        }
       }
     }
   }
-  fprintf(output_fp,
-    "\nNOTE: Cross talk results assume there are no reflections.\n");
+  fprintf(output_fp, "\nNOTE: Cross talk results assume there are no reflections.\n");
 }

@@ -99,6 +99,7 @@ add_executable(${PROJECT_NAME} nmmtl.cpp
   nmmtl_new_die_seg.cpp
   nmmtl_nl_expand.cpp
   nmmtl_orphans.cpp
+  nmmtl_output_charimp_propvel.cpp
   nmmtl_output_crosstalk.cpp
   nmmtl_output_headers.cpp
   nmmtl_output_matrices.cpp
@@ -114,7 +115,6 @@ add_executable(${PROJECT_NAME} nmmtl.cpp
   nmmtl_unload.cpp
   nmmtl_write_plot_data.cpp
   nmmtl_xtk_calculate.cpp
-  output_charimp_propvel.cpp
   plotFileInitialization.cpp
   remove_all_spaces.cpp
   units.cpp
