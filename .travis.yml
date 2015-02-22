@@ -9,7 +9,7 @@ env:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install cmake gfortran
+  - sudo apt-get install -y cmake gfortran
 
 
 script: cd bem && ./build.sh
