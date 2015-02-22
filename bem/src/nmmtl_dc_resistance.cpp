@@ -12,8 +12,7 @@
 // calculate the area for a polygon, this formula is derived from
 // the surface integral converted to a line integral
 ////////////////////////////////////////////////////////////////
-static double nmmtlPolyArea(CONTOURS_P item)
-{
+static double nmmtlPolyArea(CONTOURS_P item) {
   POLYPOINTS *point;
   double area;
   double x0;
@@ -51,10 +50,10 @@ void nmmtl_dc_resistance(double the_conductivity,
   for (i =0,sig_line1 = signals;
        sig_line1 != NULL;
        i++,sig_line1 = sig_line1->next)
-    for (j=0,sig_line2 = signals;
-   sig_line2 != NULL;
-   j++,sig_line2 = sig_line2->next)
-      Rdc[i][j] = 0.0;
+    for (j=0, sig_line2 = signals;
+         sig_line2 != NULL;
+         j++, sig_line2 = sig_line2->next)
+      Rdc[i][j] = 0.;
 
   j = 0;
   item = signals;

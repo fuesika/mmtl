@@ -51,7 +51,6 @@ static char *NULLUNIT=(char *)"";
 static int unitcount    = 0;
 static int prefixcount  = 0;
 
-void setunits(void);
 
 
 char *dupstr(const char *str) {
@@ -350,19 +349,22 @@ void setunits(void) {
 
 
 void initializeunit(struct unittype *theunit) {
-  theunit->factor=1.0;
-  theunit->numerator[0]=theunit->denominator[0]=NULL;
+  theunit->factor       = 1.;
+  theunit->numerator[0] = theunit->denominator[0] = NULL;
 }
 
 
 int addsubunit(char *product[], char *toadd) {
   char **ptr;
 
-  for (ptr=product;*ptr && *ptr!=NULLUNIT;ptr++);
-    if (ptr>=product+MAXSUBUNITS) {
-        fprintf(stderr,"Memory overflow in unit reduction\n");
-        return 1;
-    }
+  //skip to end of product
+  for (ptr = product; *ptr && (*ptr != NULLUNIT); ptr++)
+  ;
+  //sanity check: maximum number of allowed for subunits
+  if (ptr >= product+MAXSUBUNITS) {
+      fprintf(stderr,"Memory overflow in unit reduction\n");
+      return 1;
+  }
   if (!*ptr)
     *(ptr+1) = 0;
 
@@ -409,11 +411,6 @@ void showunit(struct unittype *theunit) {
       }
   if (counter>1) printf("%s%d",powerstring,counter);
   printf("\n");
-}
-
-
-void zeroerror() {
-  printf ("**** Units unspecified\n");
 }
 
 //   Adds the specified string to the unit.
@@ -512,10 +509,13 @@ void sortunit(struct unittype *theunit) {
   char **ptr;
   int count;
 
-  for(count=0,ptr=theunit->numerator; *ptr; ptr++,count++);
-    qsort(theunit->numerator, count, sizeof(char *), compare);
-  for(count=0,ptr=theunit->denominator; *ptr; ptr++,count++);
-    qsort(theunit->denominator, count, sizeof(char *), compare);
+  for (count=0,ptr=theunit->numerator; *ptr; ptr++,count++)
+  ;
+  qsort(theunit->numerator, count, sizeof(char *), compare);
+
+  for (count=0,ptr=theunit->denominator; *ptr; ptr++,count++)
+  ;
+  qsort(theunit->denominator, count, sizeof(char *), compare);
 }
 
 
@@ -629,7 +629,6 @@ const char *lookupunit(char *unit) {
 #define ERROR 4
 
 int reduceproduct(struct unittype *theunit, int flip) {
-
   const char *toadd;
   char **product;
   int didsomething=2;
@@ -664,86 +663,26 @@ int reduceproduct(struct unittype *theunit, int flip) {
   return didsomething;
   }
 
-
-//   Reduces numerator and denominator of the specified unit.
-//   Returns 0 on success, or 1 on unknown unit error.
-int reduceunit(struct unittype *theunit)
-  {
+// Reduces numerator and denominator of the specified unit.
+// Returns 0 on success, or 1 on unknown unit error.
+int reduceunit(struct unittype *theunit) {
   int ret;
   ret=1;
-  while(ret & 1)
-      {
-      ret = reduceproduct(theunit,0) | reduceproduct(theunit,1);
-      if (ret & 4) return 1;
-      }
+  while(ret & 1) {
+    ret = reduceproduct(theunit,0) | reduceproduct(theunit,1);
+    if (ret & 4) return 1;
+  }
   return 0;
-  }
+}
 
-
-int compareproducts(char **one,char **two)
-  {
-  while(*one || *two)
-      {
-      if (!*one && *two!=NULLUNIT) return 1;
-      if (!*two && *one!=NULLUNIT) return 1;
-      if (*one==NULLUNIT) one++;
-      else if (*two==NULLUNIT) two++;
-      else if (strcmp(*one,*two)) return 1;
-      else one++,two++;
-      }
-  return 0;
-  }
-
-//
-// Return zero if units are compatible, nonzero otherwise
-//
-
-int compareunits(struct unittype *first, struct unittype *second)
-  {
-  return
-    compareproducts(first->numerator,second->numerator) ||
-    compareproducts(first->denominator,second->denominator);
-  }
-
-//
-//   Reduces numerator and denominator of the specified unit.
-//   Returns 0 on success, or 1 on unknown unit error.
-//
-
-int completereduce(struct unittype *unit)
-  {
+// Reduces numerator and denominator of the specified unit.
+// Returns 0 on success, or 1 on unknown unit error.
+int completereduce(struct unittype *unit) {
   if (reduceunit(unit)) return 1;
   sortunit(unit);
   cancelunit(unit);
   return 0;
-  }
-
-
-void showanswer(struct unittype *have, struct unittype *want)
-  {
-  if (compareunits(have,want))
-      {
-      printf("conformability error\n");
-      showunit(have);
-      showunit(want);
-      }
-  else
-      {
-      printf("\t* %.8g\n\t/ %.8g\n",have->factor/want->factor,
-       want->factor/have->factor);
-      }
-  }
-
-
-void usage()
-  {
-  fprintf(stderr,"\nunits [-f unitsfile] [-q] [-v] [from-unit to-unit]\n");
-  fprintf(stderr,"\n    -f specify units file\n");
-  fprintf(stderr,"    -q supress prompting (quiet)\n");
-  fprintf(stderr,"    -v print version number\n");
-  exit(3);
-  }
-
+}
 
 
 //@F///////////////////////////////////////////////////////////////////////////
@@ -771,157 +710,110 @@ int conversion(char *from_string, char *to_string, double &scaled_number) {
   int i, j, unitspt;
   int negative_number=FALSE;
 
-  //
   // Remove any spaces embedded in the from_string to facilitate parsing.
-  //
   remove_all_spaces(local_from_string);
 
-  //
   // Read the ASCII units file for each conversion, which allows
   // more conversions to be added 'on the fly'.
-  //
-  if ( (unitcount==0) || (prefixcount==0) )
-      {
-      setunits();
-      }
+  if ( (unitcount==0) || (prefixcount==0) ) {
+    setunits();
+  }
 
-  if (local_from_string == NULL)
-      {
-      fprintf(stderr,"A string to convert from must be specified.");
-      }
-  else
-      {
-      //
-      // Insist that the units be separated from the actual number and
-      // copy verbatim the number into an internal string.  This technique
-      // avoids any conversions possibly performed by a scanf.
-      //
-      havestr = new char[strlen(local_from_string)+2];
-      //
-      // If a negative sign is present at the beginning of the number, then
-      // strip it since the units converter cannot handle it.  Flag this as
-      // the case, and restore the negative sign later to the converted
-      // number.
-      //
-      if(local_from_string[0] != '-')
-    {
-          strcpy(havestr, local_from_string);
-          }
-      else
-          {
-          negative_number = TRUE;
-          strcpy(havestr, &local_from_string[1]);
-          }
-      //
-      // Scan backwards in the string until the first digit is found.
-      // Any character at or before this point is assumed to be the physical
-      // number and any character after this point is assumed to be the units
-      // and scale factor.  In this way, '1.0ps', '1.0 ps', '1000.0fs',
-      // '1000.0 fs', '1e3fs', and '1e3 fs' are converted correctly.
-      //
-      j = (int)strlen(havestr);
-      unitspt = j;
-      while ( !isdigit(havestr[unitspt]) )
-    {
-          unitspt--;
-          if(unitspt < 0)     // no physical number was provided.
-              {
+  if (local_from_string == NULL) {
+    fprintf(stderr, "A string to convert from must be specified.");
+    return -1;
+  } else {
+    // Insist that the units be separated from the actual number and
+    // copy verbatim the number into an internal string.  This technique
+    // avoids any conversions possibly performed by a scanf.
+    havestr = new char[strlen(local_from_string)+2];
+
+    // If a negative sign is present at the beginning of the number, then
+    // strip it since the units converter cannot handle it.  Flag this as
+    // the case, and restore the negative sign later to the converted
+    // number.
+    if(local_from_string[0] != '-') {
+      strcpy(havestr, local_from_string);
+    } else {
+      negative_number = TRUE;
+      strcpy(havestr, &local_from_string[1]);
+    }
+    //
+    // Scan backwards in the string until the first digit is found.
+    // Any character at or before this point is assumed to be the physical
+    // number and any character after this point is assumed to be the units
+    // and scale factor.  In this way, '1.0ps', '1.0 ps', '1000.0fs',
+    // '1000.0 fs', '1e3fs', and '1e3 fs' are converted correctly.
+    //
+    j = (int)strlen(havestr);
+    unitspt = j;
+    while ( !isdigit(havestr[unitspt]) ) {
+      unitspt--;
+      if(unitspt < 0) {
+        // no physical number was provided.
         unitspt = j;
-              break;
-              }
-          }
-      //
-      // Insert a space after the physical number (before the units).
-      //
-      for(i = j; i > unitspt; --i)
-    {
-          havestr[i+1] = havestr[i];
-          }
-      havestr[i+1] = ' ';
+        break;
       }
+    }
+    // Insert a space after the physical number (before the units).
+    for(i = j; i > unitspt; --i) {
+      havestr[i+1] = havestr[i];
+    }
+    havestr[i+1] = ' ';
+  }
 
-  if (to_string == NULL)
-      {
-      fprintf(stderr,"A string to convert to must be specified.");
-      }
-  else
-      {
-      //
-      // Allocate memory to work with this string internally.
-      //
-      wantstr = new char[strlen(to_string)+1];
-      strcpy(wantstr, to_string);
-      }
-  //
+  if (to_string == NULL) {
+    fprintf(stderr, "A string to convert to must be specified.");
+    return -2;
+  } else {
+    // Allocate memory to work with this string internally.
+    wantstr = new char[strlen(to_string)+1];
+    strcpy(wantstr, to_string);
+  }
+
   // Calculate the conversion factor.
-  //
   initializeunit(&have);
   addunit(&have,havestr,0);
-  if (completereduce(&have) == 0)
-      {
-      initializeunit(&want);
-      addunit(&want,wantstr,0);
-      if (completereduce(&want) == 0)
-    {
-    //
-    // For the simple case of a 0.0 value, the number is 0.0 in any
-    // units.  No conversion is performed and the 0.0 value is returned.
-    //
-    if(1 == sscanf(havestr, "%lf", &number))
-              {
-        if (number == 0.0)
-            {
-            scaled_number = 0.0;
-            status = SUCCESS;
-            }
-        else
-            {
-            //
-            // Return the result.
-            //
-            if (negative_number == FALSE)
-          {
-          scaled_number = have.factor/want.factor;
+  if (completereduce(&have) == 0) {
+    initializeunit(&want);
+    addunit(&want,wantstr,0);
+    if (completereduce(&want) == 0) {
+      // For the simple case of a 0.0 value, the number is 0.0 in any
+      // units.  No conversion is performed and the 0.0 value is returned.
+      if (1 == sscanf(havestr, "%lf", &number)) {
+        //FIXME: do not compare floating point number against zero
+        if (number == 0.0) {
+          scaled_number = 0.0;
+          status = SUCCESS;
+        } else {
+          // Return the result.
+          if (negative_number == FALSE) {
+            scaled_number = have.factor/want.factor;
+          } else {
+            scaled_number = -1.0*have.factor/want.factor;
           }
-            else
-          {
-          scaled_number = -1.0*have.factor/want.factor;
-          }
-            status = SUCCESS;
-            }
-              }
-         else
-        {
-        //
+          status = SUCCESS;
+        }
+      } else {
         // An error has occurred during the conversion.
-            //
         status = FAIL;
-              }
+      }
+    } else {
+      // An error has occurred during the conversion.
+      status = FAIL;
     }
-      else
-    {
-    //
+  } else {
     // An error has occurred during the conversion.
     //
     status = FAIL;
-    }
-      }
-  else
-      {
-      //
-      // An error has occurred during the conversion.
-      //
-      status = FAIL;
-      }
-  //
+  }
+
   // Deallocate the local memory.
-  //
   delete [] wantstr;
   delete [] havestr;
   delete [] local_from_string;
-  //
+
   // Return the status to the calling routine.
-  //
   return (status);
   }
 

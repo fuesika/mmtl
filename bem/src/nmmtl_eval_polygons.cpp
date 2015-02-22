@@ -156,28 +156,23 @@ int nmmtl_evaluate_polygons(int cntr_seg,
           int conductor_counter,
           CONTOURS_P contour,
           LINE_SEGMENTS_P *segments,
-          EXTENT_DATA_P extent_data)
-{
+          EXTENT_DATA_P extent_data) {
   static PGNPTS_P head = NULL,last,current;
   POLYPOINTS_P point, last_point;
   int i;
   double sum_of_angles;
   int sign_of_polygon, sign_of_angle;
-  LINE_SEGMENTS_P new_segment, last_segment, leading_segment = NULL;
+  LINE_SEGMENTS_P new_segment = NULL, last_segment = NULL, leading_segment = NULL;
 
-
-  if(contour->points == NULL || contour->points->next == NULL)
+  if (contour->points == NULL || contour->points->next == NULL)
     return(FAIL);
 
   /* preallocate a linked list that can remain and be extended if need be */
-
-  if(head == NULL)
-  {
+  if (head == NULL) {
     head = (PGNPTS_P)malloc(sizeof(PGNPTS));
     head->valid = 0;
     current = head;
-    for(i=1;i < 10; i++)
-    {
+    for (i=1; i < 10; i++) {
       current->next = (PGNPTS_P)malloc(sizeof(PGNPTS));
       current = current->next;
       current->valid = 0;
@@ -185,26 +180,19 @@ int nmmtl_evaluate_polygons(int cntr_seg,
     current->next = NULL;
     current = head;
   }
-
   /* if list was preallocated, mark it all invalid */
-  else
-  {
-    for(current=head; current != NULL; current = current->next)
-    {
+  else {
+    for(current=head; current != NULL; current = current->next) {
       current->valid = 0;
     }
   }
 
   /* find the end of the segment list */
   last_segment = *segments;
-  if(last_segment != NULL)
-  {
+  if(last_segment != NULL) {
     while(last_segment->next != NULL)
       last_segment = last_segment->next;
   }
-
-
-
 
   last_point = contour->points;
 
@@ -226,8 +214,7 @@ int nmmtl_evaluate_polygons(int cntr_seg,
   current = head;
   current->valid = 0;
 
-  while(point != NULL)
-  {
+  while(point != NULL) {
     current->valid = 1;
     current->x[0] = last_point->x;
     current->x[1] = point->x;
@@ -336,8 +323,7 @@ int nmmtl_evaluate_polygons(int cntr_seg,
 
 #ifdef DIAG_POLY
 #ifdef NMMTL_DUMP_DIAG
-  for(current=head; current->valid != 0; current = current->next)
-  {
+  for(current=head; current->valid != 0; current = current->next) {
     fprintf(dump_file,"  (%f,%f)   theta2 %f degrees\n",
       current->dx,current->dy,
       current->theta2[1] * RADIANS_TO_DEGREES );
@@ -345,12 +331,10 @@ int nmmtl_evaluate_polygons(int cntr_seg,
 #endif
 #endif
 
-  for(current=head; current->valid != 0; current = current->next)
-  {
+  for (current=head; current->valid != 0; current = current->next) {
     /* for each edge of the polygon, set up a new line segment */
     /* with the appropriate parameters */
-
-    new_segment = (LINE_SEGMENTS_P)malloc(sizeof(LINE_SEGMENTS));
+    new_segment = (LINE_SEGMENTS_P) malloc(sizeof(LINE_SEGMENTS));
     new_segment->startx = current->x[0];
     new_segment->endx = current->x[1];
     new_segment->starty = current->y[0];
@@ -358,23 +342,17 @@ int nmmtl_evaluate_polygons(int cntr_seg,
     new_segment->theta2[0] = current->theta2[0];
     new_segment->theta2[1] = current->theta2[1];
 
-    if(current->theta2[0] != 0)
-    {
+    if(current->theta2[0] != 0) {
       new_segment->nu[0] = PI/current->theta2[0];
       new_segment->free_space_nu[0] = PI/current->theta2[0];
-    }
-    else
-    {
+    } else {
       new_segment->nu[0] = 0;
       new_segment->free_space_nu[0] = 0;
     }
-    if(current->theta2[1] != 0)
-    {
+    if(current->theta2[1] != 0) {
       new_segment->nu[1] = PI/current->theta2[1];
       new_segment->free_space_nu[1] = PI/current->theta2[1];
-    }
-    else
-    {
+    } else {
       new_segment->nu[1] = 0;
       new_segment->free_space_nu[1] = 0;
     }
@@ -382,36 +360,33 @@ int nmmtl_evaluate_polygons(int cntr_seg,
     new_segment->conductor = conductor_counter;
     new_segment->epsilon[0] = 0.0;
     new_segment->epsilon[1] = 0.0;
-    if(leading_segment == NULL) leading_segment = new_segment;
+
+    if (leading_segment == NULL)
+      leading_segment = new_segment;
 
     /* which way do you turn to get to the interior of polygon - same */
     /* direction that the polygon turns */
     new_segment->interior = sign_of_polygon;
 
-    new_segment->length =
-      sqrt(current->dx * current->dx + current->dy * current->dy);
+    new_segment->length = sqrt(current->dx*current->dx + current->dy*current->dy);
 
     /* number of elements this should be broken into - take the */
     /* ratio of the length of the side to the total perimeter of the */
     /* polygon and multiply by the number of segments to break each */
     /* contour into.  contour->x0 is the perimeter of the polygon */
     /* under consideration.  Round up to the next higher integer */
-
-    new_segment->divisions = (int)(.99 + cntr_seg * new_segment->length /
-      contour->x0);
+    new_segment->divisions = (int)(.99 + cntr_seg * new_segment->length / contour->x0);
 
     /* force two elements per side, minimum */
-    if(new_segment->divisions < 2) new_segment->divisions = 2;
+    if (new_segment->divisions < 2)
+      new_segment->divisions = 2;
 
 #ifndef NO_HALF_MIN_CHECKING
 
     /* is this element size too large?  Check to see if it is greater */
     /* than half of the smallest conductor edge. */
-
-    if(new_segment->length/new_segment->divisions > half_minimum_dimension)
-    {
-      new_segment->divisions = .99 + new_segment->length /
-  half_minimum_dimension;
+    if (new_segment->length/new_segment->divisions > half_minimum_dimension) {
+      new_segment->divisions = .99 + new_segment->length / half_minimum_dimension;
     }
 
 #endif
@@ -419,20 +394,16 @@ int nmmtl_evaluate_polygons(int cntr_seg,
     /* associate edge pairs */
     /* for first segment, edge pair association will need to */
     /* wait till the list is done */
-    if(leading_segment != new_segment)
-    {
+    if(leading_segment != new_segment) {
       last_segment->edge_pair[1] = new_segment;
       new_segment->edge_pair[0] = last_segment;
     }
 
     /* hook up to end of the list */
-    if(last_segment == NULL)
-    {
+    if(last_segment == NULL) {
       *segments = new_segment;
       last_segment = new_segment;
-    }
-    else
-    {
+    } else {
       last_segment->next = new_segment;
       last_segment = new_segment;
     }
@@ -449,7 +420,3 @@ int nmmtl_evaluate_polygons(int cntr_seg,
 
   return(SUCCESS);
 }
-
-
-
-

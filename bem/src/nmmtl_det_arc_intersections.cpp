@@ -512,8 +512,7 @@
   */
 
 int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
-            DIELECTRIC_SEGMENTS_P *dielectric_segments)
-{
+            DIELECTRIC_SEGMENTS_P *dielectric_segments) {
   LINESEG dseg;
   POINT intersection1,intersection2;
   int number_of_intersections,tangent;
@@ -527,7 +526,7 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
         the circle segment. */
   int cseg_index,dseg_index; /* initial or terminal points */
   double angle_to_normal;
-  int intersection_type; /* just a serially numbered type of intersection -
+  int intersection_type = -1; /* just a serially numbered type of intersection -
           see the above documentation */
   int cond_hits,die_hits; /* number of intersections that are on endpoints */
 
@@ -2128,14 +2127,9 @@ int nmmtl_determine_arc_intersectio(CIRCLE_SEGMENTS_P *circle_segments,
 
     break;
 
-    default :
-    {
-
-      fprintf(stderr,"ELECTRO-F-INTERNAL Internal error:  checking intersections between conductors and dielectrics; Choices for circle segment/die intersection \
-types fell through\n");
-      return(FAIL);
-    }
-
+  default :
+    fprintf(stderr,"ELECTRO-F-INTERNAL Internal error:  checking intersections between conductors and dielectrics; Choices for circle segment/die intersection types fell through\n");
+    return(FAIL);
   }                          /* switch on intersection type */
 
       }                            /* if there is an intersection */
