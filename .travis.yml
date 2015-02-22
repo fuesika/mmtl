@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get install cmake gfortran
 
 
-script: script: cd bem && ./build.sh
+script: cd bem && ./build.sh
 
 # whitelist
 branches:
