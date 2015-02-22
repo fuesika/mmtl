@@ -17,7 +17,6 @@
  **  INCLUDE FILES
  *******************************************************************
  */
-
 #include "nmmtl.h"
 #include <string.h>
 
@@ -61,14 +60,13 @@ int nmmtl_retrieve(FILE *retrieve_file,
              CONDUCTOR_DATA_P *pconductor_data,
              DELEMENTS_P *pdie_elements,
              unsigned int *pnode_point_counter,
-             unsigned int *phighest_conductor_node)
-{
-  CELEMENTS_P ce;
+             unsigned int *phighest_conductor_node) {
+  CELEMENTS_P ce = NULL;
   int cntr,i,edge0,edge1;
   char line[256];
-  CONTOURS_P sigs;
+  CONTOURS_P sigs = NULL;
   CONDUCTOR_DATA_P conductor_data;
-  DELEMENTS_P die_elements;
+  DELEMENTS_P die_elements = NULL;
   int temp[2];
   double ftemp[2];
 
@@ -197,10 +195,10 @@ int nmmtl_retrieve(FILE *retrieve_file,
     }
   }
 
-
-  if(fgets(line,255,retrieve_file) == NULL) return(FAIL);
-  while(line[0] != '.') {
-    if(*pdie_elements == NULL){
+  if (fgets(line,255,retrieve_file) == NULL)
+    return(FAIL);
+  while (line[0] != '.') {
+    if (*pdie_elements == NULL) {
       die_elements = (DELEMENTS_P)malloc(sizeof(DELEMENTS));
       *pdie_elements = die_elements;
     } else {

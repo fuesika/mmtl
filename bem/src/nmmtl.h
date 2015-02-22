@@ -410,15 +410,13 @@ typedef struct edgedata {
 
 /* the actual conductor elements */
 
-typedef struct celements
-{
+typedef struct celements {
   struct celements *next;
   EDGEDATA_P edge[2];
   double xpts[INTERP_PTS];
   double ypts[INTERP_PTS];
   double epsilon;
   int node[INTERP_PTS];
-
 } CELEMENTS, *CELEMENTS_P;
 
 /* the head of the conductor element lists - will be used in an array */
