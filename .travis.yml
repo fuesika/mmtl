@@ -1,10 +1,15 @@
 language: cpp
 compiler:
-  - g++
+  - gcc
+  - clang
+
+env:
+  global:
+    - FC=gfortran
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install cmake
+  - sudo apt-get update -qq
+  - sudo apt-get install cmake gfortran
 
 
 script: script: cd bem && ./build.sh
