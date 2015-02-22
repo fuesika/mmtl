@@ -1,0 +1,13 @@
+language: cpp
+compiler:
+  - g++
+
+env:
+
+
+script: script: cd bem && ./build.sh
+
+# whitelist
+branches:
+  only:
+    - cmake_builds
