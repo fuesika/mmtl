@@ -1,11 +1,14 @@
-Introduction
-------------
+# MMTL
+
+[![Build Status](https://travis-ci.org/fuesika/mmtl.png?branch=cmake_builds)](https://travis-ci.org/fuesika/mmtl)
+
+# Introduction
+
 This branch contains reviewed code only that has been transferred to a
 CMake-based build process. For the full and patched original code, refer to the
 branch *old_code* in this git-repository.
 
-Original Information
---------------------
+# Original Information
 
 TNT is the graphical front end supporting 2-D electromagnetic field
 solvers developed at the Mayo Special Purpose Processor Development
@@ -30,8 +33,7 @@ http://tcllib.sourceforge.net/.  Or you can download and install a
 free binary distribution of ActiveTcl which includes all these (and
 many other) packages from http://www.activestate.com/tcl/.
 
-Download
---------
+# Download
 
 Original Win32-binaries and sources for TNT and MMTL field solver programs available on the web (discontinued since 2004):
 * http://mmtl.sourceforge.net/
@@ -40,8 +42,8 @@ For the latest and patched version refer to:
 * https://github.com/fuesika/mmtl
 
 
-Copyright
----------
+# Copyright
+
 Copyright (C) Mayo Foundation 2002-2004.
 
 TNT is free software; you can redistribute it and/or modify it under
@@ -60,8 +62,7 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA
 
 
-News
-----
+# News
 
 **February 16, 2015**
 After some struggling with the original sources and trying to compile
