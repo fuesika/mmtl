@@ -2,7 +2,9 @@ language: cpp
 compiler:
   - g++
 
-env:
+before_install:
+ 	- sudo apt-get update
+ 	- sudo apt-get install cmake
 
 
 script: script: cd bem && ./build.sh
