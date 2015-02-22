@@ -26,15 +26,15 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INST_PRFX
 
 ## make MMTL-BEM ###############################################################
 echo "== Build MMTL-BEM ====================================================="
-echo -n "Build MMTL-BEM now? ([Y]/N)"
-read CONFIRM
-case $CONFIRM in
-  n|N|NO|no|No) echo 'Not building MMTL-BEM. Please cd to build-directory and run "make" and possibly "make install" for manual handling.'
-    ;;
-  *) cd $ROOTDIR/build
+#echo -n "Build MMTL-BEM now? ([Y]/N)"
+#read CONFIRM
+#case $CONFIRM in
+#  n|N|NO|no|No) echo 'Not building MMTL-BEM. Please cd to build-directory and run "make" and possibly "make install" for manual handling.'
+#    ;;
+#  *) cd $ROOTDIR/build
     make -j $NCORES
-    ;;
-esac
+#    ;;
+#esac
 
 #install mmtl_bem to binary-directory
 make DESTDIR="$ROOTDIR" install
