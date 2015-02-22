@@ -5,9 +5,9 @@ compiler:
 
 env:
   global:
-    - FC=gfortran
-    - CC=gcc-4.8
-    - CXX=g++-4.8
+    - FC=gfortran-4.9
+    - CC=gcc-4.9
+    - CXX=g++-4.9
 
 before_install:
   - sudo apt-get update -qq
