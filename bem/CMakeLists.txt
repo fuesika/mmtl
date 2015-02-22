@@ -6,7 +6,7 @@ enable_language(CXX)
 
 
 # g++
-set (CMAKE_CXX_FLAGS_RELEASE "-O2 -g -Wshadow -fno-common")
+set (CMAKE_CXX_FLAGS_RELEASE "-O2 -g -Wall -Wextra -Wshadow")
 #set (CMAKE_CXX_FLAGS_DEBUG   "-O0    -Wall -Wextra -Wshadow -fno-common -Werror -Wconversion -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -Wunused -Wuninitialized")
 set (CMAKE_CXX_FLAGS_DEBUG   "-O0    -Wall -Wextra -Wshadow -fno-common -Werror -Wconversion                 -Wpointer-arith -Wcast-align -Wwrite-strings -fshort-enums -Wunused -Wuninitialized")
 
