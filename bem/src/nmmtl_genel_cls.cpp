@@ -1,29 +1,18 @@
-
 /*
-
-  FACILITY:  nmmtl
-
-  MODULE DESCRIPTION:
-
-  contains nmmtl_generate_elements_cls()
-
-  AUTHOR(S):
-
-  Kevin J. Buchs
-
-  CREATION DATE:  Fri Mar 13 10:41:06 1992
-
-  COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
-
-  */
-
+FACILITY:  nmmtl
+MODULE DESCRIPTION:
+contains nmmtl_generate_elements_cls()
+AUTHOR(S):
+Kevin J. Buchs
+CREATION DATE:  Fri Mar 13 10:41:06 1992
+COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
+*/
 
 /*
  *******************************************************************
  **  INCLUDE FILES
  *******************************************************************
  */
-
 #include "nmmtl.h"
 
 /*
@@ -69,11 +58,11 @@
 int nmmtl_generate_elements_cls(LINE_SEGMENTS_P *clsp,
         CELEMENTS_P *head,
         CELEMENTS_P *tail,
-        unsigned int *node_point_counter)
-{
+        unsigned int *node_point_counter) {
   int conductor;
   LINE_SEGMENTS_P cls;
-  CELEMENTS_P element,start = NULL;
+  CELEMENTS_P element = NULL;
+  CELEMENTS_P start   = NULL;
   unsigned int divisions;
   unsigned int npcntr;
   unsigned int first_node;
@@ -224,5 +213,4 @@ int nmmtl_generate_elements_cls(LINE_SEGMENTS_P *clsp,
   *clsp = cls;
 
   return(SUCCESS);
-
 }

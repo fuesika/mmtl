@@ -66,7 +66,8 @@ int nmmtl_generate_elements_ccs(CIRCLE_SEGMENTS_P *ccsp,
 {
   int conductor;
   CIRCLE_SEGMENTS_P ccs;
-  CELEMENTS_P element,start = NULL;
+  CELEMENTS_P element = NULL;
+  CELEMENTS_P start   = NULL;
   unsigned int divisions;
   unsigned int npcntr;
   unsigned int first_node;

@@ -533,9 +533,20 @@ int nmmtl_parse_xsctn(char *filename,
     // Is this a conductor definition?
     //-----------------------------------------------------
     else if ( strstr (line, "Conductors") != NULL ) {
-      double width, botWidth, topWidth, height, xOffset, yOffset, pitch;
-      double diameter, tmp_cond2;
-      int indx, number, primitive, type;
+      // initialize all values with "-1" to cause failure on expected use
+      double width = -1.;
+      double botWidth = -1.;
+      double topWidth = -1.;
+      double height   = -1.;
+      double xOffset  = -1.;
+      double yOffset  = -1.;
+      double pitch    = -1.;
+      double diameter   = -1.;
+      double tmp_cond2  = -1.;
+      int indx      = -1;
+      int number    = -1;
+      int primitive = -1;
+      int type      = -1;
       char name[500];
 
       // Name of the conductor
@@ -666,8 +677,12 @@ int nmmtl_parse_xsctn(char *filename,
           continue;
       }
 
-      double cx = xOffset, tw, length;
+      double cx = xOffset;
       double cy = yCoord + yOffset;
+      // initialize "tw" and "length" values that will most likely lead to
+      // obvious failure, if used unexpectedly
+      double tw     = -1.;
+      double length = -1.;
 
       //-----------------------------------------------------
       // Caculate the total width of the conductor set.
@@ -820,11 +835,11 @@ int nmmtl_parse_xsctn(char *filename,
         //----------------------------------------------------
         // Check if this is a conductor that should be defined as a ground wire.
         //----------------------------------------------------
-        if (  strncmp (name, "gr", 2) ) {
+        if (strncmp(name, "gr", 2)) {
           c_temp->conductivity = tmp_cond2;
           c_temp->next = *signals;
           *signals = c_temp;
-          sprintf (c_temp->name, "%s%c%d", name, type, *num_signals);
+          sprintf(c_temp->name, "%s%c%d", name, type, *num_signals);
           (*num_signals)++;
           printf("Conductivity %s = %g siemens/meter\n",
                  c_temp->name,

@@ -1,22 +1,12 @@
-
 /*
-
-  FACILITY:  nmmtl
-
-  MODULE DESCRIPTION:
-
-  contains the function nmmtl_generate_elements()
-
-  AUTHOR(S):
-
-  Kevin J. Buchs
-
-  CREATION DATE:  Fri Mar 13 09:26:49 1992
-
-  COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
-
-  */
-
+FACILITY:  nmmtl
+MODULE DESCRIPTION:
+contains the function nmmtl_generate_elements()
+AUTHOR(S):
+Kevin J. Buchs
+CREATION DATE:  Fri Mar 13 09:26:49 1992
+COPYRIGHT:   Copyright (C) 1992 by Mayo Foundation. All rights reserved.
+*/
 
 /*
  *******************************************************************
@@ -106,7 +96,10 @@ int nmmtl_generate_elements(int conductor_counter,
   CONDUCTOR_DATA_P cd;
   LINE_SEGMENTS_P cls;
   CIRCLE_SEGMENTS_P ccs;
-  CELEMENTS_P head,tail,gnd_list,gnd_list_head = NULL;
+  CELEMENTS_P head                = NULL;
+  CELEMENTS_P tail                = NULL;
+  CELEMENTS_P gnd_list            = NULL;
+  CELEMENTS_P gnd_list_head       = NULL;
   CELEMENTS_P gnd_plane_list_head = NULL;
   unsigned int node_point_counter_start;
   int number_elements = 0;

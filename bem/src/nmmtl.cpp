@@ -70,19 +70,19 @@ int main(int argc, char **argv) {
   char filespec[PATH_MAX];    /* filespec for fopen() */
   int num_signals = 0;
   int num_grounds = 0;
-  double **electrostatic_induction;
-  double **inductance;
-  double **Rdc;
-  double *characteristic_impedance;
-  double *propagation_velocity;
-  double *equivalent_dielectric;
-  double **forward_xtk;
-  double **backward_xtk;
-  FILE *output_file1;
-  FILE *output_file2;
+  double **electrostatic_induction  = NULL;
+  double **inductance               = NULL;
+  double **Rdc                      = NULL;
+  double *characteristic_impedance  = NULL;
+  double *propagation_velocity      = NULL;
+  double *equivalent_dielectric     = NULL;
+  double **forward_xtk              = NULL;
+  double **backward_xtk             = NULL;
+  FILE *output_file1                = NULL;
+  FILE *output_file2                = NULL;
   bool element_dump = false;
   char ele_dmp_filename[PATH_MAX];
-  FILE *retrieval_file;
+  FILE *retrieval_file              = NULL;
 
   /* - - - - - - - - - -  INITIALIZATIONS - - - - - - - - - - - - - - - - */
   dump_file = fopen("nmmtl.dump","w");
