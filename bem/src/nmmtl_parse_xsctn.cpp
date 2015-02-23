@@ -170,16 +170,16 @@ int nmmtl_parse_xsctn(char *filename,
   /* initialize the parameters set by icon attributes */
   *cntr_seg = 0;
   *pln_seg  = 0;
-  *coupling = 0.0;
-  *risetime = 0.0;
+  *coupling = 0.;
+  *risetime = 0.;
 
   //
   // Establish a default CONDUCTIVITY if the user specified no value.
   //
   *conductivity = DEFAULT_CONDUCTIVITY;
   *gnd_planes = 0;
-  *top_ground_plane_thickness = 0.0;
-  *bottom_ground_plane_thickness = 0.0;
+  *top_ground_plane_thickness = 0.;
+  *bottom_ground_plane_thickness = 0.;
   *units = UNITS_NO_UNITS;
 
   netlist = (NETLIST_REC *)calloc(1,sizeof(NETLIST_REC));
@@ -190,117 +190,114 @@ int nmmtl_parse_xsctn(char *filename,
 
   FILE *inpf;
 
-  //-----------------------------------------------
   // Loss-tangent not used for the calculations.
-  //-----------------------------------------------
   printf ("Warning: lossTangent not used in this simulation!\n");
 
-  if ( ! (inpf = fopen (fullfilespec, "r") ) ) {
-    printf ("* ERROR: Could not open the cross-section file %s\n", fullfilespec);
+  if (!(inpf = fopen(fullfilespec, "r"))) {
+    printf ("Error: cannot open the cross-section file %s\n", fullfilespec);
     return (FAIL);
   }
 
   double dbl;
-  char tmp[100], defaultUnits[20];
+  char tmp[100];
+  char defaultUnits[20];
   double arg1;
   char arg2[30];
-  int tmp_cntr_seg, tmp_pln_seg;
+  int tmp_cntr_seg;
+  int tmp_pln_seg;
 
-  while (1) {
-    if ( fgets (line, GPGE_MAX, inpf) == NULL ) {
-    printf ("*** EOF incountered -- imcomplete input file %s\n", fullfilespec);
-    return 0;
-  }
-  if ( line[0] == '#' )
-    continue;
+  while (true) {
+    if (fgets(line, GPGE_MAX, inpf) == NULL) {
+      printf ("*** EOF incountered -- incomplete input file %s\n", fullfilespec);
+      return FAIL;
+    }
+    // skip comment
+    if (line[0] == '#')
+      continue;
 
-  if ( strlen(line) < 3 )
-    continue;
-  if ( strstr (line, "ackage") != NULL )
-    continue;
+    // skip for reasons of sanity, line too short to carry relevant information
+    if (strlen(line) < 3)
+      continue;
 
-  if ( (! strncmp (line, "Gro", 3)) ||
-  (! strncmp (line, "Die", 3)) ||
-  (! strncmp (line, "Rec", 3)) ||
-  (! strncmp (line, "Cir", 3)) ||
-  (! strncmp (line, "Tra", 3)) )
-    break;
+    // skip specification of required packages
+    if (strstr(line, "ackage") != NULL)
+      continue;
 
-  if ( strncmp (line, "set", 3) )
-    continue;
+    // beginning of geometry section -- exit loop
+    if ((! strncmp(line, "Gro", 3))
+    ||  (! strncmp(line, "Die", 3))
+    ||  (! strncmp(line, "Rec", 3))
+    ||  (! strncmp(line, "Cir", 3))
+    ||  (! strncmp(line, "Tra", 3)))
+      break;
 
-  if ( strstr (line, "couplingLen") != NULL ) {
-    parseVal (line, 0, tmp);
-    if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-      strcat (tmp, "meters");
-    conversion (tmp, meters, dbl);
-    *coupling = (float) dbl;
-    printf ("CouplingLength = %g\n", dbl);
-  }
-      if ( strstr (line, "riseTime") != NULL )
-  {
-    parseVal (line, 0, tmp);
-    if ( (sscanf (tmp, "%lf%s", &arg1, arg2)) < 2 )
-      {
-        strcat (tmp, "ps");
+    //cannot see the use for the following lines.. commenting them for the time being
+    //// skip indented "set ..." lines
+    //if (strncmp(line, "set", 3)) {
+      //continue;
+    //}
+
+    if (strstr(line, "couplingLen") != NULL) {
+      parseVal(line, 0, tmp);
+      if ((sscanf (tmp, "%lf%s", &arg1, arg2)) < 2)
+        strcat(tmp, "meters");
+      conversion(tmp, meters, dbl);
+      *coupling = dbl;
+      printf ("Input CouplingLength = %lf\n", dbl);
+    }
+    if (strstr(line, "riseTime") != NULL) {
+      parseVal (line, 0, tmp);
+      if ((sscanf(tmp, "%lf%s", &arg1, arg2)) < 2) {
+        strcat(tmp, "ps");
+        conversion(tmp, seconds, dbl);
+        *risetime = dbl;
+      } else {
         conversion (tmp, seconds, dbl);
-        *risetime = (float) dbl;
+        *risetime = dbl;
       }
-    else
-      {
-        conversion (tmp, seconds, dbl);
-        *risetime = (float) dbl;
-      }
-    printf ("RiseTime = %g\n", *risetime);
-  }
-      if ( strstr (line, "defaultLeng") != NULL )
-  {
-    sscanf (line, "%*s %*s %*c%s", tmp);
-    tmp[strlen(tmp)-1] = '\0';
-    strcpy (defaultUnits, tmp);
-    printf ("Default Units: %s\n", defaultUnits);
-  }
-
-      if ( strstr (line, "CSEG") != NULL )
-    sscanf (line, "%*s %*s %d", &tmp_cntr_seg);
-      if ( strstr (line, "DSEG") != NULL )
-    sscanf (line, "%*s %*s %d", &tmp_pln_seg);
+      printf("Input RiseTime = %lf\n", *risetime);
+    }
+    if (strstr (line, "defaultLeng") != NULL) {
+      sscanf(line, "%*s %*s %*c%s", tmp);
+      tmp[strlen(tmp)-1] = '\0';
+      strcpy(defaultUnits, tmp);
+      printf("Input Default Units: %s\n", defaultUnits);
     }
 
+    if (strstr(line, "CSEG") != NULL) {
+      sscanf(line, "%*s %*s %d", &tmp_cntr_seg);
+    }
+    if (strstr(line, "DSEG") != NULL) {
+      sscanf(line, "%*s %*s %d", &tmp_pln_seg);
+    }
+  }
 
-  if ( *cntr_seg < 1 )
+  // assign segment counters to corresponding return values
+  if (*cntr_seg < 1)
     *cntr_seg = tmp_cntr_seg;
 
-  if ( *pln_seg < 1 )
+  if (*pln_seg < 1)
     *pln_seg = tmp_pln_seg;
 
-  //
   // Establish a default RISETIME if riseTime is set to zero.
-  //
   if (*risetime == 0) {
     *risetime = DEFAULT_RISETIME * 1.0e-12;
     printf ("Assign a default value of %g to risetime\n", *risetime);
   }
 
-  //
   // Establish a default COUPLING if the coupling-length is set to zero.
-  // Note here that units input will default
-  // to units of mils when the user specifies none.
-  //
-
-  if ( *coupling == 0 )
-    {
-      /* make the assignment in terms of meters, first,
-   using default in inches*/
-      *coupling = DEFAULT_COUPLING;
-      *coupling *= INCHES_TO_METERS;
-      /* warn about using default values in user's selected units */
-      sprintf(msg, "Default=%g mils used\n",
-        (float)((*coupling) / MILS_TO_METERS));
-      printf ("%s\n", msg);
-    } else
-      printf ("CouplingLength = %g\n", *coupling);
-
+  // Note here that units input will default to units of mils when the user
+  // specifies none.
+  if (*coupling == 0) {
+    /* make the assignment in terms of meters, first, using default in inches*/
+    *coupling = DEFAULT_COUPLING;
+    *coupling *= INCHES_TO_METERS;
+    /* warn about using default values in user's selected units */
+    sprintf(msg, "WARN: Default=%g mils used\n", (float)((*coupling) / MILS_TO_METERS));
+    printf ("%s\n", msg);
+  } else {
+    printf ("CouplingLength = %g\n", *coupling);
+  }
 
   /* assign in user's units */
   *top_ground_plane_thickness = DEFAULT_GND_THICK / MILS_TO_METERS;
