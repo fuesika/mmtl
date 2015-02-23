@@ -26,23 +26,17 @@ COPYRIGHT:          Copyright (C) 1986-92 by Mayo Foundation. All rights reserve
  *******************************************************************
  */
 
-
 //---------------------------------------------------------------------
-//
 // parseVal: parse the line from the file to get the portion containing
 //           the value.
 //---------------------------------------------------------------------
-void parseVal (char *line, int flg, char *tmp)
-{
+void parseVal (char *line, int flg, char *tmp) {
   if (flg)
     sscanf (line, "%*s %s", tmp);
   else
     sscanf (line, "%*s %*s %s", tmp);
 
-  //-----------------------------------------------------------------
-  // Check if the value is surrounded by quotes.  If so, remove the
-  // quotes.
-  //-----------------------------------------------------------------
+  // Remove (optional) surrounding quotes from value
   if ( tmp[0] == '\"' )
     tmp[0] = ' ';
   if ( tmp[strlen(tmp)-1] == '\"' )
@@ -52,90 +46,85 @@ void parseVal (char *line, int flg, char *tmp)
 }
 
 
-
-
 /*
+ FUNCTION NAME:  nmmtl_parse_graphic()
 
-   FUNCTION NAME:  nmmtl_parse_graphic()
+ FUNCTIONAL DESCRIPTION:
 
+ generate a data structure of subsections and dielectric constants
+ around signals, grounds and dielectric interfaces represented by a 2D
+ GPGE graphic cross section diagram of an electromagnetic system. These
+ structures are then used to build a mesh of boundary elements in order
+ to allow calculation of static EM parameters.  Separate linked lists
+ are used for signal and ground wires but both are called contours (use
+ contour data struct). Signal and ground wires may be gpge rectangles,
+ circles or polygon primitives. Signal wires are always yellow, ground
+ wires dark blue, ground planes must use the icon ground_plane (this is
+ a dark blue rectangle). Only the number of ground planes are
+ important. If 2 ground planes exist, points are generated along the
+ top's bottom (two consecutive points make a segment). Dielectric
+ layers are represented by hollow (not filled) gpge white or green
+ rectangles. A linked list of dielectric layers is created, points
+ along dielectric interfaces (line where two adjacent dielectric layers
+ touch) are output.  Primitive attributes are used to define
+ coordinates of signals, ground wires and dielectric layers making the
+ diagram NOT_SCALE.  The old MMTL program implemented two types of
+ drawings, a to-scale and a not-to-scale.  This program only implements
+ a not-to-scale.  The attributes must be there.
 
-   FUNCTIONAL DESCRIPTION:
+ An attribute on the drawing indicates the units used, either meters,
+ microns, mils, or inches.  Mils is assumed if this attribute is
+ absent.
 
-   generate a data structure of subsections and dielectric constants
-   around signals, grounds and dielectric interfaces represented by a 2D
-   GPGE graphic cross section diagram of an electromagnetic system. These
-   structures are then used to build a mesh of boundary elements in order
-   to allow calculation of static EM parameters.  Separate linked lists
-   are used for signal and ground wires but both are called contours (use
-   contour data struct). Signal and ground wires may be gpge rectangles,
-   circles or polygon primitives. Signal wires are always yellow, ground
-   wires dark blue, ground planes must use the icon ground_plane (this is
-   a dark blue rectangle). Only the number of ground planes are
-   important. If 2 ground planes exist, points are generated along the
-   top's bottom (two consecutive points make a segment). Dielectric
-   layers are represented by hollow (not filled) gpge white or green
-   rectangles. A linked list of dielectric layers is created, points
-   along dielectric interfaces (line where two adjacent dielectric layers
-   touch) are output.  Primitive attributes are used to define
-   coordinates of signals, ground wires and dielectric layers making the
-   diagram NOT_SCALE.  The old MMTL program implemented two types of
-   drawings, a to-scale and a not-to-scale.  This program only implements
-   a not-to-scale.  The attributes must be there.
+ If the user desires to use a transmission line x-section in a network
+ simulation, an icon must be created.  If the icon exists, this program
+ will match the signal names with the icon pin names and generate
+ netlist for the icon.
 
-   An attribute on the drawing indicates the units used, either meters,
-   microns, mils, or inches.  Mils is assumed if this attribute is
-   absent.
+ Some features have been ommitted.  Some of the code remains, blocked
+ by ifdefs.  These are CHECK_SCALE and SORT_DIELECTRICS.  Some of the
+ comments from omitted features:
 
-   If the user desires to use a transmission line x-section in a network
-   simulation, an icon must be created.  If the icon exists, this program
-   will match the signal names with the icon pin names and generate
-   netlist for the icon.
-
-   Some features have been ommitted.  Some of the code remains, blocked
-   by ifdefs.  These are CHECK_SCALE and SORT_DIELECTRICS.  Some of the
-   comments from omitted features:
-
-   In the dielectric list, the rightmost link is the bottom layer
-   (d_bottom) the left most is the top layer.
-   .. otherwise gpge coordinates are used for the
-   TO_SCALE primitives. There may be no mixed scale diagrams.
+ In the dielectric list, the rightmost link is the bottom layer
+ (d_bottom) the left most is the top layer.
+ .. otherwise gpge coordinates are used for the
+ TO_SCALE primitives. There may be no mixed scale diagrams.
 
 
-   FORMAL PARAMETERS:
+ FORMAL PARAMETERS:
 
-   INPUTS:
+ INPUTS:
 
-   input file: node.graphic
+ input file: node.graphic
 
-   OUTPUTS:
+ OUTPUTS:
 
-   cntr_seg : number of contour segments (defaults to 6)
-   pln_seg  : number of plane segments (defaults to 15)
-   coupling : coupling length of transmission line in meters
-   risetime : risetime at which to do the analysis in seconds
-   conductivity : conductivity in mhos/meter
-   half_minimum_dimension : half the smallest side or radius
-   gnd_planes : the number of ground planes : 1 or 2
-   top_ground_plane_thickness : in meters
-   bottom_ground_plane_thickness : in meters
-   dielectrics : pointer to linked list of dielectric layers
-   signals  : pointer to the head of the signal linked list
-   groundwires  : pointer to the head of the ground wire linked list
-   num_signals : number of signal conductors
-   num_grounds : number of ground conductors (including upper plane)
-   units : the user-specified or default units for measurement
+ cntr_seg : number of contour segments (defaults to 6)
+ pln_seg  : number of plane segments (defaults to 15)
+ coupling : coupling length of transmission line in meters
+ risetime : risetime at which to do the analysis in seconds
+ conductivity : conductivity in mhos/meter
+ half_minimum_dimension : half the smallest side or radius
+ gnd_planes : the number of ground planes : 1 or 2
+ top_ground_plane_thickness : in meters
+ bottom_ground_plane_thickness : in meters
+ dielectrics : pointer to linked list of dielectric layers
+ signals  : pointer to the head of the signal linked list
+ groundwires  : pointer to the head of the ground wire linked list
+ num_signals : number of signal conductors
+ num_grounds : number of ground conductors (including upper plane)
+ units : the user-specified or default units for measurement
 
-   FUNCTIONS CALLED:
-   in_string, header_c, mcms_access, mcms_deaccess,
-   get_error, filescan, get_node, get_design_dir
+ FUNCTIONS CALLED:
+ in_string, header_c, mcms_access, mcms_deaccess,
+ get_error, filescan, get_node, get_design_dir
 
 
-   RETURN VALUE:
+ RETURN VALUE:
 
-   SUCCESS, FAIL
+ SUCCESS, FAIL
 
-   */
-
+ */
 int nmmtl_parse_xsctn(char *filename,
       int *cntr_seg,
       int *pln_seg,
@@ -179,12 +168,10 @@ int nmmtl_parse_xsctn(char *filename,
   double totWidth = 0;
 
   /* initialize the parameters set by icon attributes */
-
-  //  *cntr_seg = 0;
-  //  *pln_seg = 0;
+  *cntr_seg = 0;
+  *pln_seg  = 0;
   *coupling = 0.0;
   *risetime = 0.0;
-
 
   //
   // Establish a default CONDUCTIVITY if the user specified no value.
